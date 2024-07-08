@@ -10,4 +10,9 @@ public class LoginController {
 	public String loginPage() {
 		return "login";
 	}
+
+	@GetMapping("/encrypt")
+	public String encryptPassword() {
+		return "encrypt";
+	}
 }
