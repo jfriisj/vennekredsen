@@ -64,11 +64,12 @@ public class WebSecurityConfig {
 				.authorizeHttpRequests(auth ->
 						auth.requestMatchers("/api/auth/**").permitAll()
 								.requestMatchers("/api/test/**").permitAll()
+								.requestMatchers("/encrypt").permitAll()
+								.requestMatchers("/", "/index.html", "/login", "/**").permitAll()
 								.anyRequest().authenticated()
 				);
 
 		http.authenticationProvider(authenticationProvider());
-
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
