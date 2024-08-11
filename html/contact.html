@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vennekredsen - Hashøjskolen</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"> <!-- Custom CSS -->
+</head>
+
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Vennekredsen</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Hjem</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="about.html">Om Os</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="contact.html">Kontakt</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="bg-primary text-white text-center py-5 mb-4">
+  <div class="container">
+    <h1 class="display-4">Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
+    <p class="lead">Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i Slots Bjergby.</p>
+  </div>
+</header>
+
+<main class="container my-4">
+  <section id="vennekredsen" class="mb-5">
+    <h2 class="text-center">Kontakt os</h2>
+    <form id="contactForm" class="mx-auto" style="max-width: 500px;">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="message">Message:</label>
+        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-dark btn-block">Submit</button>
+    </form>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-dark text-white text-center py-4">
+  <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
+  <p>Følg os på
+    <a href="#" class="text-white">Facebook</a>,
+    <a href="#" class="text-white">Twitter</a>, og
+    <a href="#" class="text-white">LinkedIn</a>.
+  </p>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="../client.js"></script> <!-- Custom JS -->
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+body {
+  background-color: #343a40 !important; /* Light gray background for the whole page */
+  color: #fff; /* Dark text for readability */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Professional font */
+}
+
+/* Header Section */
+header {
+  background: url('hashojskolen.png') no-repeat center center/cover;
+  color: #000;
+}
+
+.center-text {
+  text-align: center;
+}
+
+header .btn-light {
+  color: #000;
+}
+
+/* Card Styling */
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.card-body {
+  text-align: center;
+}
+
+/* Footer Styling */
+footer {
+  background-color: #343a40;
+  color: #ccc;
+}
+
+footer a {
+  color: #ccc;
+  text-decoration: underline;
+}
+
+footer a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* styles.css */
+
+/* Om Vennekredsen Section */
+#vennekredsen {
+  background-color: #555; /* White background for a clean look */
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#vennekredsen h2 {
+  color: #fff; /* Blue color to match the hero section */
+}
+
+#vennekredsen p.lead {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: #fff;
+}
+
+#vennekredsen p {
+  color: #fff;
+  line-height: 1.6;
+}
