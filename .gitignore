@@ -5,3 +5,7 @@ node_modules
 dist
 .cache
 .env
+.dockerignore
+.editorconfig
+.gitattributes
+.gitignore
