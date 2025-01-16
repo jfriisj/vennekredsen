@@ -16,5 +16,5 @@ jobs:
       - name: Build and push
         uses: macbre/push-to-ghcr@master
         with:
-          image_name: 'jfriisj/vennekredsen:latest'
+          image_name: 'jfriisj/vennekredsen'
           github_token: ${{ secrets.TOKEN }}
