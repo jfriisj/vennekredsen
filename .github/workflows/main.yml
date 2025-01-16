@@ -28,7 +28,5 @@ jobs:
         with:
           context: .
           dockerfile: ./Dockerfile
-          image_name: ${{ github.repository }}-vennekredsen
+          image_name: ${{ github.repository | toLowerCase }}-vennekredsen
           github_token: ${{ secrets.GHCR_TOKEN }}
-          push: true
-          tags: ghcr.io/${{ github.repository | toLowerCase }}-vennekredsen:latest
