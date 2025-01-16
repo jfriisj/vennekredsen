@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  vennekredsen:
+  vennekredsen: # This is the name of the job
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
