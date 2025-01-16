@@ -20,9 +20,12 @@ jobs:
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and publish a Docker image for ${{ github.repository }}
         uses: docker/build-push-action@v4
         with:
           context: .
+          dockerfile: ./Dockerfile
+          image_name: ${{ github.repository }}-vennekredsen
+          github_token: ${{ secrets.GHCR_TOKEN }}
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
