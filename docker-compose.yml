@@ -2,7 +2,7 @@ services:
   vennekredsen:
     container_name: vennekredsen-hjemmeside
     restart: unless-stopped
-    image: nginx:latest
+    image: ghcr.io/jfriisj/vennekredsen:latest
     ports:
       - "85:80"
     volumes:
