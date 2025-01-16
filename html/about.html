@@ -1,81 +1,29 @@
 <!DOCTYPE html>
-<html lang="da">
-<style>
-  header {
-    background: url('hashojskolen.png') no-repeat center center/cover;
-    color: #000;
-  }
-
-
-  body {
-    background-color: #343a40 !important; /* Light gray background for the whole page */
-    color: #fff; /* Dark text for readability */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Professional font */
-  }
-
-
-  #vennekredsen {
-    background-color: #555; /* White background for a clean look */
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  }
-
-  #vennekredsen h2 {
-    color: #fff; /* Blue color to match the hero section */
-  }
-
-  #vennekredsen p.lead {
-    font-size: 1.25rem;
-    font-weight: 300;
-    color: #fff;
-  }
-
-  #vennekredsen p {
-    color: #fff;
-    line-height: 1.6;
-  }
-</style>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vennekredsen - Hashøjskolen</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<!--  <link rel="stylesheet" href="style.css"> &lt;!&ndash; Custom CSS &ndash;&gt;-->
-</head>
-
-<body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Vennekredsen</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">Hjem</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="about.html">Om Os</a>
-        </li>
-<!--        <li class="nav-item">-->
-<!--          <a class="nav-link" href="contact.html">Kontakt</a>-->
-<!--        </li>-->
-      </ul>
-    </div>
+  <!DOCTYPE html>
+  <html lang="da">
+  
+  
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vennekredsen - Hashøjskolen</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  </head>
+  
+  <body>
+    <!--Navigation bar-->
+  <div id="nav-placeholder">
+  
   </div>
-</nav>
+  
+  <script>
+  $(function(){
+    $("#nav-placeholder").load("navbar.html");
+  });
+  </script>
 
-<!-- Hero Section -->
-<header id="header" class="bg-primary text-black text-center py-5 mb-4">
-  <div class="container">
-    <h1 class="display-4">Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
-    <p class="lead">Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i Slots Bjergby.</p>
-  </div>
-</header>
+
 
 <main class="container my-4">
   <section id="vennekredsen" class="mb-5">
@@ -93,17 +41,9 @@
 <!-- Footer -->
 <footer class="bg-dark text-white text-center py-4">
   <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
-<!--  <p>Følg os på-->
-<!--    <a href="#" class="text-white">Facebook</a>,-->
-<!--    <a href="#" class="text-white">Twitter</a>, og-->
-<!--    <a href="#" class="text-white">LinkedIn</a>.-->
-<!--  </p>-->
+
 </footer>
 
-<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
-<!--<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>-->
-<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
-<!--<script src="script.js"></script> &lt;!&ndash; Custom JS &ndash;&gt;-->
 </body>
 
 </html>
