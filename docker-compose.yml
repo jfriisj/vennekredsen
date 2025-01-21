@@ -10,6 +10,8 @@ services:
       - ./html:/usr/share/nginx/html
     networks:
       - cloudflare
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
 
 networks:
   cloudflare:
