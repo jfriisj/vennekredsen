@@ -1,34 +1,300 @@
+/* Base Styling */
 body {
-  background-color: #343a40 !important; /* Light gray background for the whole page */
-  color: #fff; /* Dark text for readability */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Professional font */
+  background-color: #343a40 !important;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Header Section */
-
-
+/* Text Alignment */
 .center-text {
   text-align: center;
+}
+
+/* Header Styling */
+header {
+  background: url('skole.png') no-repeat center center/cover !important;
+  color: #000;
+  margin-bottom: 2rem;
 }
 
 header .btn-light {
   color: #000;
 }
 
+/* Section Styling */
+#vennekredsen {
+  background-color: #555;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+#vennekredsen h2 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+#vennekredsen h3, #vennekredsen h4, #vennekredsen h5 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+#vennekredsen p.lead {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+#vennekredsen p {
+  color: #fff;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
 /* Card Styling */
 .card {
   border: none;
   border-radius: 10px;
+  background-color: #444;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 0.75rem 1.25rem;
 }
 
 .card-body {
   text-align: center;
+  padding: 1.5rem;
+}
+
+.card-footer {
+  background-color: rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 0.75rem 1.25rem;
+}
+
+/* Card text color fixes - ensure all text in cards is visible */
+.card-title, .card-text {
+  color: #fff;
+}
+
+.card small, .card .text-muted {
+  color: #adb5bd !important;
+}
+
+/* Override for forms and admin panels */
+form .card-body, 
+#ansoegninger .card-body {
+  text-align: left;
+}
+
+/* Form Styling */
+.form-control {
+  background-color: #495057;
+  border: 1px solid #6c757d;
+  color: #fff;
+}
+
+.form-control:focus {
+  background-color: #495057;
+  border-color: #80bdff;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.form-control::placeholder {
+  color: #adb5bd;
+}
+
+.form-text.text-muted {
+  color: #adb5bd !important;
+}
+
+/* Form label color fix */
+label {
+  color: #fff;
+}
+
+/* Alert Styling - Fix contrast issues */
+.alert {
+  border: none;
+  border-radius: 5px;
+}
+
+.alert-success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #8fd19e;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #f1aeb5;
+}
+
+.alert-info {
+  background-color: rgba(23, 162, 184, 0.2);
+  color: #8ee0f1;
+}
+
+/* Bootstrap component contrast fixes */
+.text-muted {
+  color: #adb5bd !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-black {
+  color: #000000 !important;
+}
+
+/* Fix dropdown menu contrast */
+.dropdown-menu {
+  background-color: #495057;
+}
+
+.dropdown-item {
+  color: #fff;
+}
+
+.dropdown-item:hover {
+  background-color: #343a40;
+  color: #fff;
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.btn-outline-light {
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-outline-light:hover {
+  color: #212529;
+  background-color: #f8f9fa;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+/* Admin Panel Specific */
+.application-card {
+  transition: all 0.3s ease;
+}
+
+.application-card.pending {
+  border-left: 5px solid #6c757d;
+}
+
+.application-card.approved {
+  border-left: 5px solid #28a745;
+}
+
+.application-card.rejected {
+  border-left: 5px solid #dc3545;
+}
+
+.badge {
+  font-size: 85%;
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+  border-radius: 0.25rem;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+/* Fix table contrast issues */
+table {
+  color: #fff;
+}
+
+.table-dark {
+  background-color: #343a40;
+}
+
+.table-dark th,
+.table-dark td {
+  border-color: #454d55;
+}
+
+/* Fix modal contrast issues */
+.modal-content {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.modal-header, .modal-footer {
+  border-color: #454d55;
+}
+
+.close {
+  color: #fff;
+  text-shadow: none;
+}
+
+.close:hover {
+  color: #adb5bd;
 }
 
 /* Footer Styling */
 footer {
   background-color: #343a40;
   color: #ccc;
+  padding: 2rem 0;
+  margin-top: 2rem;
 }
 
 footer a {
@@ -41,27 +307,19 @@ footer a:hover {
   text-decoration: none;
 }
 
-/* styles.css */
-
-/* Om Vennekredsen Section */
-#vennekredsen {
-  background-color: #555; /* White background for a clean look */
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+/* Make sure header text is readable when background image loads */
+header h1, header p.lead {
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 1); 
+  font-weight: bold;
 }
 
-#vennekredsen h2 {
-  color: #fff; /* Blue color to match the hero section */
-}
-
-#vennekredsen p.lead {
-  font-size: 1.25rem;
-  font-weight: 300;
-  color: #fff;
-}
-
-#vennekredsen p {
-  color: #fff;
-  line-height: 1.6;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  #vennekredsen {
+    padding: 20px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
 }

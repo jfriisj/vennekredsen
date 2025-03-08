@@ -1,85 +1,77 @@
 <!DOCTYPE html>
 <html lang="da">
-
 <head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Tilmelding - Vennekredsen for Hashøjskolen</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilmelding - Vennekredsen for Hashøjskolen</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
-
 <body>
-  <!--Navigation bar-->
-  <div id="nav-placeholder">
+    <!--Navigation bar-->
+    <div id="nav-placeholder"></div>
 
-  </div>
-
-  <script>
-    $(function () {
-      $("#nav-placeholder").load("navbar.html", function() {
-        // Initialize login button after navbar is loaded
-        if (typeof initializeLoginButton === 'function') {
-          initializeLoginButton();
-        } else {
-          $.getScript("login-button.js");
-        }
+    <script>
+      $(function () {
+        $("#nav-placeholder").load("navbar.html");
       });
-    });
-  </script>
+    </script>
 
+    <main class="container my-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- Intro section -->
+                <section class="text-center mb-5">
+                    <h2>Tilmelding til Arrangementer</h2>
+                    <p class="lead">Vennekredsen står for at arrangere fester og aktiviteter for skolens børn</p>
+                </section>
 
-  <!-- Main Content -->
-  <main class="container my-5">
-    <!-- Tilmelding Section -->
-    <section id="vennekredsen" class="mb-5">
-      <div class="text-center mb-4">
-        <h2>Tilmelding til Arrangementer</h2>
-        <p class="lead">Vennekredsen står for at arrangere fester og aktiviteter for skolens børn</p>
-      </div>
-      
-      <div class="card mb-4">
-        <div class="card-body">
-          <h4 class="card-title text-center">Kommende Arrangementer</h4>
-          <p class="card-text">Vi vil gerne invitere dig til at deltage i vores kommende fester og arrangementer. Tilmeld dig via linket herunder.</p>
-          
-          <div class="alert alert-info" role="alert">
-            <strong>Næste arrangement:</strong> Sommerfest den 14. juni 2024
-          </div>
-          
-          <div class="text-center my-4">
-            <a href="https://hashoej-if.dk/" class="btn btn-primary btn-lg">TILMELD HER!</a>
-            <p><small class="text-muted mt-2">Tilmelding via Hashøj IF's hjemmeside under "Events"</small></p>
-          </div>
+                <!-- Main content section -->
+                <section id="vennekredsen" class="mb-5">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Kommende Arrangementer</h4>
+                            <p class="card-text">Vi vil gerne invitere dig til at deltage i vores kommende fester og arrangementer. Tilmeld dig via linket herunder.</p>
+                            
+                            <div class="alert alert-info" role="alert">
+                                <strong>Næste arrangement:</strong> Sommerfest den 14. juni 2024
+                            </div>
+                            
+                            <div class="text-center my-4">
+                                <a href="https://hashoej-if.dk/" class="btn btn-primary btn-lg">TILMELD HER!</a>
+                                <p><small class="text-muted mt-2">Tilmelding via Hashøj IF's hjemmeside under "Events"</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Hashøj IF og Vennekredsen</h4>
+                            <h5 class="text-center mb-3">Samarbejde for et stærkt lokalsamfund</h5>
+                            
+                            <p class="card-text">Hashøj Idrætsforening (Hashøj IF) og Vennekredsen har begge en vigtig rolle i vores lokalområde.
+                                Ved at styrke samarbejdet mellem os kan vi skabe endnu flere muligheder og aktiviteter for beboerne.
+                                Vennekredsen benytter derfor Hashøj IF's tilmeldingsplatform til vores arrangementer.</p>
+                                
+                            <p class="card-text">Vi glæder os til at se dig til vores næste arrangement!</p>
+                            
+                            <div class="alert alert-success mt-3">
+                                <strong>Vigtigt:</strong> Alle penge som Vennekredsen tjener bruges på de børn som går på Hashøjskolen
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title text-center">Hashøj IF og Vennekredsen</h4>
-          <h5 class="text-center mb-3">Samarbejde for et stærkt lokalsamfund</h5>
-          
-          <p class="card-text">Hashøj Idrætsforening (Hashøj IF) og Vennekredsen har begge en vigtig rolle i vores lokalområde.
-            Ved at styrke samarbejdet mellem os kan vi skabe endnu flere muligheder og aktiviteter for beboerne.
-            Vennekredsen benytter derfor Hashøj IF's tilmeldingsplatform til vores arrangementer.</p>
-            
-          <p class="card-text">Vi glæder os til at se dig til vores næste arrangement!</p>
-          
-          <div class="alert alert-success mt-3">
-            <strong>Vigtigt:</strong> Alle penge som Vennekredsen tjener bruges på de børn som går på Hashøjskolen
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+    </main>
 
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center py-4">
-    <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4">
+        <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
