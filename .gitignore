@@ -9,4 +9,4 @@ dist
 .editorconfig
 .gitattributes
 .gitignore
-init.sql
+api/init.sql
