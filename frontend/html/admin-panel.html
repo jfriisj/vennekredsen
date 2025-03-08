@@ -6,11 +6,20 @@
     <title>Admin Panel - Vennekredsen for Hashøjskolen</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
-        /* Additional styling for admin panel */
+        /* Fix contrast issues */
         .application-card {
             transition: all 0.3s ease;
+            background-color: #444 !important; /* Dark background */
+        }
+        
+        .application-card .card-body {
+            background-color: #444 !important; /* Dark background */
+        }
+        
+        .application-card .card-text {
+            color: #fff !important; /* White text */
         }
         
         .application-card.pending {
@@ -25,18 +34,52 @@
             border-left: 5px solid #dc3545;
         }
         
-        .card-body {
-            text-align: left; /* Override the center alignment from style.css */
+        .card-header, .card-footer {
+            background-color: rgba(0,0,0,0.2) !important;
         }
         
-        .card-header, .card-footer {
-            background-color: rgba(0,0,0,0.1);
+        /* Card specific fixes */
+        .card-title {
+            color: #fff !important;
+        }
+        
+        h5.card-title {
+            color: #fff !important;
+        }
+        
+        .card-body {
+            text-align: left; /* Override the center alignment from style.css */
         }
     </style>
 </head>
 <body>
+    <style>
+        /* Emergency contrast fixes */
+        #ansoegninger .card {
+            background-color: #444 !important;
+        }
+        
+        #ansoegninger .card-body {
+            background-color: #444 !important;
+        }
+        
+        #ansoegninger .card-text {
+            color: #fff !important;
+        }
+        
+        #ansoegninger .card-title {
+            color: #fff !important;
+        }
+    </style>
+
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
+
+    <script>
+      $(function () {
+        $("#nav-placeholder").load("navbar.html");
+      });
+    </script>
 
     <script>
       $(function () {
@@ -90,12 +133,18 @@
                 </section>
                 
                 <!-- Applications container -->
-                <section class="mb-4" id="vennekredsen">
+                <section id="vennekredsen" class="mb-4">
                     <div id="ansoegninger"></div>
                     
                     <div id="noApplicationsMessage" class="alert alert-info text-center d-none">
                         Ingen ansøgninger at vise.
                     </div>
+                </section>
+                
+                <!-- Debug section -->
+                <section class="mb-4">
+                    <button class="btn btn-sm btn-secondary" onclick="toggleDebug()">Vis/Skjul Debug Info</button>
+                    <div id="debugPanel" style="display: none;"></div>
                 </section>
             </div>
         </div>
@@ -107,6 +156,19 @@
     </footer>
     
     <script>
+    // Debug helper function
+    function logDebug(message) {
+        console.log(message);
+        const debugPanel = document.getElementById('debugPanel');
+        const timestamp = new Date().toISOString().substr(11, 8);
+        debugPanel.innerHTML += `[${timestamp}] ${message}<br>`;
+    }
+    
+    function toggleDebug() {
+        const debugPanel = document.getElementById('debugPanel');
+        debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+    }
+    
     // Check authentication
     document.addEventListener('DOMContentLoaded', function() {
         const token = localStorage.getItem('adminToken');
@@ -114,6 +176,8 @@
             window.location.href = 'login.html';
             return;
         }
+        
+        logDebug("Admin token exists, loading applications");
         
         // Load applications
         loadApplications();
@@ -135,6 +199,8 @@
             document.getElementById("noApplicationsMessage").classList.add("d-none");
             
             const token = localStorage.getItem('adminToken');
+            logDebug("Fetching applications with token");
+            
             const response = await fetch("/api/admin/ansoegninger", {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -152,6 +218,12 @@
             }
             
             allApplications = await response.json();
+            logDebug(`Received ${allApplications.length} applications from API`);
+            
+            // Debug the first application if any exist
+            if (allApplications.length > 0) {
+                logDebug(`Sample application: ${JSON.stringify(allApplications[0])}`);
+            }
             
             // Update counts
             updateCountBadges();
@@ -161,7 +233,7 @@
             
         } catch (error) {
             showMessage("Der opstod en fejl ved indlæsning af ansøgninger: " + error.message, "error");
-            console.error("Error loading applications:", error);
+            logDebug(`Error loading applications: ${error.message}`);
         } finally {
             document.getElementById("loadingApplications").style.display = "none";
         }
@@ -183,12 +255,16 @@
         const statusFilter = document.getElementById("statusFilter").value;
         const searchFilter = document.getElementById("searchFilter").value.toLowerCase();
         
+        logDebug(`Applying filters: status=${statusFilter}, search="${searchFilter}"`);
+        
         // Filter applications
         const filtered = allApplications.filter(app => {
             const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-            const matchesSearch = app.beskrivelse.toLowerCase().includes(searchFilter);
+            const matchesSearch = app.beskrivelse && app.beskrivelse.toLowerCase().includes(searchFilter);
             return matchesStatus && matchesSearch;
         });
+        
+        logDebug(`Filtered to ${filtered.length} applications`);
         
         // Display applications
         displayApplications(filtered);
@@ -207,6 +283,8 @@
         document.getElementById("noApplicationsMessage").classList.add("d-none");
         
         applications.forEach(app => {
+            logDebug(`Rendering application #${app.id}`);
+            
             const card = document.createElement('div');
             card.className = `card mb-3 application-card ${app.status}`;
             card.dataset.id = app.id;
@@ -243,6 +321,10 @@
                 'rejected': 'Afvist'
             }[app.status] || 'Afventer';
             
+            // Check if beskrivelse exists
+            const beskrivelse = app.beskrivelse || "Ingen beskrivelse";
+            logDebug(`Application #${app.id} description: ${beskrivelse.substring(0, 20)}...`);
+            
             card.innerHTML = `
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span class="badge badge-${statusClass}">${statusText}</span>
@@ -253,7 +335,7 @@
                         <span>Ansøgning #${app.id}</span>
                         <span>${formattertBelob}</span>
                     </h5>
-                    <p class="card-text">${escapeHTML(app.beskrivelse)}</p>
+                    <p class="card-text">${escapeHTML(beskrivelse)}</p>
                 </div>
                 <div class="card-footer">
                     ${app.status === 'pending' ? `
@@ -321,7 +403,7 @@
             
         } catch (error) {
             showMessage("Der opstod en fejl: " + error.message, "error");
-            console.error("Error updating application:", error);
+            logDebug(`Error updating application: ${error.message}`);
         }
     }
     
@@ -368,6 +450,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

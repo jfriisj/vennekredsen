@@ -7,6 +7,55 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+        /* Contrast fixes */
+        .card {
+            background-color: #444 !important;
+        }
+        .card-body {
+            background-color: #444 !important;
+        }
+        .card-title, .card-text, .card h5 {
+            color: #fff !important;
+        }
+        .text-muted {
+            color: #adb5bd !important;
+        }
+        label {
+            color: #fff !important;
+        }
+        .form-text.text-muted {
+            color: #adb5bd !important;
+        }
+        .form-control {
+            background-color: #555 !important;
+            border-color: #666 !important;
+            color: #fff !important;
+        }
+        .form-control:focus {
+            background-color: #555 !important;
+            color: #fff !important;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .form-control::placeholder {
+            color: #adb5bd !important;
+        }
+        .alert-info {
+            background-color: rgba(23, 162, 184, 0.2) !important;
+            color: #8ee0f1 !important;
+            border-color: rgba(23, 162, 184, 0.3) !important;
+        }
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2) !important;
+            color: #8fd19e !important;
+            border-color: rgba(40, 167, 69, 0.3) !important;
+        }
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2) !important;
+            color: #f1aeb5 !important;
+            border-color: rgba(220, 53, 69, 0.3) !important;
+        }
+    </style>
 </head>
 <body>
     <!--Navigation bar-->
@@ -67,7 +116,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="gdprConsent" required>
                                 <label class="form-check-label" for="gdprConsent">
-                                    Jeg accepterer, at Vennekredsen behandler mine personoplysninger med det formål at vurdere og behandle min ansøgning om støtte. Mine oplysninger vil blive behandlet fortroligt og kun deles med bestyrelsesmedlemmer, der vurderer ansøgningen.
+                                    Jeg accepterer, at Vennekredsen behandler mine personoplysninger med det formål at vurdere og behandle min ansøgning om støtte. Mine oplysninger vil blive behandlet fortroligt.
                                 </label>
                             </div>
                         </div>
@@ -185,6 +234,7 @@
             projects.forEach(project => {
                 const card = document.createElement('div');
                 card.className = 'card mb-3';
+                card.style.backgroundColor = '#444';
                 
                 // Format amount
                 const formattertBelob = new Intl.NumberFormat('da-DK', {
@@ -203,9 +253,9 @@
                 
                 card.innerHTML = `
                     <div class="card-body">
-                        <h5 class="card-title">Støtte på ${formattertBelob}</h5>
-                        <p class="card-text">${escapeHTML(project.beskrivelse)}</p>
-                        <p class="card-text"><small class="text-muted">Godkendt: ${formattertDato}</small></p>
+                        <h5 class="card-title" style="color: #fff !important;">Støtte på ${formattertBelob}</h5>
+                        <p class="card-text" style="color: #fff !important;">${escapeHTML(project.beskrivelse)}</p>
+                        <p class="card-text"><small class="text-muted" style="color: #adb5bd !important;">Godkendt: ${formattertDato}</small></p>
                     </div>
                 `;
                 

@@ -8,23 +8,78 @@
     <link href="style.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <style>
-        /* Page-specific style overrides for contrast fixes */
-        .card-text {
+        /* Contrast fixes */
+        .card {
+            background-color: #444 !important;
+        }
+        .card-body {
+            background-color: #444 !important;
+        }
+        .card-title, .card-text, .card h4, .card h5 {
             color: #fff !important;
         }
         .alert-info {
+            background-color: rgba(23, 162, 184, 0.2) !important;
             color: #8ee0f1 !important;
+            border-color: rgba(23, 162, 184, 0.3) !important;
         }
         .alert-success {
+            background-color: rgba(40, 167, 69, 0.2) !important;
             color: #8fd19e !important;
+            border-color: rgba(40, 167, 69, 0.3) !important;
         }
         small.text-muted {
             color: #adb5bd !important;
         }
-        .card h4, .card h5 {
+        /* Contrast fixes */
+        .card {
+            background-color: #444 !important;
+        }
+        .card-body {
+            background-color: #444 !important;
+        }
+        .card-title, .card-text, .card h5 {
             color: #fff !important;
         }
+        .text-muted {
+            color: #adb5bd !important;
+        }
+        label {
+            color: #fff !important;
+        }
+        .form-text.text-muted {
+            color: #adb5bd !important;
+        }
+        .form-control {
+            background-color: #555 !important;
+            border-color: #666 !important;
+            color: #fff !important;
+        }
+        .form-control:focus {
+            background-color: #555 !important;
+            color: #fff !important;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .form-control::placeholder {
+            color: #adb5bd !important;
+        }
+        .alert-info {
+            background-color: rgba(23, 162, 184, 0.2) !important;
+            color: #8ee0f1 !important;
+            border-color: rgba(23, 162, 184, 0.3) !important;
+        }
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.2) !important;
+            color: #8fd19e !important;
+            border-color: rgba(40, 167, 69, 0.3) !important;
+        }
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.2) !important;
+            color: #f1aeb5 !important;
+            border-color: rgba(220, 53, 69, 0.3) !important;
+        }
     </style>
+
 </head>
 <body>
     <!--Navigation bar-->
@@ -40,27 +95,34 @@
         <div class="row">
             <div class="col-md-8 offset-md-2">
                 <!-- Intro section -->
-                <section class="text-center mb-5">
-                    <h2>Tilmelding til Arrangementer</h2>
-                    <p class="lead">Vennekredsen står for at arrangere fester og aktiviteter for skolens børn</p>
-                </section>
+                
 
                 <!-- Main content section -->
                 <section id="vennekredsen" class="mb-5">
+                    <section class="text-center mb-5">
+                        <h2>Tilmelding til Arrangementer</h2>
+                        <p class="lead">Vennekredsen står for at arrangere fester og aktiviteter for skolens børn</p>
+                    </section>
                     <div class="card mb-4">
                         <div class="card-body">
                             <h4 class="card-title text-center">Kommende Arrangementer</h4>
                             <p class="card-text">Vi vil gerne invitere dig til at deltage i vores kommende fester og arrangementer. Tilmeld dig via linket herunder.</p>
                             
                             <div class="alert alert-info" role="alert">
-                                <strong>Sommerfest:</strong> den 29. august 2025
-                                <strong>Julefest:</strong> den 28. November 2025
-                                <strong>Fastelavn:</strong> den 20. februar 2026
+                                <strong>Sommerfest:</strong> den 29. august 2025 kl. 18:00
+                            </div>
+
+                            <div class="alert alert-info" role="alert">
+                                <strong>Julefest:</strong> den 28. November 2025 kl. 18:00
+                            </div>
+
+                            <div class="alert alert-info" role="alert">
+                                <strong>Fastelavn:</strong> den 20. februar 2026 kl. 18:00
                             </div>
                             
                             <div class="text-center my-4">
                                 <a href="https://hashoej-if.dk/" class="btn btn-primary btn-lg">TILMELD HER!</a>
-                                <p><small class="text-muted mt-2">Tilmelding via Hashøj IF's hjemmeside under "Events"</small></p>
+                                <p><small class="text-muted mt-2">Tilmelding via Hashøj IF's hjemmeside under "Events, tilmeldingen medregner automatisk et barn"</small></p>
                             </div>
                         </div>
                     </div>

@@ -1,78 +1,109 @@
 <!DOCTYPE html>
 <html lang="da">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Om Os - Vennekredsen for Hashøjskolen</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Om Os - Vennekredsen for Hashøjskolen</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <style>
+    /* Contrast fixes */
+    .card {
+      background-color: #444 !important;
+    }
+    .card-body {
+      background-color: #444 !important;
+      color: #fff !important;
+    }
+    .card-title, .card-text {
+      color: #fff !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: #fff !important;
+    }
+    p {
+      color: #fff !important;
+    }
+    .card p {
+      color: #fff !important;
+    }
+    .col-md-4 p {
+      color: #fff !important;
+    }
+  </style>
 </head>
+
 <body>
-    <!--Navigation bar-->
-    <div id="nav-placeholder"></div>
+  <!--Navigation bar-->
+  <div id="nav-placeholder">
 
-    <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
+  </div>
+
+  <script>
+    $(function () {
+      $("#nav-placeholder").load("navbar.html", function() {
+        // Initialize login button after navbar is loaded
+        if (typeof initializeLoginButton === 'function') {
+          initializeLoginButton();
+        } else {
+          $.getScript("login-button.js");
+        }
       });
-    </script>
+    });
+  </script>
 
-    <main class="container my-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Intro section -->
-                <section class="text-center mb-5">
-                    <h2>Vores Mål</h2>
-                    <p class="lead">Vennekredsen arbejder for at alle børn på Hashøjskolen får lige muligheder</p>
-                </section>
+  <main class="container my-5">
+    <section id="vennekredsen" class="mb-5">
+      <div class="text-center mb-4">
+        <h2>Vores Mål</h2>
+        <p class="lead">Vennekredsen arbejder for at alle børn på Hashøjskolen får lige muligheder</p>
+      </div>
 
-                <!-- Main content section -->
-                <section id="vennekredsen" class="mb-5">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h4 class="card-title text-center">Vision</h4>
-                            <p class="card-text">Vennekredsen har som formål at skabe en inkluderende og berigende skoleoplevelse for alle
-                                børn på Hashøjskolen.</p>
-                            <p class="card-text">Vi arbejder målrettet for at sikre, at ingen elever udelukkes fra skolens aktiviteter på
-                                grund af økonomiske udfordringer.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title text-center">Værdier</h4>
-                            <p class="card-text">Vores mål er at give alle børn mulighed for at deltage i kreative, udviklende og lærerige
-                                aktiviteter, som styrker fællesskabet og glæden ved skolen. Gennem vores støtte og arrangementer bidrager vi til
-                                at fremme leg, læring og socialt samvær blandt skolens elever.</p>
-                            
-                            <div class="row mt-4">
-                                <div class="col-md-4 text-center">
-                                    <h5>Fællesskab</h5>
-                                    <p>Vi tror på at stærke fællesskaber skaber trygge rammer for børnenes udvikling</p>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <h5>Inklusion</h5>
-                                    <p>Alle børn skal have mulighed for at deltage i aktiviteter uanset baggrund</p>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <h5>Engagement</h5>
-                                    <p>Vi engagerer os aktivt i at skabe positive oplevelser for skolens børn</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h4 class="card-title text-center">Vision</h4>
+          <p class="card-text">Vennekredsen har som formål at skabe en inkluderende og berigende skoleoplevelse for alle
+            børn på Hashøjskolen.</p>
+          <p class="card-text">Vi arbejder målrettet for at sikre, at ingen elever udelukkes fra skolens aktiviteter på
+            grund af økonomiske udfordringer.</p>
         </div>
-    </main>
+      </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
-    </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title text-center">Værdier</h4>
+          <p class="card-text">Vores mål er at give alle børn mulighed for at deltage i kreative, udviklende og lærerige
+            aktiviteter, som styrker fællesskabet og glæden ved skolen. Gennem vores støtte og arrangementer bidrager vi til
+            at fremme leg, læring og socialt samvær blandt skolens elever.</p>
+          
+          <div class="row mt-4">
+            <div class="col-md-4 text-center">
+              <h5>Fællesskab</h5>
+              <p>Vi tror på at stærke fællesskaber skaber trygge rammer for børnenes udvikling</p>
+            </div>
+            <div class="col-md-4 text-center">
+              <h5>Inklusion</h5>
+              <p>Alle børn skal have mulighed for at deltage i aktiviteter uanset baggrund</p>
+            </div>
+            <div class="col-md-4 text-center">
+              <h5>Engagement</h5>
+              <p>Vi engagerer os aktivt i at skabe positive oplevelser for skolens børn</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-4">
+    <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
