@@ -6,25 +6,31 @@
     <title>Login - Vennekredsen for Hashøjskolen</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
-        /* Page-specific style overrides for contrast fixes */
+        /* Ensure proper contrast */
         .card {
             background-color: #444 !important;
         }
         .card-body {
-            color: #fff !important;
+            color: white !important;
         }
         label {
-            color: #fff !important;
+            color: white !important;
         }
-        .alert-success {
-            background-color: rgba(40, 167, 69, 0.2) !important;
-            color: #8fd19e !important;
+        .form-control {
+            background-color: #555;
+            color: white;
+            border: 1px solid #666;
         }
-        .alert-danger {
-            background-color: rgba(220, 53, 69, 0.2) !important;
-            color: #f1aeb5 !important;
+        .form-control:focus {
+            background-color: #555;
+            color: white;
+        }
+        #debugInfo {
+            background-color: #222;
+            color: #8f8;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -33,9 +39,9 @@
     <div id="nav-placeholder"></div>
 
     <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
-      });
+        $(function () {
+            $("#nav-placeholder").load("navbar.html");
+        });
     </script>
 
     <main class="container my-5">
@@ -43,7 +49,7 @@
             <div class="col-md-8 offset-md-2">
                 <!-- Intro section -->
                 <section class="text-center mb-5">
-                    <h2>Login</h2>
+                    <h2>Admin Login</h2>
                     <p class="lead">Log ind for at administrere ansøgninger</p>
                 </section>
 
@@ -53,24 +59,30 @@
                         <div class="card-body">
                             <div id="loginMessage" class="alert d-none" role="alert"></div>
 
-                            <form id="loginForm">
+                            <!-- Direct login form without extra handling -->
+                            <div class="text-center mb-4">
                                 <div class="form-group">
                                     <label for="username">Brugernavn:</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
+                                    <input type="text" class="form-control" id="username" value="jonfriis">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="password">Adgangskode:</label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <input type="password" class="form-control" id="password" value="Rosa2009">
                                 </div>
 
-                                <div class="text-center mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
-                                        <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                        Log ind
-                                    </button>
-                                </div>
-                            </form>
+                                <button type="button" onclick="doLogin()" class="btn btn-primary btn-lg" id="loginBtn">
+                                    Log ind
+                                </button>
+                            </div>
+                            
+                            <!-- Debug output
+                            <div class="mt-4">
+                                <p>Status: <span id="loginStatus">Klar til login</span></p>
+                                <pre id="debugInfo" class="p-2 mt-2" style="display: none; max-height: 150px; overflow: auto;"></pre>
+                                <button type="button" onclick="toggleDebug()" class="btn btn-sm btn-secondary mt-2">Vis/skjul debug info</button>
+                            </div>
+                             -->
                         </div>
                     </div>
                 </section>
@@ -84,72 +96,108 @@
     </footer>
     
     <script>
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', function () {
-          if (localStorage.getItem('adminToken')) {
-            window.location.href = 'admin-panel.html';
-          }
-        });
-    
-        // Login form handler
-        document.getElementById("loginForm").addEventListener("submit", async function (event) {
-          event.preventDefault();
-    
-          // Show loading state
-          const loginBtn = document.getElementById("loginBtn");
-          const loginSpinner = document.getElementById("loginSpinner");
-          loginBtn.disabled = true;
-          loginSpinner.classList.remove("d-none");
-    
-          // Clear previous messages
-          const messageBox = document.getElementById("loginMessage");
-          messageBox.classList.add("d-none");
-    
-          const loginData = {
-            username: document.getElementById("username").value.trim(),
-            password: document.getElementById("password").value
-          };
-    
-          try {
-            const response = await fetch("/api/admin/login", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(loginData)
-            });
-    
-            const result = await response.json();
-    
-            if (response.ok) {
-              // Login successful, store token and redirect
-              localStorage.setItem('adminToken', result.token);
-              messageBox.textContent = "Login successful! Redirecting to admin panel...";
-              messageBox.classList.remove("d-none", "alert-danger");
-              messageBox.classList.add("alert-success");
-              
-              setTimeout(() => {
-                window.location.href = 'admin-panel.html';
-              }, 1000);
-            } else {
-              // Display error message
-              messageBox.textContent = result.message || "Forkert brugernavn eller adgangskode";
-              messageBox.classList.remove("d-none", "alert-success");
-              messageBox.classList.add("alert-danger");
+        // Simple debug toggle
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Log to the debug area
+        function logDebug(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toISOString().substr(11, 8);
+            debugInfo.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+        
+        // Update status display
+        function updateStatus(message, isError = false) {
+            const statusEl = document.getElementById('loginStatus');
+            statusEl.textContent = message;
+            statusEl.style.color = isError ? 'red' : 'white';
+        }
+
+        // Handle login
+        function doLogin() {
+            updateStatus("Logger ind...");
+            logDebug("Attempting login...");
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                updateStatus("Udfyld venligst både brugernavn og adgangskode", true);
+                return;
             }
-          } catch (error) {
-            // Display error message
-            messageBox.textContent = "Der opstod en fejl: " + (error.message || "Kunne ikke behandle din anmodning");
-            messageBox.classList.remove("d-none", "alert-success");
-            messageBox.classList.add("alert-danger");
-            console.error("Login error:", error);
-          } finally {
-            // Reset button state
-            loginBtn.disabled = false;
-            loginSpinner.classList.add("d-none");
-          }
+            
+            logDebug(`Sending login request for user: ${username}`);
+            
+            // Disable button during login
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logger ind...';
+            
+            // Create the request data
+            const loginData = { username, password };
+            
+            // Make the request using fetch API
+            fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response => {
+                logDebug(`Received response with status: ${response.status}`);
+                return response.json().then(data => ({ ok: response.ok, status: response.status, data }));
+            })
+            .then(result => {
+                if (result.ok) {
+                    // Success case
+                    updateStatus("Login successful! Redirecting...");
+                    logDebug(`Login successful, received token: ${result.data.token.substring(0, 15)}...`);
+                    
+                    // Store token and redirect
+                    localStorage.setItem('adminToken', result.data.token);
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin-panel.html';
+                    }, 1000);
+                } else {
+                    // Error case
+                    const errorMsg = result.data.message || "Login fejlede";
+                    updateStatus(errorMsg, true);
+                    logDebug(`Login failed: ${JSON.stringify(result.data)}`);
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Log ind';
+                }
+            })
+            .catch(error => {
+                // Network or other errors
+                updateStatus("Fejl ved forbindelse til serveren", true);
+                logDebug(`Error during login: ${error.message}`);
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Log ind';
+            });
+        }
+
+        // Initialize debug info
+        document.addEventListener('DOMContentLoaded', () => {
+            logDebug("Page loaded");
+            logDebug(`Current URL: ${window.location.href}`);
+            logDebug(`API Endpoint: ${window.location.origin}/api/admin/login`);
+            
+            // Check if already logged in
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                logDebug("Found existing token in localStorage");
+                updateStatus("Allerede logget ind, viderestiller...");
+                setTimeout(() => {
+                    window.location.href = 'admin-panel.html';
+                }, 1000);
+            }
         });
     </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

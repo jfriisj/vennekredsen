@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Login - Vennekredsen</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #343a40; color: white; padding: 20px; }
+        .card { background-color: #444; color: white; margin-top: 20px; }
+        pre { background-color: #222; color: #8f8; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API Connection Test</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Login Test</h5>
+                        <form id="testLoginForm">
+                            <div class="form-group">
+                                <label for="username">Username:</label>
+                                <input type="text" class="form-control bg-dark text-white" id="username" value="jonfriis">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control bg-dark text-white" id="password" value="Rosa2009">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Test Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Results</h5>
+                        <div id="results">No test run yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('testLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testing connection...</p>';
+            
+            const loginData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                // Log the request details
+                console.log('Sending request to /api/admin/login with data:', JSON.stringify(loginData));
+                resultsDiv.innerHTML += `<p>Sending request to /api/admin/login...</p>`;
+                
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                console.log('Response status:', response.status);
+                resultsDiv.innerHTML += `<p>Response status: ${response.status}</p>`;
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                resultsDiv.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (response.ok) {
+                    resultsDiv.innerHTML += `<p style="color: green">SUCCESS: API connection works!</p>`;
+                } else {
+                    resultsDiv.innerHTML += `<p style="color: orange">WARNING: API returned error: ${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML += `<p style="color: red">ERROR: Could not connect to API: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
