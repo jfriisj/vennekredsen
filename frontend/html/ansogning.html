@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ansøgning om støtte - Vennekredsen</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 20px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label, input, textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input, textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <!--Navigation bar-->
+    <div id="nav-placeholder"></div>
+
+    <script>
+      $(function () {
+        $("#nav-placeholder").load("navbar.html");
+      });
+    </script>
+
+    <div class="container">
+        <h2 class="text-center mb-4">Indsend en ansøgning</h2>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form id="ansoegningForm">
+                  <div class="form-group">
+                    <label for="navn">Navn:</label>
+                    <input type="text" class="form-control" id="navn" name="navn" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="belob">Beløb:</label>
+                    <input type="number" class="form-control" id="belob" name="belob" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="beskrivelse">Beskrivelse:</label>
+                    <textarea class="form-control" id="beskrivelse" name="beskrivelse" rows="5" required></textarea>
+                  </div>
+
+                  <button type="submit" class="btn btn-success">Send ansøgning</button>
+                </form>
+            </div>
+        </div>
+
+        <hr class="my-5">
+
+        <h2 class="text-center mb-4">Modtagne Ansøgninger</h2>
+        <div id="ansoegninger" class="list-group"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+      <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
+    </footer>
+    
+    <script>
+    // Håndterer formularen
+    document.getElementById("ansoegningForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const formData = {
+          navn: document.getElementById("navn").value,
+          email: document.getElementById("email").value,
+          belob: parseFloat(document.getElementById("belob").value),
+          beskrivelse: document.getElementById("beskrivelse").value
+        };
+
+        try {
+            const response = await fetch("/api/ansoegning", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            
+            // Reset form
+            document.getElementById("ansoegningForm").reset();
+            
+            // Reload applications
+            hentAnsoegninger();
+        } catch (error) {
+            alert("Der opstod en fejl: " + error.message);
+        }
+    });
+
+    // Hent og vis ansøgninger
+    async function hentAnsoegninger() {
+        try {
+            const response = await fetch("/api/ansoegninger");
+            const ansogninger = await response.json();
+
+            const liste = document.getElementById("ansoegninger");
+            liste.innerHTML = ""; // Ryd listen
+
+            if (ansogninger.length === 0) {
+                liste.innerHTML = "<p class='text-center'>Ingen ansøgninger modtaget endnu.</p>";
+                return;
+            }
+
+            ansogninger.forEach(ansoegning => {
+                const div = document.createElement("div");
+                div.className = "list-group-item";
+                div.innerHTML = `
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">${ansoegning.navn}</h5>
+                        <small>${ansoegning.belob} kr.</small>
+                    </div>
+                    <p class="mb-1">${ansoegning.beskrivelse}</p>
+                    <small>Email: ${ansoegning.email}</small>
+                    ${ansoegning.oprettet ? `<small class="d-block">Oprettet: ${ansoegning.oprettet}</small>` : ''}
+                `;
+                liste.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Fejl ved hentning af ansøgninger:", error);
+        }
+    }
+
+    // Hent ansøgninger ved load
+    window.onload = hentAnsoegninger;
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

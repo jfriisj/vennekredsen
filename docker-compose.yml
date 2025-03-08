@@ -1,18 +1,44 @@
+version: '3.8'
+
 services:
   vennekredsen:
     container_name: vennekredsen-hjemmeside
     restart: unless-stopped
-    image: ghcr.io/jfriisj/vennekredsen:latest
+    build: ./frontend
     ports:
       - "85:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./html:/usr/share/nginx/html
     networks:
-      - cloudflare
-    labels:
-      com.centurylinklabs.watchtower.enable: "true"
+      - vennekredsen_net
+    depends_on:
+      - api
+
+  api:
+    container_name: vennekredsen-api
+    restart: unless-stopped
+    build: ./api
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+    networks:
+      - vennekredsen_net
+    depends_on:
+      - db
+
+  db:
+    container_name: vennekredsen-db
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vennekredsen_db
+      POSTGRES_USER: vennekredsen
+      POSTGRES_PASSWORD: hemmeligkode
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - vennekredsen_net
 
 networks:
-  cloudflare:
-    external: true
+  vennekredsen_net:
+
+volumes:
+  db_data:
