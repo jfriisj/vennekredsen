@@ -43,7 +43,7 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository }}/frontend:latest
+        tags: ghcr.io/jfriisj/vennekredsen/frontend:latest
 
     - name: Build and push API
       uses: docker/build-push-action@v2
@@ -51,7 +51,7 @@ jobs:
         context: ./api
         file: ./api/Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository }}/api:latest
+        tags: ghcr.io/jfriisj/vennekredsen/api:latest
 
     - name: Run Docker Compose
       run: docker compose -f vennekredsen/docker-compose.yml up -d --build
