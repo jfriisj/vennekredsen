@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Vennekredsen for Hashøjskolen</title>
+  <title>Login - Vennekredsen for Hashøjskolen</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="style.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -16,46 +16,43 @@
 
   <script>
     $(function () {
-      $("#nav-placeholder").load("navbar.html", function() {
-        // Initialize login button after navbar is loaded
-        if (typeof initializeLoginButton === 'function') {
-          initializeLoginButton();
-        } else {
-          $.getScript("login-button.js");
-        }
-      });
+      $("#nav-placeholder").load("navbar.html");
     });
   </script>
 
   <main class="container my-5">
     <div class="row">
-      <div class="col-md-8 offset-md-2">
+      <div class="col-md-6 offset-md-3">
         <section id="vennekredsen" class="mb-5">
           <div class="text-center mb-4">
-            <h2>Admin Login</h2>
-            <p class="lead">Log ind for at administrere ansøgninger og indhold</p>
+            <h2>Login</h2>
+            <p class="lead">Log ind for at administrere ansøgninger</p>
           </div>
 
-          <div id="loginMessage" class="alert d-none" role="alert"></div>
+          <div class="card">
+            <div class="card-body">
+              <div id="loginMessage" class="alert d-none" role="alert"></div>
 
-          <form id="loginForm">
-            <div class="form-group">
-              <label for="username">Brugernavn:</label>
-              <input type="text" class="form-control" id="username" name="username" required>
-            </div>
+              <form id="loginForm">
+                <div class="form-group">
+                  <label for="username">Brugernavn:</label>
+                  <input type="text" class="form-control" id="username" name="username" required>
+                </div>
 
-            <div class="form-group">
-              <label for="password">Adgangskode:</label>
-              <input type="password" class="form-control" id="password" name="password" required>
-            </div>
+                <div class="form-group">
+                  <label for="password">Adgangskode:</label>
+                  <input type="password" class="form-control" id="password" name="password" required>
+                </div>
 
-            <div class="text-center mt-4">
-              <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
-                <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                Log ind
-              </button>
+                <div class="text-center mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
+                    <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Log ind
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </section>
       </div>
     </div>
@@ -105,7 +102,13 @@
         if (response.ok) {
           // Login successful, store token and redirect
           localStorage.setItem('adminToken', result.token);
-          window.location.href = 'admin-panel.html';
+          messageBox.textContent = "Login successful! Redirecting to admin panel...";
+          messageBox.classList.remove("d-none", "alert-danger");
+          messageBox.classList.add("alert-success");
+          
+          setTimeout(() => {
+            window.location.href = 'admin-panel.html';
+          }, 1000);
         } else {
           // Display error message
           messageBox.textContent = result.message || "Forkert brugernavn eller adgangskode";

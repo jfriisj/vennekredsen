@@ -39,16 +39,6 @@ services:
     networks:
       - vennekredsen_net
 
-  cloudflare_tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflare_tunnel_vennekredsen
-    restart: unless-stopped
-    environment:
-      - TUNNEL_TOKEN=${INTERNAL_TOKEN}
-    command: tunnel --no-autoupdate run
-    networks:
-      - cloudflare
-
 networks:
   vennekredsen_net:
   cloudflare:
