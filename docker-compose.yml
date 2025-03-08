@@ -38,6 +38,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql  # This line ensures init.sql runs on startup
     networks:
       - vennekredsen_net
 
