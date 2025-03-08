@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="da">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,44 +13,56 @@
         .card {
             background-color: #444 !important;
         }
+
         .card-body {
             background-color: #444 !important;
         }
-        .card-title, .card-text, .card h5 {
+
+        .card-title,
+        .card-text,
+        .card h5 {
             color: #fff !important;
         }
+
         .text-muted {
             color: #adb5bd !important;
         }
+
         label {
             color: #fff !important;
         }
+
         .form-text.text-muted {
             color: #adb5bd !important;
         }
+
         .form-control {
-            background-color: #555 !important;
-            border-color: #666 !important;
+            background-color: #495057 !important;
+            border-color: #6c757d !important;
             color: #fff !important;
         }
+
         .form-control:focus {
-            background-color: #555 !important;
+            background-color: #495057 !important;
             color: #fff !important;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
         }
+
         .form-control::placeholder {
             color: #adb5bd !important;
         }
+
         .alert-info {
             background-color: rgba(23, 162, 184, 0.2) !important;
             color: #8ee0f1 !important;
             border-color: rgba(23, 162, 184, 0.3) !important;
         }
+
         .alert-success {
             background-color: rgba(40, 167, 69, 0.2) !important;
             color: #8fd19e !important;
             border-color: rgba(40, 167, 69, 0.3) !important;
         }
+
         .alert-danger {
             background-color: rgba(220, 53, 69, 0.2) !important;
             color: #f1aeb5 !important;
@@ -57,14 +70,15 @@
         }
     </style>
 </head>
+
 <body>
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
 
     <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
-      });
+        $(function () {
+            $("#nav-placeholder").load("navbar.html");
+        });
     </script>
 
     <main class="container my-5">
@@ -78,72 +92,90 @@
 
                 <!-- Application form section -->
                 <section id="vennekredsen" class="mb-5">
-                    <h3 class="mb-4">Indsend din ansøgning</h3>
-                    
-                    <div id="formResponseMessage" class="alert d-none" role="alert"></div>
-                    
-                    <form id="ansoegningForm">
-                        <div class="form-group">
-                            <label for="navn">Navn på ansøger:</label>
-                            <input type="text" class="form-control" id="navn" name="navn" required 
-                                   aria-describedby="navnHelp">
-                            <small id="navnHelp" class="form-text text-muted">Angiv navnet på personen eller gruppen der søger støtte</small>
-                        </div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Indsend din ansøgning</h4>
 
-                        <div class="form-group">
-                            <label for="email">E-mail:</label>
-                            <input type="email" class="form-control" id="email" name="email" required
-                                   aria-describedby="emailHelp">
-                            <small id="emailHelp" class="form-text text-muted">Vi kontakter dig på denne email med svar på din ansøgning</small>
-                        </div>
+                            <div id="formResponseMessage" class="alert d-none" role="alert"></div>
 
-                        <div class="form-group">
-                            <label for="belob">Beløb (kr.):</label>
-                            <input type="number" min="0" step="1" class="form-control" id="belob" name="belob" required
-                                   aria-describedby="belobHelp">
-                            <small id="belobHelp" class="form-text text-muted">Angiv det beløb du søger om støtte til</small>
-                        </div>
+                            <form id="ansoegningForm">
+                                <div class="form-group">
+                                    <label for="navn">Navn på ansøger:</label>
+                                    <input type="text" class="form-control" id="navn" name="navn" required
+                                        aria-describedby="navnHelp">
+                                    <small id="navnHelp" class="form-text text-muted">Angiv navnet på personen eller
+                                        gruppen der søger støtte</small>
+                                </div>
 
-                        <div class="form-group">
-                            <label for="beskrivelse">Beskrivelse af projektet/aktiviteten:</label>
-                            <textarea class="form-control" id="beskrivelse" name="beskrivelse" rows="5" required
-                                     aria-describedby="beskrivelseHelp"></textarea>
-                            <small id="beskrivelseHelp" class="form-text text-muted">Beskriv formålet med projektet og hvordan det vil gavne børnene på Hashøjskolen</small>
-                        </div>
+                                <div class="form-group">
+                                    <label for="email">E-mail:</label>
+                                    <input type="email" class="form-control" id="email" name="email" required
+                                        aria-describedby="emailHelp">
+                                    <small id="emailHelp" class="form-text text-muted">Vi kontakter dig på denne email
+                                        med svar på din ansøgning</small>
+                                </div>
 
-                        <!-- GDPR Consent -->
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="gdprConsent" required>
-                                <label class="form-check-label" for="gdprConsent">
-                                    Jeg accepterer, at Vennekredsen behandler mine personoplysninger med det formål at vurdere og behandle min ansøgning om støtte. Mine oplysninger vil blive behandlet fortroligt.
-                                </label>
+                                <div class="form-group">
+                                    <label for="belob">Beløb (kr.):</label>
+                                    <input type="number" min="0" step="1" class="form-control" id="belob" name="belob"
+                                        required aria-describedby="belobHelp">
+                                    <small id="belobHelp" class="form-text text-muted">Angiv det beløb du søger om
+                                        støtte til</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="beskrivelse">Beskrivelse af projektet/aktiviteten:</label>
+                                    <textarea class="form-control" id="beskrivelse" name="beskrivelse" rows="5" required
+                                        aria-describedby="beskrivelseHelp"></textarea>
+                                    <small id="beskrivelseHelp" class="form-text text-muted">Beskriv formålet med
+                                        projektet og hvordan det vil gavne børnene på Hashøjskolen</small>
+                                </div>
+
+                                <!-- GDPR Consent -->
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="gdprConsent" required>
+                                        <label class="form-check-label" for="gdprConsent">
+                                            Jeg accepterer, at Vennekredsen behandler mine personoplysninger med det
+                                            formål at vurdere og behandle min ansøgning om støtte. Mine oplysninger vil
+                                            blive behandlet fortroligt.
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                        <span id="submitSpinner" class="spinner-border spinner-border-sm d-none"
+                                            role="status" aria-hidden="true"></span>
+                                        Send ansøgning
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">Godkendte projekter</h4>
+
+                            <div class="text-center mb-3" id="loadingApplications">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Indlæser...</span>
+                                </div>
+                                <p>Henter godkendte projekter...</p>
+                            </div>
+
+                            <div id="approvedProjects" class="list-group mt-4"></div>
+
+                            <div id="noApprovedProjects" class="alert alert-info text-center d-none mt-3">
+                                Der er ingen godkendte projekter at vise.
+                            </div>
+
+                            <div class="alert alert-success mt-3">
+                                <strong>Information:</strong> Alle godkendte ansøgninger vises offentligt på denne side
+                                uden personlige oplysninger.
                             </div>
                         </div>
-
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                                <span id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                                Send ansøgning
-                            </button>
-                        </div>
-                    </form>
-                </section>
-
-                <hr class="my-5">
-
-                <!-- Approved applications section -->
-                <section class="mb-4">
-                    <h3 class="mb-4 text-center">Godkendte projekter</h3>
-                    <div class="text-center mb-3" id="loadingApplications">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Indlæser...</span>
-                        </div>
-                        <p>Henter godkendte projekter...</p>
-                    </div>
-                    <div id="approvedProjects" class="list-group"></div>
-                    <div id="noApprovedProjects" class="alert alert-info text-center d-none">
-                        Der er ingen godkendte projekter at vise.
                     </div>
                 </section>
             </div>
@@ -154,138 +186,139 @@
     <footer class="bg-dark text-white text-center py-4">
         <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
     </footer>
-    
+
     <script>
-    // Form submission handler
-    document.getElementById("ansoegningForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
-        
-        // Show loading state
-        const submitBtn = document.getElementById("submitBtn");
-        const submitSpinner = document.getElementById("submitSpinner");
-        submitBtn.disabled = true;
-        submitSpinner.classList.remove("d-none");
-        
-        // Clear previous messages
-        const messageBox = document.getElementById("formResponseMessage");
-        messageBox.classList.add("d-none");
-        
-        const formData = {
-            navn: document.getElementById("navn").value.trim(),
-            email: document.getElementById("email").value.trim(),
-            belob: parseFloat(document.getElementById("belob").value),
-            beskrivelse: document.getElementById("beskrivelse").value.trim()
-        };
+        // Form submission handler
+        document.getElementById("ansoegningForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-        try {
-            const response = await fetch("/api/ansoegning", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
+            // Show loading state
+            const submitBtn = document.getElementById("submitBtn");
+            const submitSpinner = document.getElementById("submitSpinner");
+            submitBtn.disabled = true;
+            submitSpinner.classList.remove("d-none");
 
-            const result = await response.json();
-            
-            // Display success message
-            messageBox.textContent = "Din ansøgning er modtaget! Vi behandler den hurtigst muligt og vender tilbage via e-mail.";
-            messageBox.classList.remove("d-none", "alert-danger");
-            messageBox.classList.add("alert-success");
-            
-            // Reset form
-            document.getElementById("ansoegningForm").reset();
-            
-            // Refresh approved projects list
-            loadApprovedProjects();
-        } catch (error) {
-            // Display error message
-            messageBox.textContent = "Der opstod en fejl: " + (error.message || "Kunne ikke behandle din anmodning");
-            messageBox.classList.remove("d-none", "alert-success");
-            messageBox.classList.add("alert-danger");
-            console.error("Error submitting application:", error);
-        } finally {
-            // Reset button state
-            submitBtn.disabled = false;
-            submitSpinner.classList.add("d-none");
-        }
-    });
-    
-    // Load approved projects for public display
-    async function loadApprovedProjects() {
-        try {
-            document.getElementById("loadingApplications").style.display = "block";
-            document.getElementById("approvedProjects").innerHTML = "";
-            document.getElementById("noApprovedProjects").classList.add("d-none");
-            
-            const response = await fetch("/api/approved-projects");
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error: ${response.status}`);
+            // Clear previous messages
+            const messageBox = document.getElementById("formResponseMessage");
+            messageBox.classList.add("d-none");
+
+            const formData = {
+                navn: document.getElementById("navn").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                belob: parseFloat(document.getElementById("belob").value),
+                beskrivelse: document.getElementById("beskrivelse").value.trim()
+            };
+
+            try {
+                const response = await fetch("/api/ansoegning", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                // Display success message
+                messageBox.textContent = "Din ansøgning er modtaget! Vi behandler den hurtigst muligt og vender tilbage via e-mail.";
+                messageBox.classList.remove("d-none", "alert-danger");
+                messageBox.classList.add("alert-success");
+
+                // Reset form
+                document.getElementById("ansoegningForm").reset();
+
+                // Refresh approved projects list
+                loadApprovedProjects();
+            } catch (error) {
+                // Display error message
+                messageBox.textContent = "Der opstod en fejl: " + (error.message || "Kunne ikke behandle din anmodning");
+                messageBox.classList.remove("d-none", "alert-success");
+                messageBox.classList.add("alert-danger");
+                console.error("Error submitting application:", error);
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitSpinner.classList.add("d-none");
             }
-            
-            const projects = await response.json();
-            
-            if (projects.length === 0) {
-                document.getElementById("noApprovedProjects").classList.remove("d-none");
-                return;
-            }
-            
-            const container = document.getElementById("approvedProjects");
-            
-            projects.forEach(project => {
-                const card = document.createElement('div');
-                card.className = 'card mb-3';
-                card.style.backgroundColor = '#444';
-                
-                // Format amount
-                const formattertBelob = new Intl.NumberFormat('da-DK', {
-                    style: 'currency',
-                    currency: 'DKK',
-                    minimumFractionDigits: 0
-                }).format(project.belob);
-                
-                // Format date
-                const oprettetDato = project.godkendt_dato ? new Date(project.godkendt_dato) : null;
-                const formattertDato = oprettetDato ? 
-                    new Intl.DateTimeFormat('da-DK', {
-                        year: 'numeric', 
-                        month: 'long'
-                    }).format(oprettetDato) : '';
-                
-                card.innerHTML = `
+        });
+
+        // Load approved projects for public display
+        async function loadApprovedProjects() {
+            try {
+                document.getElementById("loadingApplications").style.display = "block";
+                document.getElementById("approvedProjects").innerHTML = "";
+                document.getElementById("noApprovedProjects").classList.add("d-none");
+
+                const response = await fetch("/api/approved-projects");
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                const projects = await response.json();
+
+                if (projects.length === 0) {
+                    document.getElementById("noApprovedProjects").classList.remove("d-none");
+                    return;
+                }
+
+                const container = document.getElementById("approvedProjects");
+
+                projects.forEach(project => {
+                    const card = document.createElement('div');
+                    card.className = 'card mb-3';
+                    card.style.backgroundColor = '#444';
+
+                    // Format amount
+                    const formattertBelob = new Intl.NumberFormat('da-DK', {
+                        style: 'currency',
+                        currency: 'DKK',
+                        minimumFractionDigits: 0
+                    }).format(project.belob);
+
+                    // Format date
+                    const oprettetDato = project.godkendt_dato ? new Date(project.godkendt_dato) : null;
+                    const formattertDato = oprettetDato ?
+                        new Intl.DateTimeFormat('da-DK', {
+                            year: 'numeric',
+                            month: 'long'
+                        }).format(oprettetDato) : '';
+
+                    card.innerHTML = `
                     <div class="card-body">
                         <h5 class="card-title" style="color: #fff !important;">Støtte på ${formattertBelob}</h5>
                         <p class="card-text" style="color: #fff !important;">${escapeHTML(project.beskrivelse)}</p>
                         <p class="card-text"><small class="text-muted" style="color: #adb5bd !important;">Godkendt: ${formattertDato}</small></p>
                     </div>
                 `;
-                
-                container.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Error loading approved projects:", error);
-        } finally {
-            document.getElementById("loadingApplications").style.display = "none";
+
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading approved projects:", error);
+            } finally {
+                document.getElementById("loadingApplications").style.display = "none";
+            }
         }
-    }
-    
-    // Helper function to prevent XSS
-    function escapeHTML(str) {
-        if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-    
-    // Load approved projects on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadApprovedProjects();
-    });
+
+        // Helper function to prevent XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Load approved projects on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadApprovedProjects();
+        });
     </script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>

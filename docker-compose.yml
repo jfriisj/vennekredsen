@@ -41,6 +41,17 @@ services:
       - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql  # This line ensures init.sql runs on startup
     networks:
       - vennekredsen_net
+      
+  cloudflare_tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: vennekredsen_cloudflare_tunnel  # Changed name to be unique
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=${INTERNAL_TOKEN}
+    command: tunnel --no-autoupdate run
+    networks:
+      - vennekredsen_net
+      - cloudflare
 
 networks:
   vennekredsen_net:
