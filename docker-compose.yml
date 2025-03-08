@@ -34,6 +34,8 @@ services:
       POSTGRES_DB: vennekredsen_db
       POSTGRES_USER: vennekredsen
       POSTGRES_PASSWORD: hemmeligkode
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:

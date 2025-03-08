@@ -48,7 +48,7 @@ header .btn-light {
 }
 
 #vennekredsen p {
-  color: #fff;
+  color: #fff !important;
   line-height: 1.6;
   margin-bottom: 1rem;
 }
@@ -57,7 +57,7 @@ header .btn-light {
 .card {
   border: none;
   border-radius: 10px;
-  background-color: #444;
+  background-color: #444 !important;
   margin-bottom: 1.5rem;
   overflow: hidden;
 }
@@ -71,6 +71,7 @@ header .btn-light {
 .card-body {
   text-align: center;
   padding: 1.5rem;
+  color: #fff;
 }
 
 .card-footer {
@@ -81,7 +82,11 @@ header .btn-light {
 
 /* Card text color fixes - ensure all text in cards is visible */
 .card-title, .card-text {
-  color: #fff;
+  color: #fff !important;
+}
+
+.card h4, .card h5, .card h6 {
+  color: #fff !important;
 }
 
 .card small, .card .text-muted {
@@ -118,7 +123,7 @@ form .card-body,
 
 /* Form label color fix */
 label {
-  color: #fff;
+  color: #fff !important;
 }
 
 /* Alert Styling - Fix contrast issues */
@@ -128,18 +133,18 @@ label {
 }
 
 .alert-success {
-  background-color: rgba(40, 167, 69, 0.2);
-  color: #8fd19e;
+  background-color: rgba(40, 167, 69, 0.2) !important;
+  color: #8fd19e !important;
 }
 
 .alert-danger {
-  background-color: rgba(220, 53, 69, 0.2);
-  color: #f1aeb5;
+  background-color: rgba(220, 53, 69, 0.2) !important;
+  color: #f1aeb5 !important;
 }
 
 .alert-info {
-  background-color: rgba(23, 162, 184, 0.2);
-  color: #8ee0f1;
+  background-color: rgba(23, 162, 184, 0.2) !important;
+  color: #8ee0f1 !important;
 }
 
 /* Bootstrap component contrast fixes */
