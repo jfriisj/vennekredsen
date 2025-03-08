@@ -10,9 +10,15 @@ import hashlib
 app = Flask(__name__)
 CORS(app)  # Allow API requests from the website
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://vennekredsen:hemmeligkode@db/vennekredsen_db"
+# Get database connection details from environment variables
+db_user = os.environ.get("POSTGRES_USER", "postgres")
+db_password = os.environ.get("POSTGRES_PASSWORD", "password")
+db_name = os.environ.get("POSTGRES_DB", "postgres")
+db_host = os.environ.get("DB_HOST", "db")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET", "vennekredsen_meget_hemmelig_nogle")
+app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET", "secret_key")
 
 db = SQLAlchemy(app)
 
