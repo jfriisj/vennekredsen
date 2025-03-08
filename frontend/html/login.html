@@ -27,11 +27,6 @@
             background-color: #555;
             color: white;
         }
-        #debugInfo {
-            background-color: #222;
-            color: #8f8;
-            border-radius: 5px;
-        }
     </style>
 </head>
 <body>
@@ -59,28 +54,21 @@
                         <div class="card-body">
                             <div id="loginMessage" class="alert d-none" role="alert"></div>
 
-                            <!-- Direct login form without extra handling -->
+                            <!-- Login form -->
                             <div class="text-center mb-4">
                                 <div class="form-group">
                                     <label for="username">Brugernavn:</label>
-                                    <input type="text" class="form-control" id="username" value="jonfriis">
+                                    <input type="text" class="form-control" id="username">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="password">Adgangskode:</label>
-                                    <input type="password" class="form-control" id="password" value="Rosa2009">
+                                    <input type="password" class="form-control" id="password">
                                 </div>
 
                                 <button type="button" onclick="doLogin()" class="btn btn-primary btn-lg" id="loginBtn">
                                     Log ind
                                 </button>
-                            </div>
-                            
-                            <!-- Debug output -->
-                            <div class="mt-4">
-                                <p>Status: <span id="loginStatus">Klar til login</span></p>
-                                <pre id="debugInfo" class="p-2 mt-2" style="display: none; max-height: 150px; overflow: auto;"></pre>
-                                <button type="button" onclick="toggleDebug()" class="btn btn-sm btn-secondary mt-2">Vis/skjul debug info</button>
                             </div>
                         </div>
                     </div>
@@ -95,41 +83,18 @@
     </footer>
     
     <script>
-        // Simple debug toggle
-        function toggleDebug() {
-            const debugInfo = document.getElementById('debugInfo');
-            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Log to the debug area
-        function logDebug(message) {
-            const debugInfo = document.getElementById('debugInfo');
-            const timestamp = new Date().toISOString().substr(11, 8);
-            debugInfo.textContent += `[${timestamp}] ${message}\n`;
-            console.log(message);
-        }
-        
-        // Update status display
-        function updateStatus(message, isError = false) {
-            const statusEl = document.getElementById('loginStatus');
-            statusEl.textContent = message;
-            statusEl.style.color = isError ? 'red' : 'white';
-        }
-
         // Handle login
         function doLogin() {
-            updateStatus("Logger ind...");
-            logDebug("Attempting login...");
+            const messageBox = document.getElementById('loginMessage');
+            messageBox.classList.add('d-none');
             
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
             if (!username || !password) {
-                updateStatus("Udfyld venligst både brugernavn og adgangskode", true);
+                showMessage("Udfyld venligst både brugernavn og adgangskode", "danger");
                 return;
             }
-            
-            logDebug(`Sending login request for user: ${username}`);
             
             // Disable button during login
             const loginBtn = document.getElementById('loginBtn');
@@ -148,14 +113,12 @@
                 body: JSON.stringify(loginData)
             })
             .then(response => {
-                logDebug(`Received response with status: ${response.status}`);
                 return response.json().then(data => ({ ok: response.ok, status: response.status, data }));
             })
             .then(result => {
                 if (result.ok) {
                     // Success case
-                    updateStatus("Login successful! Redirecting...");
-                    logDebug(`Login successful, received token: ${result.data.token.substring(0, 15)}...`);
+                    showMessage("Login successful! Omdirigerer...", "success");
                     
                     // Store token and redirect
                     localStorage.setItem('adminToken', result.data.token);
@@ -166,32 +129,33 @@
                 } else {
                     // Error case
                     const errorMsg = result.data.message || "Login fejlede";
-                    updateStatus(errorMsg, true);
-                    logDebug(`Login failed: ${JSON.stringify(result.data)}`);
+                    showMessage(errorMsg, "danger");
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Log ind';
                 }
             })
             .catch(error => {
                 // Network or other errors
-                updateStatus("Fejl ved forbindelse til serveren", true);
-                logDebug(`Error during login: ${error.message}`);
+                showMessage("Fejl ved forbindelse til serveren", "danger");
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Log ind';
             });
         }
 
-        // Initialize debug info
+        // Helper function to show messages
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('loginMessage');
+            messageBox.textContent = message;
+            messageBox.classList.remove('d-none');
+            messageBox.classList.remove('alert-success', 'alert-danger', 'alert-info');
+            messageBox.classList.add(`alert-${type}`);
+        }
+
+        // Check if already logged in
         document.addEventListener('DOMContentLoaded', () => {
-            logDebug("Page loaded");
-            logDebug(`Current URL: ${window.location.href}`);
-            logDebug(`API Endpoint: ${window.location.origin}/api/admin/login`);
-            
-            // Check if already logged in
             const token = localStorage.getItem('adminToken');
             if (token) {
-                logDebug("Found existing token in localStorage");
-                updateStatus("Allerede logget ind, viderestiller...");
+                showMessage("Allerede logget ind, viderestiller...", "info");
                 setTimeout(() => {
                     window.location.href = 'admin-panel.html';
                 }, 1000);
