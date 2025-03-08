@@ -14,8 +14,3 @@ CREATE TABLE admins (
     password_hash VARCHAR(128) NOT NULL
 );
 
--- Insert admin user with pre-hashed password
--- Password 'Rosa2009' hashed with SHA-256
-INSERT INTO admins (username, password_hash) 
-VALUES ('jonfriis', '9a0db62a511cc3a0c3251992d4c373f17ba4b61279d6a9c52290390072d7f891')
-ON CONFLICT (username) DO NOTHING;
