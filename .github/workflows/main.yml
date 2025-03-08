@@ -11,16 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
       
-    - name: Build the Docker image
-      uses: docker/build-push-action@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build and export Docker image
+      uses: docker/build-push-action@v5
       with:
         context: .
-        push: false
+        load: true
         tags: vennekredsen:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        
+    - name: Test Docker image
+      run: |
+        docker image ls
+        docker run --rm vennekredsen:latest python -c "print('Container is working!')"
