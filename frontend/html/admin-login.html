@@ -55,13 +55,6 @@
     </footer>
     
     <script>
-    // Check if already logged in
-    document.addEventListener('DOMContentLoaded', function() {
-        if (localStorage.getItem('adminToken')) {
-            window.location.href = 'admin-panel.html';
-        }
-    });
-    
     // Login form handler
     document.getElementById("loginForm").addEventListener("submit", async function(event) {
         event.preventDefault();
@@ -110,6 +103,13 @@
             // Reset button state
             loginBtn.disabled = false;
             loginSpinner.classList.add("d-none");
+        }
+    });
+    
+    // Check if already logged in
+    document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('adminToken')) {
+            window.location.href = 'admin-panel.html';
         }
     });
     </script>

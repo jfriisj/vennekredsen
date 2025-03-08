@@ -8,6 +8,7 @@ services:
     ports:
       - "85:80"
     networks:
+      - vennekredsen_net
       - cloudflare
     depends_on:
       - api
@@ -20,6 +21,7 @@ services:
       - FLASK_APP=app.py
       - FLASK_ENV=production
     networks:
+      - vennekredsen_net
       - cloudflare
     depends_on:
       - db
@@ -35,9 +37,20 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
+      - vennekredsen_net
+
+  cloudflare_tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare_tunnel_vennekredsen
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=${INTERNAL_TOKEN}
+    command: tunnel --no-autoupdate run
+    networks:
       - cloudflare
 
 networks:
+  vennekredsen_net:
   cloudflare:
     external: true
 
