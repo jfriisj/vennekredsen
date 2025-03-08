@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="da">
+
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -17,7 +18,12 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       color: #fff;
     }
 
@@ -26,85 +32,56 @@
       line-height: 1.6;
       text-align: center;
     }
-    
+
     .login-btn {
       margin-left: 15px;
     }
   </style>
 </head>
+
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="index.html">Vennekredsen</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="index.html">Hjem</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="about.html">Om Os</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="tilmelding.html">Tilmelding</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="ansogning.html">Søg støtte</a>
-        </li>
-        <li class="nav-item" id="adminNavItem">
-          <!-- Login/logout button will be inserted here -->
-        </li>
-      </ul>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Vennekredsen</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Hjem</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">Om Os</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="tilmelding.html">Tilmelding</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="ansogning.html">Søg støtte</a>
+          </li>
+          <li class="nav-item" id="adminNavItem">
+            <!-- Login/logout button will be inserted here -->
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Hero Section -->
-<header class="bg-primary text-black text-center py-5 mb-4" id="header">
-  <div class="container">
-    <h1>Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
-    <p class="lead">Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i Slots Bjergby.</p>
-  </div>
-</header>
+  <!-- Hero Section -->
+  <header class="bg-primary text-black text-center py-5 mb-4" id="header">
+    <div class="container">
+      <h1>Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
+      <p class="lead">Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i Slots Bjergby.</p>
+    </div>
+  </header>
 
-<!-- Login/Logout Script -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const adminNavItem = document.getElementById('adminNavItem');
-    const token = localStorage.getItem('adminToken');
-    
-    if (token) {
-      // User is logged in - show admin panel link and logout button
-      const adminButton = document.createElement('div');
-      adminButton.className = 'btn-group';
-      adminButton.innerHTML = `
-        <a href="admin-panel.html" class="btn btn-outline-light btn-sm">Admin Panel</a>
-        <button class="btn btn-outline-danger btn-sm" id="logoutBtn">Log ud</button>
-      `;
-      adminNavItem.appendChild(adminButton);
-      
-      // Add logout functionality
-      document.getElementById('logoutBtn').addEventListener('click', function() {
-        localStorage.removeItem('adminToken');
-        window.location.reload();
-      });
-    } else {
-      // User is not logged in - show login button
-      const loginButton = document.createElement('a');
-      loginButton.href = 'admin-login.html';
-      loginButton.className = 'btn btn-outline-light btn-sm login-btn';
-      loginButton.textContent = 'Log ind';
-      adminNavItem.appendChild(loginButton);
-    }
-  });
-</script>
-
-<!-- Required JavaScript -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Required JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
