@@ -8,6 +8,10 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
     <link href="style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <style>
@@ -70,6 +74,153 @@
         color: #f1aeb5 !important;
         border-color: rgba(220, 53, 69, 0.3) !important;
       }
+
+      /* Progress indicator styles */
+      .progress-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+
+      .progress-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+      }
+
+      .progress-step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 60%;
+        right: -40%;
+        height: 3px;
+        background-color: #6c757d;
+        z-index: 0;
+      }
+
+      .progress-step.active:not(:last-child)::after {
+        background-color: #007bff;
+      }
+
+      .progress-step .step-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #6c757d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem auto;
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+      }
+
+      .progress-step.active .step-circle {
+        background-color: #007bff;
+      }
+
+      .progress-step.completed .step-circle {
+        background-color: #28a745;
+      }
+
+      .progress-step .step-label {
+        font-size: 0.875rem;
+        color: #adb5bd;
+      }
+
+      .progress-step.active .step-label {
+        color: #007bff;
+      }
+
+      .progress-step.completed .step-label {
+        color: #28a745;
+      }
+
+      /* Form section styles */
+      .form-section {
+        display: none;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .form-section.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Input improvements */
+      .input-group-text {
+        background-color: #495057 !important;
+        border-color: #6c757d !important;
+        color: #fff !important;
+      }
+
+      .form-control.is-invalid {
+        border-color: #dc3545 !important;
+      }
+
+      .form-control.is-valid {
+        border-color: #28a745 !important;
+      }
+
+      .invalid-feedback {
+        color: #f1aeb5 !important;
+      }
+
+      .valid-feedback {
+        color: #8fd19e !important;
+      }
+
+      /* Character counter */
+      .char-counter {
+        font-size: 0.875rem;
+        color: #adb5bd;
+        text-align: right;
+        margin-top: 0.25rem;
+      }
+
+      .char-counter.warning {
+        color: #ffc107;
+      }
+
+      .char-counter.danger {
+        color: #dc3545;
+      }
+
+      /* Navigation buttons */
+      .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #6c757d;
+      }
+
+      /* Mobile optimizations */
+      @media (max-width: 768px) {
+        .progress-indicator {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .progress-step::after {
+          display: none;
+        }
+
+        .card-body {
+          padding: 1rem;
+        }
+      }
     </style>
   </head>
 
@@ -102,6 +253,22 @@
                 <h4 class="card-title text-center">Indsend din ansøgning</h4>
                 <h5 class="card-title text-center">Årlig pulje på 5000 kr.</h5>
 
+                <!-- Progress Indicator -->
+                <div class="progress-indicator">
+                  <div class="progress-step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Grundinfo</div>
+                  </div>
+                  <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Projekt</div>
+                  </div>
+                  <div class="progress-step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Gennemse</div>
+                  </div>
+                </div>
+
                 <div
                   id="formResponseMessage"
                   class="alert d-none"
@@ -109,105 +276,230 @@
                 ></div>
 
                 <form id="ansoegningForm">
-                  <div class="form-group">
-                    <label for="navn">Navn på ansøger:</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="navn"
-                      name="navn"
-                      required
-                      aria-describedby="navnHelp"
-                    />
-                    <small id="navnHelp" class="form-text text-muted"
-                      >Angiv navnet på personen eller gruppen der søger
-                      støtte</small
-                    >
-                  </div>
+                  <!-- Step 1: Basic Information -->
+                  <div class="form-section active" data-section="1">
+                    <h5 class="mb-4 text-center" style="color: #fff">
+                      Grundlæggende information
+                    </h5>
 
-                  <div class="form-group">
-                    <label for="email">E-mail:</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      name="email"
-                      required
-                      aria-describedby="emailHelp"
-                    />
-                    <small id="emailHelp" class="form-text text-muted"
-                      >Vi kontakter dig på denne email med svar på din
-                      ansøgning</small
-                    >
-                  </div>
-
-                  <div class="form-group">
-                    <label for="belob">Beløb (kr.):</label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      class="form-control"
-                      id="belob"
-                      name="belob"
-                      required
-                      aria-describedby="belobHelp"
-                    />
-                    <small id="belobHelp" class="form-text text-muted"
-                      >Angiv det beløb du søger om støtte til</small
-                    >
-                  </div>
-
-                  <div class="form-group">
-                    <label for="beskrivelse"
-                      >Beskrivelse af projektet/aktiviteten:</label
-                    >
-                    <textarea
-                      class="form-control"
-                      id="beskrivelse"
-                      name="beskrivelse"
-                      rows="5"
-                      required
-                      aria-describedby="beskrivelseHelp"
-                    ></textarea>
-                    <small id="beskrivelseHelp" class="form-text text-muted"
-                      >Beskriv formålet med projektet og hvordan det vil gavne
-                      børnene på Hashøjskolen</small
-                    >
-                  </div>
-
-                  <!-- GDPR Consent -->
-                  <div class="form-group">
-                    <div class="form-check">
+                    <div class="form-group">
+                      <label for="navn"
+                        >Navn på ansøger:
+                        <span class="text-danger">*</span></label
+                      >
                       <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="gdprConsent"
+                        type="text"
+                        class="form-control"
+                        id="navn"
+                        name="navn"
                         required
+                        placeholder="F.eks. Anna Jensen eller Klasse 3B"
+                        aria-describedby="navnHelp"
                       />
-                      <label class="form-check-label" for="gdprConsent">
-                        Jeg accepterer, at Vennekredsen behandler mine
-                        personoplysninger med det formål at vurdere og behandle
-                        min ansøgning om støtte. Mine oplysninger vil blive
-                        behandlet fortroligt.
-                      </label>
+                      <small id="navnHelp" class="form-text text-muted">
+                        Angiv navnet på personen, klassen eller gruppen der
+                        søger støtte
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="email"
+                        >E-mail: <span class="text-danger">*</span></label
+                      >
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="din@email.dk"
+                        aria-describedby="emailHelp"
+                      />
+                      <small id="emailHelp" class="form-text text-muted">
+                        Vi kontakter dig på denne email med svar på din
+                        ansøgning
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-navigation">
+                      <div></div>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="nextStep1"
+                      >
+                        Næste <i class="fas fa-arrow-right"></i>
+                      </button>
                     </div>
                   </div>
 
-                  <div class="text-center mt-4">
-                    <button
-                      type="submit"
-                      class="btn btn-primary btn-lg"
-                      id="submitBtn"
+                  <!-- Step 2: Project Details -->
+                  <div class="form-section" data-section="2">
+                    <h5 class="mb-4 text-center" style="color: #fff">
+                      Projektdetaljer
+                    </h5>
+
+                    <div class="form-group">
+                      <label for="belob"
+                        >Ansøgt beløb: <span class="text-danger">*</span></label
+                      >
+                      <div class="input-group">
+                        <input
+                          type="number"
+                          min="0"
+                          max="5000"
+                          step="1"
+                          class="form-control"
+                          id="belob"
+                          name="belob"
+                          required
+                          placeholder="0"
+                          aria-describedby="belobHelp"
+                        />
+                        <div class="input-group-append">
+                          <span class="input-group-text">DKK</span>
+                        </div>
+                      </div>
+                      <small id="belobHelp" class="form-text text-muted">
+                        Maksimalt 5.000 kr. fra årets pulje. Skriv det fulde
+                        beløb du har brug for.
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="beskrivelse">
+                        Beskrivelse af projektet/aktiviteten:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="beskrivelse"
+                        name="beskrivelse"
+                        rows="6"
+                        required
+                        placeholder="Beskriv dit projekt eller aktivitet..."
+                        aria-describedby="beskrivelseHelp"
+                        maxlength="1000"
+                      ></textarea>
+                      <small id="beskrivelseHelp" class="form-text text-muted">
+                        Forklar formålet med projektet og hvordan det vil gavne
+                        børnene på Hashøjskolen.
+                        <br /><strong>Eksempler:</strong> Sportsudstyr til
+                        pauserne, materialer til kreative projekter, udflugter
+                        eller læremidler.
+                      </small>
+                      <div class="char-counter">
+                        <span id="charCount">0</span>/1000 tegn
+                      </div>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-navigation">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="prevStep2"
+                      >
+                        <i class="fas fa-arrow-left"></i> Tilbage
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="nextStep2"
+                      >
+                        Næste <i class="fas fa-arrow-right"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Step 3: Review and Submit -->
+                  <div class="form-section" data-section="3">
+                    <h5 class="mb-4 text-center" style="color: #fff">
+                      Gennemse din ansøgning
+                    </h5>
+
+                    <div
+                      class="card mb-4"
+                      style="background-color: #495057 !important"
                     >
-                      <span
-                        id="submitSpinner"
-                        class="spinner-border spinner-border-sm d-none"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      Send ansøgning
-                    </button>
+                      <div class="card-body">
+                        <h6 class="card-title" style="color: #fff">
+                          Ansøgningsoplysninger
+                        </h6>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p>
+                              <strong>Ansøger:</strong>
+                              <span id="reviewNavn"></span>
+                            </p>
+                            <p>
+                              <strong>E-mail:</strong>
+                              <span id="reviewEmail"></span>
+                            </p>
+                          </div>
+                          <div class="col-md-6">
+                            <p>
+                              <strong>Beløb:</strong>
+                              <span id="reviewBelob"></span> DKK
+                            </p>
+                          </div>
+                        </div>
+                        <p><strong>Beskrivelse:</strong></p>
+                        <p
+                          id="reviewBeskrivelse"
+                          style="
+                            background-color: #444;
+                            padding: 1rem;
+                            border-radius: 0.25rem;
+                          "
+                        ></p>
+                      </div>
+                    </div>
+
+                    <!-- GDPR Consent -->
+                    <div class="form-group">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="gdprConsent"
+                          required
+                        />
+                        <label class="form-check-label" for="gdprConsent">
+                          <span class="text-danger">*</span> Jeg accepterer, at
+                          Vennekredsen behandler mine personoplysninger med det
+                          formål at vurdere og behandle min ansøgning om støtte.
+                          Mine oplysninger vil blive behandlet fortroligt.
+                        </label>
+                      </div>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="form-navigation">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="prevStep3"
+                      >
+                        <i class="fas fa-arrow-left"></i> Tilbage
+                      </button>
+                      <button
+                        type="submit"
+                        class="btn btn-success btn-lg"
+                        id="submitBtn"
+                      >
+                        <span
+                          id="submitSpinner"
+                          class="spinner-border spinner-border-sm d-none"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        <i class="fas fa-paper-plane"></i> Send ansøgning
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -252,11 +544,249 @@
     </footer>
 
     <script>
+      // Wizard functionality
+      let currentStep = 1;
+      const totalSteps = 3;
+
+      // Initialize wizard
+      document.addEventListener("DOMContentLoaded", function () {
+        setupFormValidation();
+        setupCharacterCounter();
+        setupWizardNavigation();
+        loadApprovedProjects();
+      });
+
+      // Setup wizard navigation
+      function setupWizardNavigation() {
+        // Next step buttons
+        document.getElementById("nextStep1").addEventListener("click", () => {
+          if (validateStep(1)) {
+            goToStep(2);
+          }
+        });
+
+        document.getElementById("nextStep2").addEventListener("click", () => {
+          if (validateStep(2)) {
+            updateReviewSection();
+            goToStep(3);
+          }
+        });
+
+        // Previous step buttons
+        document.getElementById("prevStep2").addEventListener("click", () => {
+          goToStep(1);
+        });
+
+        document.getElementById("prevStep3").addEventListener("click", () => {
+          goToStep(2);
+        });
+      }
+
+      // Navigate to specific step
+      function goToStep(step) {
+        // Hide all sections
+        document.querySelectorAll(".form-section").forEach(section => {
+          section.classList.remove("active");
+        });
+
+        // Show current section
+        document
+          .querySelector(`[data-section="${step}"]`)
+          .classList.add("active");
+
+        // Update progress indicator
+        document.querySelectorAll(".progress-step").forEach((stepEl, index) => {
+          stepEl.classList.remove("active", "completed");
+          if (index + 1 < step) {
+            stepEl.classList.add("completed");
+            stepEl.querySelector(".step-circle").innerHTML =
+              '<i class="fas fa-check"></i>';
+          } else if (index + 1 === step) {
+            stepEl.classList.add("active");
+            stepEl.querySelector(".step-circle").innerHTML = index + 1;
+          } else {
+            stepEl.querySelector(".step-circle").innerHTML = index + 1;
+          }
+        });
+
+        currentStep = step;
+      }
+
+      // Validate current step
+      function validateStep(step) {
+        let isValid = true;
+        const section = document.querySelector(`[data-section="${step}"]`);
+        const inputs = section.querySelectorAll(
+          "input[required], textarea[required]"
+        );
+
+        inputs.forEach(input => {
+          if (!validateInput(input)) {
+            isValid = false;
+          }
+        });
+
+        return isValid;
+      }
+
+      // Validate individual input
+      function validateInput(input) {
+        const value = input.value.trim();
+        const type = input.type;
+        let isValid = true;
+        let message = "";
+
+        // Remove previous validation classes
+        input.classList.remove("is-valid", "is-invalid");
+
+        // Required field validation
+        if (input.required && !value) {
+          isValid = false;
+          message = "Dette felt er påkrævet";
+        }
+        // Email validation
+        else if (type === "email" && value) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(value)) {
+            isValid = false;
+            message = "Indtast en gyldig email-adresse";
+          }
+        }
+        // Number validation (amount)
+        else if (type === "number" && value) {
+          const numValue = parseFloat(value);
+          if (isNaN(numValue) || numValue <= 0) {
+            isValid = false;
+            message = "Indtast et gyldigt beløb større end 0";
+          } else if (numValue > 5000) {
+            isValid = false;
+            message = "Beløbet kan ikke overstige 5.000 kr.";
+          }
+        }
+        // Textarea validation (description)
+        else if (input.tagName === "TEXTAREA" && value) {
+          if (value.length < 50) {
+            isValid = false;
+            message = "Beskrivelsen skal være mindst 50 tegn lang";
+          } else if (value.length > 1000) {
+            isValid = false;
+            message = "Beskrivelsen må ikke overstige 1000 tegn";
+          }
+        }
+
+        // Apply validation feedback
+        if (isValid && value) {
+          input.classList.add("is-valid");
+        } else if (!isValid) {
+          input.classList.add("is-invalid");
+        }
+
+        // Update feedback message
+        const feedback = input.parentNode.querySelector(".invalid-feedback");
+        if (feedback) {
+          feedback.textContent = message;
+        }
+
+        return isValid;
+      }
+
+      // Setup real-time validation
+      function setupFormValidation() {
+        const inputs = document.querySelectorAll(
+          "#ansoegningForm input, #ansoegningForm textarea"
+        );
+
+        inputs.forEach(input => {
+          // Validate on blur
+          input.addEventListener("blur", () => {
+            validateInput(input);
+          });
+
+          // Clear validation on focus
+          input.addEventListener("focus", () => {
+            input.classList.remove("is-valid", "is-invalid");
+          });
+
+          // Real-time validation for amount field
+          if (input.id === "belob") {
+            input.addEventListener("input", () => {
+              const value = parseFloat(input.value);
+              if (value > 5000) {
+                input.value = 5000;
+              }
+            });
+          }
+        });
+
+        // Checkbox validation
+        document
+          .getElementById("gdprConsent")
+          .addEventListener("change", function () {
+            this.classList.remove("is-valid", "is-invalid");
+            if (this.checked) {
+              this.classList.add("is-valid");
+            }
+          });
+      }
+
+      // Character counter for description
+      function setupCharacterCounter() {
+        const textarea = document.getElementById("beskrivelse");
+        const counter = document.getElementById("charCount");
+
+        textarea.addEventListener("input", () => {
+          const length = textarea.value.length;
+          counter.textContent = length;
+
+          // Update counter styling
+          counter.parentNode.classList.remove("warning", "danger");
+          if (length > 900) {
+            counter.parentNode.classList.add("danger");
+          } else if (length > 750) {
+            counter.parentNode.classList.add("warning");
+          }
+        });
+      }
+
+      // Update review section
+      function updateReviewSection() {
+        document.getElementById("reviewNavn").textContent =
+          document.getElementById("navn").value;
+        document.getElementById("reviewEmail").textContent =
+          document.getElementById("email").value;
+        document.getElementById("reviewBelob").textContent =
+          new Intl.NumberFormat("da-DK").format(
+            document.getElementById("belob").value
+          );
+        document.getElementById("reviewBeskrivelse").textContent =
+          document.getElementById("beskrivelse").value;
+      }
+
       // Form submission handler
       document
         .getElementById("ansoegningForm")
         .addEventListener("submit", async function (event) {
           event.preventDefault();
+
+          // Validate final step
+          if (!validateStep(3)) {
+            return;
+          }
+
+          // Check GDPR consent
+          const gdprConsent = document.getElementById("gdprConsent");
+          if (!gdprConsent.checked) {
+            gdprConsent.classList.add("is-invalid");
+            const feedback =
+              gdprConsent.parentNode.parentNode.querySelector(
+                ".invalid-feedback"
+              );
+            if (feedback) {
+              feedback.textContent =
+                "Du skal acceptere behandling af personoplysninger for at fortsætte";
+            }
+            return;
+          }
 
           // Show loading state
           const submitBtn = document.getElementById("submitBtn");
@@ -285,21 +815,34 @@
             const result = await response.json();
 
             // Display success message
-            messageBox.textContent =
-              "Din ansøgning er modtaget! Vi behandler den hurtigst muligt og vender tilbage via e-mail.";
+            messageBox.innerHTML = `
+              <i class="fas fa-check-circle"></i>
+              <strong>Tak for din ansøgning!</strong><br>
+              Din ansøgning er modtaget og vil blive behandlet hurtigst muligt. 
+              Vi vender tilbage til <strong>${formData.email}</strong> med svar.
+            `;
             messageBox.classList.remove("d-none", "alert-danger");
             messageBox.classList.add("alert-success");
 
-            // Reset form
+            // Reset form and go back to step 1
             document.getElementById("ansoegningForm").reset();
+            document.getElementById("charCount").textContent = "0";
+            goToStep(1);
+
+            // Scroll to top
+            document
+              .querySelector(".card")
+              .scrollIntoView({ behavior: "smooth" });
 
             // Refresh approved projects list
             loadApprovedProjects();
           } catch (error) {
             // Display error message
-            messageBox.textContent =
-              "Der opstod en fejl: " +
-              (error.message || "Kunne ikke behandle din anmodning");
+            messageBox.innerHTML = `
+              <i class="fas fa-exclamation-triangle"></i>
+              <strong>Der opstod en fejl:</strong><br>
+              ${error.message || "Kunne ikke behandle din anmodning. Prøv igen senere."}
+            `;
             messageBox.classList.remove("d-none", "alert-success");
             messageBox.classList.add("alert-danger");
             console.error("Error submitting application:", error);
