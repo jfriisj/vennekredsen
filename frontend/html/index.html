@@ -3,42 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="description" content="Vennekredsen - Støttekreds for børn på Hashøjskolen i Slots Bjergby. Vi støtter leg, lejrture, faciliteter og arrangementer for skolens elever." />
+    <meta name="keywords" content="Vennekredsen, Hashøjskolen, støttekreds, Slots Bjergby, børn, skole" />
     <title>Vennekredsen - Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <style>
-      /* Contrast fixes */
-      .card {
-        background-color: #444 !important;
-      }
-      .card-body {
-        background-color: #444 !important;
-        color: #fff !important;
-      }
-      .card-title,
-      .card-text {
-        color: #fff !important;
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        color: #fff !important;
-      }
-      p {
-        color: #fff !important;
-      }
-      .card p {
-        color: #fff !important;
-        text-align: left;
-      }
-    </style>
   </head>
 
   <body>
@@ -59,12 +41,12 @@
     </script>
 
     <!-- Main Content -->
-    <main class="container my-5">
+    <main class="container my-5" role="main">
       <!-- Vennekredsen Description Section -->
-      <section id="vennekredsen" class="mb-5">
+      <section id="vennekredsen" class="mb-5" aria-label="Om Vennekredsen">
         <div class="text-center mb-4">
-          <h2>Vennekredsen</h2>
-          <h3>Støttekreds for børn på Hashøjskolen</h3>
+          <h1>Vennekredsen</h1>
+          <h2 class="h3">Støttekreds for børn på Hashøjskolen</h2>
           <p class="lead">
             Vennekredsen er en engageret støttegruppe, der arbejder dedikeret
             for at skabe bedre muligheder for børnene på Hashøjskolen i Slots
@@ -74,46 +56,46 @@
           </p>
         </div>
 
-        <div class="card mb-4">
+        <article class="card mb-4">
           <div class="card-body">
-            <h4 class="card-title">Hvad støtter vi?</h4>
+            <h3 class="card-title">Hvad støtter vi?</h3>
             <p class="card-text text-center">
               Gruppen samler penge ind til at støtte forskellige aktiviteter og
               faciliteter, der gør hverdagen både sjovere og mere lærerig for
               skolens elever.
             </p>
             <p class="text-center">Støtter blandt andet:</p>
-            <ul>
+            <ul role="list">
               <li>
-                Leg og aktiviteter – Støtte til kreative lege, der fremmer børns
+                <strong>Leg og aktiviteter</strong> – Støtte til kreative lege, der fremmer børns
                 fantasi og sociale færdigheder.
               </li>
               <li>
-                Lejrture – Økonomisk hjælp til skolens lejrture, så alle børn
+                <strong>Lejrture</strong> – Økonomisk hjælp til skolens lejrture, så alle børn
                 kan deltage uanset økonomisk situation.
               </li>
               <li>
-                Faciliteter og udstyr – Støtte til forbedring af skolens
+                <strong>Faciliteter og udstyr</strong> – Støtte til forbedring af skolens
                 faciliteter og materialer, der gavner eleverne.
               </li>
               <li>
-                Arrangementer – Støtte til arrangementer, der skaber fællesskab
+                <strong>Arrangementer</strong> – Støtte til arrangementer, der skaber fællesskab
                 og glæde blandt eleverne.
               </li>
             </ul>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
+        <article class="card">
           <div class="card-body">
-            <h4 class="card-title">Hvordan tjener vi penge?</h4>
+            <h3 class="card-title">Hvordan tjener vi penge?</h3>
             <p class="card-text text-center">
               Vennekredsen tjener penge gennem tre årlige fester, som de
               arrangerer for skolens børn. Disse fester inkluderer en
               sommerfest, en julefest og en fastelavnsfest. Udover at skabe
               glæde og fællesskab blandt eleverne, bidrager festerne også til at
               samle penge ind. Gennem disse arrangementer formår Vennekredsen at
-              indsamle mellem 10.000 og 15.000 kr. årligt. Disse midler er en
+              indsamle mellem <strong>10.000 og 15.000 kr. årligt</strong>. Disse midler er en
               vigtig økonomisk støtte for at forbedre midlerne for de børn, der
               går på skolen.
             </p>
@@ -123,7 +105,7 @@
               fagligt og socialt, og som giver dem minder for livet.
             </p>
           </div>
-        </div>
+        </article>
       </section>
     </main>
 
