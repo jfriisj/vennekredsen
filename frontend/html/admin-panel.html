@@ -127,7 +127,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" id="searchFilter" class="form-control" placeholder="Søg i beskrivelser...">
+                            <input type="text" id="searchFilter" class="form-control" placeholder="Søg i beskrivelser, navne eller emails...">
                         </div>
                     </div>
                 </section>
@@ -260,8 +260,12 @@
         // Filter applications
         const filtered = allApplications.filter(app => {
             const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-            const matchesSearch = app.beskrivelse && app.beskrivelse.toLowerCase().includes(searchFilter);
-            return matchesStatus && matchesSearch;
+            const searchText = searchFilter.toLowerCase();
+            const matchesSearch = 
+                (app.beskrivelse && app.beskrivelse.toLowerCase().includes(searchText)) ||
+                (app.navn && app.navn.toLowerCase().includes(searchText)) ||
+                (app.email && app.email.toLowerCase().includes(searchText));
+            return matchesStatus && (!searchFilter || matchesSearch);
         });
         
         logDebug(`Filtered to ${filtered.length} applications`);
@@ -335,6 +339,11 @@
                         <span>Ansøgning #${app.id}</span>
                         <span>${formattertBelob}</span>
                     </h5>
+                    <div class="mb-2">
+                        <strong>Ansøger:</strong> ${escapeHTML(app.navn || 'Ikke angivet')}<br>
+                        <strong>Email:</strong> <a href="mailto:${escapeHTML(app.email || '')}" style="color: #17a2b8;">${escapeHTML(app.email || 'Ikke angivet')}</a>
+                        <!-- Personlige oplysninger vises kun i admin panel - ikke på offentlige sider -->
+                    </div>
                     <p class="card-text">${escapeHTML(beskrivelse)}</p>
                 </div>
                 <div class="card-footer">

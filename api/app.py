@@ -111,14 +111,18 @@ def admin_login():
     
     return jsonify({'token': token}), 200
 
-# Admin - Get all applications
+# Admin - Get all applications (includes personal info for admin only)
 @app.route("/api/admin/ansoegninger", methods=["GET"])
 @token_required
 def admin_hent_ansoegninger(current_user):
+    # IMPORTANT: This endpoint includes personal information (navn, email) 
+    # and is protected by JWT authentication - only for admin use
     ansogninger = Ansoegning.query.all()
     return jsonify([
         {
             "id": ansogning.id,
+            "navn": ansogning.navn,
+            "email": ansogning.email,
             "belob": ansogning.belob,
             "beskrivelse": ansogning.beskrivelse,
             "oprettet": ansogning.oprettet.strftime("%Y-%m-%d %H:%M:%S") if ansogning.oprettet else None,
