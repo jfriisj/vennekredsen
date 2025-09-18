@@ -1,87 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tilmelding - Vennekredsen for Hashøjskolen</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <style>
-        /* Contrast fixes */
-        .card {
-            background-color: #444 !important;
-        }
-        .card-body {
-            background-color: #444 !important;
-        }
-        .card-title, .card-text, .card h4, .card h5 {
-            color: #fff !important;
-        }
-        .alert-info {
-            background-color: rgba(23, 162, 184, 0.2) !important;
-            color: #8ee0f1 !important;
-            border-color: rgba(23, 162, 184, 0.3) !important;
-        }
-        .alert-success {
-            background-color: rgba(40, 167, 69, 0.2) !important;
-            color: #8fd19e !important;
-            border-color: rgba(40, 167, 69, 0.3) !important;
-        }
-        small.text-muted {
-            color: #adb5bd !important;
-        }
-        /* Contrast fixes */
-        .card {
-            background-color: #444 !important;
-        }
-        .card-body {
-            background-color: #444 !important;
-        }
-        .card-title, .card-text, .card h5 {
-            color: #fff !important;
-        }
-        .text-muted {
-            color: #adb5bd !important;
-        }
-        label {
-            color: #fff !important;
-        }
-        .form-text.text-muted {
-            color: #adb5bd !important;
-        }
-        .form-control {
-            background-color: #555 !important;
-            border-color: #666 !important;
-            color: #fff !important;
-        }
-        .form-control:focus {
-            background-color: #555 !important;
-            color: #fff !important;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        .form-control::placeholder {
-            color: #adb5bd !important;
-        }
-        .alert-info {
-            background-color: rgba(23, 162, 184, 0.2) !important;
-            color: #8ee0f1 !important;
-            border-color: rgba(23, 162, 184, 0.3) !important;
-        }
-        .alert-success {
-            background-color: rgba(40, 167, 69, 0.2) !important;
-            color: #8fd19e !important;
-            border-color: rgba(40, 167, 69, 0.3) !important;
-        }
-        .alert-danger {
-            background-color: rgba(220, 53, 69, 0.2) !important;
-            color: #f1aeb5 !important;
-            border-color: rgba(220, 53, 69, 0.3) !important;
-        }
+      /* Contrast fixes */
+      .card {
+        background-color: #444 !important;
+      }
+      .card-body {
+        background-color: #444 !important;
+      }
+      .card-title,
+      .card-text,
+      .card h4,
+      .card h5 {
+        color: #fff !important;
+      }
+      .alert-info {
+        background-color: rgba(23, 162, 184, 0.2) !important;
+        color: #8ee0f1 !important;
+        border-color: rgba(23, 162, 184, 0.3) !important;
+      }
+      .alert-success {
+        background-color: rgba(40, 167, 69, 0.2) !important;
+        color: #8fd19e !important;
+        border-color: rgba(40, 167, 69, 0.3) !important;
+      }
+      small.text-muted {
+        color: #adb5bd !important;
+      }
+      /* Contrast fixes */
+      .card {
+        background-color: #444 !important;
+      }
+      .card-body {
+        background-color: #444 !important;
+      }
+      .card-title,
+      .card-text,
+      .card h5 {
+        color: #fff !important;
+      }
+      .text-muted {
+        color: #adb5bd !important;
+      }
+      label {
+        color: #fff !important;
+      }
+      .form-text.text-muted {
+        color: #adb5bd !important;
+      }
+      .form-control {
+        background-color: #555 !important;
+        border-color: #666 !important;
+        color: #fff !important;
+      }
+      .form-control:focus {
+        background-color: #555 !important;
+        color: #fff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+      .form-control::placeholder {
+        color: #adb5bd !important;
+      }
+      .alert-info {
+        background-color: rgba(23, 162, 184, 0.2) !important;
+        color: #8ee0f1 !important;
+        border-color: rgba(23, 162, 184, 0.3) !important;
+      }
+      .alert-success {
+        background-color: rgba(40, 167, 69, 0.2) !important;
+        color: #8fd19e !important;
+        border-color: rgba(40, 167, 69, 0.3) !important;
+      }
+      .alert-danger {
+        background-color: rgba(220, 53, 69, 0.2) !important;
+        color: #f1aeb5 !important;
+        border-color: rgba(220, 53, 69, 0.3) !important;
+      }
     </style>
-
-</head>
-<body>
+  </head>
+  <body>
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
 
@@ -92,68 +99,95 @@
     </script>
 
     <main class="container my-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Intro section -->
-                
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <!-- Intro section -->
 
-                <!-- Main content section -->
-                <section id="vennekredsen" class="mb-5">
-                    <section class="text-center mb-5">
-                        <h2>Tilmelding til Arrangementer</h2>
-                        <p class="lead">Vennekredsen står for at arrangere fester og aktiviteter for skolens børn</p>
-                    </section>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h4 class="card-title text-center">Kommende Arrangementer</h4>
-                            <p class="card-text">Vi vil gerne invitere dig til at deltage i vores kommende fester og arrangementer. Tilmeld dig via linket herunder.</p>
-                            
-                            <div class="alert alert-info" role="alert">
-                                <strong>Sommerfest:</strong> den 29. august 2025 kl. 18:00
-                            </div>
+          <!-- Main content section -->
+          <section id="vennekredsen" class="mb-5">
+            <section class="text-center mb-5">
+              <h2>Tilmelding til Arrangementer</h2>
+              <p class="lead">
+                Vennekredsen står for at arrangere fester og aktiviteter for
+                skolens børn
+              </p>
+            </section>
+            <div class="card mb-4">
+              <div class="card-body">
+                <h4 class="card-title text-center">Kommende Arrangementer</h4>
+                <p class="card-text">
+                  Vi vil gerne invitere dig til at deltage i vores kommende
+                  fester og arrangementer. Tilmeld dig via linket herunder.
+                </p>
 
-                            <div class="alert alert-info" role="alert">
-                                <strong>Julefest:</strong> den 28. November 2025 kl. 18:00
-                            </div>
+                <div class="alert alert-info" role="alert">
+                  <strong>Sommerfest:</strong> den 29. august 2025 kl. 18:00
+                </div>
 
-                            <div class="alert alert-info" role="alert">
-                                <strong>Fastelavn:</strong> den 20. februar 2026 kl. 18:00
-                            </div>
-                            
-                            <div class="text-center my-4">
-                                <a href="https://hashoej-if.dk/" class="btn btn-primary btn-lg">TILMELD HER!</a>
-                                <p><small class="text-muted mt-2">Tilmelding via Hashøj IF's hjemmeside under "Events, tilmeldingen medregner automatisk et barn"</small></p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title text-center">Hashøj IF og Vennekredsen</h4>
-                            <h5 class="text-center mb-3">Samarbejde for et stærkt lokalsamfund</h5>
-                            
-                            <p class="card-text">Hashøj Idrætsforening (Hashøj IF) og Vennekredsen har begge en vigtig rolle i vores lokalområde.
-                                Ved at styrke samarbejdet mellem os kan vi skabe endnu flere muligheder og aktiviteter for beboerne.
-                                Vennekredsen benytter derfor Hashøj IF's tilmeldingsplatform til vores arrangementer.</p>
-                                
-                            <p class="card-text">Vi glæder os til at se dig til vores næste arrangement!</p>
-                            
-                            <div class="alert alert-success mt-3">
-                                <strong>Vigtigt:</strong> Alle penge som Vennekredsen tjener bruges på de børn som går på Hashøjskolen
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <div class="alert alert-info" role="alert">
+                  <strong>Julefest:</strong> den 28. November 2025 kl. 18:00
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                  <strong>Fastelavn:</strong> den 20. februar 2026 kl. 18:00
+                </div>
+
+                <div class="text-center my-4">
+                  <a
+                    href="https://hashoej-if.dk/"
+                    class="btn btn-primary btn-lg"
+                    >TILMELD HER!</a
+                  >
+                  <p>
+                    <small class="text-muted mt-2"
+                      >Tilmelding via Hashøj IF's hjemmeside under "Events,
+                      tilmeldingen medregner automatisk et barn"</small
+                    >
+                  </p>
+                </div>
+              </div>
             </div>
+
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title text-center">
+                  Hashøj IF og Vennekredsen
+                </h4>
+                <h5 class="text-center mb-3">
+                  Samarbejde for et stærkt lokalsamfund
+                </h5>
+
+                <p class="card-text">
+                  Hashøj Idrætsforening (Hashøj IF) og Vennekredsen har begge en
+                  vigtig rolle i vores lokalområde. Ved at styrke samarbejdet
+                  mellem os kan vi skabe endnu flere muligheder og aktiviteter
+                  for beboerne. Vennekredsen benytter derfor Hashøj IF's
+                  tilmeldingsplatform til vores arrangementer.
+                </p>
+
+                <p class="card-text">
+                  Vi glæder os til at se dig til vores næste arrangement!
+                </p>
+
+                <div class="alert alert-success mt-3">
+                  <strong>Vigtigt:</strong> Alle penge som Vennekredsen tjener
+                  bruges på de børn som går på Hashøjskolen
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
+      </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
+      <p>
+        &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
+      </p>
     </footer>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>

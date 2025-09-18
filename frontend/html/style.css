@@ -2,7 +2,7 @@
 body {
   background-color: #343a40 !important;
   color: #fff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Text Alignment */
@@ -12,7 +12,7 @@ body {
 
 /* Header Styling */
 header {
-  background: url('skole.png') no-repeat center center/cover !important;
+  background: url("skole.png") no-repeat center center/cover !important;
   color: #000;
   margin-bottom: 2rem;
 }
@@ -35,7 +35,9 @@ header .btn-light {
   margin-bottom: 1.5rem;
 }
 
-#vennekredsen h3, #vennekredsen h4, #vennekredsen h5 {
+#vennekredsen h3,
+#vennekredsen h4,
+#vennekredsen h5 {
   color: #fff;
   margin-bottom: 1rem;
 }
@@ -63,8 +65,8 @@ header .btn-light {
 }
 
 .card-header {
-  background-color: rgba(0,0,0,0.2) !important;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0.75rem 1.25rem;
 }
 
@@ -76,26 +78,33 @@ header .btn-light {
 }
 
 .card-footer {
-  background-color: rgba(0,0,0,0.2) !important;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0.75rem 1.25rem;
 }
 
 /* Card text color fixes - ensure all text in cards is visible */
-.card-title, .card-text {
+.card-title,
+.card-text {
   color: #fff !important;
 }
 
-.card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6 {
   color: #fff !important;
 }
 
-.card small, .card .text-muted {
+.card small,
+.card .text-muted {
   color: #adb5bd !important;
 }
 
 /* Override for forms and admin panels */
-form .card-body, 
+form .card-body,
 #ansoegninger .card-body {
   text-align: left;
 }
@@ -111,7 +120,7 @@ form .card-body,
   background-color: #495057 !important;
   border-color: #80bdff;
   color: #fff !important;
-  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .form-control::placeholder {
@@ -285,7 +294,8 @@ table {
   color: #fff;
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
   border-color: #454d55;
 }
 
@@ -317,8 +327,9 @@ footer a:hover {
 }
 
 /* Make sure header text is readable when background image loads */
-header h1, header p.lead {
-  text-shadow: 0px 0px 5px rgba(255, 255, 255, 1); 
+header h1,
+header p.lead {
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 1);
   font-weight: bold;
 }
 
@@ -332,7 +343,7 @@ header h1, header p.lead {
   #vennekredsen {
     padding: 20px;
   }
-  
+
   .card-body {
     padding: 1rem;
   }

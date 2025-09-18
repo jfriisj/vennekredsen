@@ -1,87 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vennekredsen - Hashøjskolen</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      header {
+        background: url("skole.png") no-repeat center center/cover !important;
+        color: #000;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Vennekredsen - Hashøjskolen</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    header {
-      background: url('skole.png') no-repeat center center/cover !important;
-      color: #000;
-    }
+      body {
+        background-color: #343a40 !important;
+        color: #fff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-    body {
-      background-color: #343a40 !important;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #fff;
+      }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      color: #fff;
-    }
+      p {
+        color: #fff;
+        line-height: 1.6;
+        text-align: center;
+      }
 
-    p {
-      color: #fff;
-      line-height: 1.6;
-      text-align: center;
-    }
+      .login-btn {
+        margin-left: 15px;
+      }
+    </style>
+  </head>
 
-    .login-btn {
-      margin-left: 15px;
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">Vennekredsen</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse text-center"  id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Hjem</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="about.html">Om Os</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="tilmelding.html">Tilmelding</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="ansogning.html">Ansøg Vennekredsen</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="login.html">Login</a>
-          </li>
-        </ul>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">Vennekredsen</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse text-center" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Hjem</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">Om Os</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tilmelding.html">Tilmelding</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="ansogning.html">Ansøg Vennekredsen</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html">Login</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- Hero Section -->
-  <header class="bg-primary text-black text-center py-5 mb-4" id="header">
-    <div class="container">
-      <h1>Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
-      <p class="lead">Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i Slots Bjergby.</p>
-    </div>
-  </header>
+    <!-- Hero Section -->
+    <header class="bg-primary text-black text-center py-5 mb-4" id="header">
+      <div class="container">
+        <h1>Vennekredsen: En Støttegruppe for Hashøjskolens Børn</h1>
+        <p class="lead">
+          Dedikeret til at forbedre hverdagen for børnene på Hashøjskolen i
+          Slots Bjergby.
+        </p>
+      </div>
+    </header>
 
-  <!-- Required JavaScript -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-
+    <!-- Required JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

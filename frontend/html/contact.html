@@ -1,133 +1,164 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Vennekredsen for Hashøjskolen</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Vennekredsen for Hashøjskolen</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-</head>
+  <body>
+    <!--Navigation bar-->
+    <div id="nav-placeholder"></div>
 
-<body>
-  <!--Navigation bar-->
-  <div id="nav-placeholder"></div>
+    <script>
+      $(function () {
+        $("#nav-placeholder").load("navbar.html", function () {
+          // Initialize login button after navbar is loaded
+          if (typeof initializeLoginButton === "function") {
+            initializeLoginButton();
+          } else {
+            $.getScript("login-button.js");
+          }
+        });
+      });
+    </script>
 
-  <script>
-    $(function () {
-      $("#nav-placeholder").load("navbar.html", function() {
-        // Initialize login button after navbar is loaded
-        if (typeof initializeLoginButton === 'function') {
-          initializeLoginButton();
-        } else {
-          $.getScript("login-button.js");
+    <main class="container my-5">
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <section id="vennekredsen" class="mb-5">
+            <div class="text-center mb-4">
+              <h2>Admin Login</h2>
+              <p class="lead">
+                Log ind for at administrere ansøgninger og indhold
+              </p>
+            </div>
+
+            <div id="loginMessage" class="alert d-none" role="alert"></div>
+
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="username">Brugernavn:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Adgangskode:</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  required
+                />
+              </div>
+
+              <div class="text-center mt-4">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg"
+                  id="loginBtn"
+                >
+                  <span
+                    id="loginSpinner"
+                    class="spinner-border spinner-border-sm d-none"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Log ind
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4">
+      <p>
+        &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
+      </p>
+    </footer>
+
+    <script>
+      // Check if already logged in
+      document.addEventListener("DOMContentLoaded", function () {
+        if (localStorage.getItem("adminToken")) {
+          window.location.href = "admin-panel.html";
         }
       });
-    });
-  </script>
 
-  <main class="container my-5">
-    <div class="row">
-      <div class="col-md-8 offset-md-2">
-        <section id="vennekredsen" class="mb-5">
-          <div class="text-center mb-4">
-            <h2>Admin Login</h2>
-            <p class="lead">Log ind for at administrere ansøgninger og indhold</p>
-          </div>
+      // Login form handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
 
-          <div id="loginMessage" class="alert d-none" role="alert"></div>
+          // Show loading state
+          const loginBtn = document.getElementById("loginBtn");
+          const loginSpinner = document.getElementById("loginSpinner");
+          loginBtn.disabled = true;
+          loginSpinner.classList.remove("d-none");
 
-          <form id="loginForm">
-            <div class="form-group">
-              <label for="username">Brugernavn:</label>
-              <input type="text" class="form-control" id="username" name="username" required>
-            </div>
+          // Clear previous messages
+          const messageBox = document.getElementById("loginMessage");
+          messageBox.classList.add("d-none");
 
-            <div class="form-group">
-              <label for="password">Adgangskode:</label>
-              <input type="password" class="form-control" id="password" name="password" required>
-            </div>
+          const loginData = {
+            username: document.getElementById("username").value.trim(),
+            password: document.getElementById("password").value,
+          };
 
-            <div class="text-center mt-4">
-              <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
-                <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                Log ind
-              </button>
-            </div>
-          </form>
-        </section>
-      </div>
-    </div>
-  </main>
+          try {
+            const response = await fetch("/api/admin/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(loginData),
+            });
 
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center py-4">
-    <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
-  </footer>
+            const result = await response.json();
 
-  <script>
-    // Check if already logged in
-    document.addEventListener('DOMContentLoaded', function () {
-      if (localStorage.getItem('adminToken')) {
-        window.location.href = 'admin-panel.html';
-      }
-    });
-
-    // Login form handler
-    document.getElementById("loginForm").addEventListener("submit", async function (event) {
-      event.preventDefault();
-
-      // Show loading state
-      const loginBtn = document.getElementById("loginBtn");
-      const loginSpinner = document.getElementById("loginSpinner");
-      loginBtn.disabled = true;
-      loginSpinner.classList.remove("d-none");
-
-      // Clear previous messages
-      const messageBox = document.getElementById("loginMessage");
-      messageBox.classList.add("d-none");
-
-      const loginData = {
-        username: document.getElementById("username").value.trim(),
-        password: document.getElementById("password").value
-      };
-
-      try {
-        const response = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(loginData)
+            if (response.ok) {
+              // Login successful, store token and redirect
+              localStorage.setItem("adminToken", result.token);
+              window.location.href = "admin-panel.html";
+            } else {
+              // Display error message
+              messageBox.textContent =
+                result.message || "Forkert brugernavn eller adgangskode";
+              messageBox.classList.remove("d-none", "alert-success");
+              messageBox.classList.add("alert-danger");
+            }
+          } catch (error) {
+            // Display error message
+            messageBox.textContent =
+              "Der opstod en fejl: " +
+              (error.message || "Kunne ikke behandle din anmodning");
+            messageBox.classList.remove("d-none", "alert-success");
+            messageBox.classList.add("alert-danger");
+            console.error("Login error:", error);
+          } finally {
+            // Reset button state
+            loginBtn.disabled = false;
+            loginSpinner.classList.add("d-none");
+          }
         });
+    </script>
 
-        const result = await response.json();
-
-        if (response.ok) {
-          // Login successful, store token and redirect
-          localStorage.setItem('adminToken', result.token);
-          window.location.href = 'admin-panel.html';
-        } else {
-          // Display error message
-          messageBox.textContent = result.message || "Forkert brugernavn eller adgangskode";
-          messageBox.classList.remove("d-none", "alert-success");
-          messageBox.classList.add("alert-danger");
-        }
-      } catch (error) {
-        // Display error message
-        messageBox.textContent = "Der opstod en fejl: " + (error.message || "Kunne ikke behandle din anmodning");
-        messageBox.classList.remove("d-none", "alert-success");
-        messageBox.classList.add("alert-danger");
-        console.error("Login error:", error);
-      } finally {
-        // Reset button state
-        loginBtn.disabled = false;
-        loginSpinner.classList.add("d-none");
-      }
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

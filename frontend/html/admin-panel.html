@@ -1,77 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel - Vennekredsen for Hashøjskolen</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
-        /* Fix contrast issues */
-        .application-card {
-            transition: all 0.3s ease;
-            background-color: #444 !important; /* Dark background */
-        }
-        
-        .application-card .card-body {
-            background-color: #444 !important; /* Dark background */
-        }
-        
-        .application-card .card-text {
-            color: #fff !important; /* White text */
-        }
-        
-        .application-card.pending {
-            border-left: 5px solid #6c757d;
-        }
-        
-        .application-card.approved {
-            border-left: 5px solid #28a745;
-        }
-        
-        .application-card.rejected {
-            border-left: 5px solid #dc3545;
-        }
-        
-        .card-header, .card-footer {
-            background-color: rgba(0,0,0,0.2) !important;
-        }
-        
-        /* Card specific fixes */
-        .card-title {
-            color: #fff !important;
-        }
-        
-        h5.card-title {
-            color: #fff !important;
-        }
-        
-        .card-body {
-            text-align: left; /* Override the center alignment from style.css */
-        }
-    </style>
-</head>
-<body>
-    <style>
-        /* Emergency contrast fixes */
-        #ansoegninger .card {
-            background-color: #444 !important;
-        }
-        
-        #ansoegninger .card-body {
-            background-color: #444 !important;
-        }
-        
-        #ansoegninger .card-text {
-            color: #fff !important;
-        }
-        
-        #ansoegninger .card-title {
-            color: #fff !important;
-        }
-    </style>
+      /* Fix contrast issues */
+      .application-card {
+        transition: all 0.3s ease;
+        background-color: #444 !important; /* Dark background */
+      }
 
+      .application-card .card-body {
+        background-color: #444 !important; /* Dark background */
+      }
+
+      .application-card .card-text {
+        color: #fff !important; /* White text */
+      }
+
+      .application-card.pending {
+        border-left: 5px solid #6c757d;
+      }
+
+      .application-card.approved {
+        border-left: 5px solid #28a745;
+      }
+
+      .application-card.rejected {
+        border-left: 5px solid #dc3545;
+      }
+
+      .card-header,
+      .card-footer {
+        background-color: rgba(0, 0, 0, 0.2) !important;
+      }
+
+      /* Card specific fixes */
+      .card-title {
+        color: #fff !important;
+      }
+
+      h5.card-title {
+        color: #fff !important;
+      }
+
+      .card-body {
+        text-align: left; /* Override the center alignment from style.css */
+      }
+
+      /* Emergency contrast fixes */
+      #ansoegninger .card {
+        background-color: #444 !important;
+      }
+
+      #ansoegninger .card-body {
+        background-color: #444 !important;
+      }
+
+      #ansoegninger .card-text {
+        color: #fff !important;
+      }
+
+      #ansoegninger .card-title {
+        color: #fff !important;
+      }
+    </style>
+  </head>
+  <body>
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
 
@@ -88,248 +90,299 @@
     </script>
 
     <main class="container my-5">
-        <div class="row">
-            <div class="col-md-10 offset-md-1">
-                <!-- Header section -->
-                <section class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h2>Administration af ansøgninger</h2>
-                        <button id="logoutBtn" class="btn btn-outline-danger">
-                            Log ud <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="d-flex align-items-center mt-3">
-                        <span class="badge badge-secondary mr-2" id="pendingCount">0</span> afventer
-                        <span class="badge badge-success mx-2" id="approvedCount">0</span> godkendt
-                        <span class="badge badge-danger mx-2" id="rejectedCount">0</span> afvist
-                    </div>
-                </section>
-                
-                <div id="adminMessage" class="alert d-none" role="alert"></div>
-                
-                <div class="text-center mb-4" id="loadingApplications">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Indlæser ansøgninger...</span>
-                    </div>
-                    <p>Henter ansøgninger...</p>
-                </div>
-                
-                <!-- Filter section -->
-                <section class="mb-4">
-                    <div class="form-row mb-3">
-                        <div class="col-md-6">
-                            <select id="statusFilter" class="form-control">
-                                <option value="all">Alle ansøgninger</option>
-                                <option value="pending">Afventende</option>
-                                <option value="approved">Godkendt</option>
-                                <option value="rejected">Afvist</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="text" id="searchFilter" class="form-control" placeholder="Søg i beskrivelser, navne eller emails...">
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Applications container -->
-                <section id="vennekredsen" class="mb-4">
-                    <div id="ansoegninger"></div>
-                    
-                    <div id="noApplicationsMessage" class="alert alert-info text-center d-none">
-                        Ingen ansøgninger at vise.
-                    </div>
-                </section>
-                
-                <!-- Debug section -->
-                <section class="mb-4">
-                    <button class="btn btn-sm btn-secondary" onclick="toggleDebug()">Vis/Skjul Debug Info</button>
-                    <div id="debugPanel" style="display: none;"></div>
-                </section>
+      <div class="row">
+        <div class="col-md-10 offset-md-1">
+          <!-- Header section -->
+          <section class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2>Administration af ansøgninger</h2>
+              <button id="logoutBtn" class="btn btn-outline-danger">
+                Log ud <i class="fas fa-sign-out-alt"></i>
+              </button>
             </div>
+
+            <div class="d-flex align-items-center mt-3">
+              <span class="badge badge-secondary mr-2" id="pendingCount"
+                >0</span
+              >
+              afventer
+              <span class="badge badge-success mx-2" id="approvedCount">0</span>
+              godkendt
+              <span class="badge badge-danger mx-2" id="rejectedCount">0</span>
+              afvist
+            </div>
+          </section>
+
+          <div id="adminMessage" class="alert d-none" role="alert"></div>
+
+          <div class="text-center mb-4" id="loadingApplications">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Indlæser ansøgninger...</span>
+            </div>
+            <p>Henter ansøgninger...</p>
+          </div>
+
+          <!-- Filter section -->
+          <section class="mb-4">
+            <div class="form-row mb-3">
+              <div class="col-md-6">
+                <select id="statusFilter" class="form-control">
+                  <option value="all">Alle ansøgninger</option>
+                  <option value="pending">Afventende</option>
+                  <option value="approved">Godkendt</option>
+                  <option value="rejected">Afvist</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <input
+                  type="text"
+                  id="searchFilter"
+                  class="form-control"
+                  placeholder="Søg i beskrivelser, navne eller emails..."
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- Applications container -->
+          <section id="vennekredsen" class="mb-4">
+            <div id="ansoegninger"></div>
+
+            <div
+              id="noApplicationsMessage"
+              class="alert alert-info text-center d-none"
+            >
+              Ingen ansøgninger at vise.
+            </div>
+          </section>
+
+          <!-- Debug section -->
+          <section class="mb-4">
+            <button class="btn btn-sm btn-secondary" onclick="toggleDebug()">
+              Vis/Skjul Debug Info
+            </button>
+            <div id="debugPanel" style="display: none"></div>
+          </section>
         </div>
+      </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
+      <p>
+        &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
+      </p>
     </footer>
-    
+
     <script>
-    // Debug helper function
-    function logDebug(message) {
+      // Debug helper function
+      function logDebug(message) {
         console.log(message);
-        const debugPanel = document.getElementById('debugPanel');
+        const debugPanel = document.getElementById("debugPanel");
         const timestamp = new Date().toISOString().substr(11, 8);
         debugPanel.innerHTML += `[${timestamp}] ${message}<br>`;
-    }
-    
-    function toggleDebug() {
-        const debugPanel = document.getElementById('debugPanel');
-        debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // Check authentication
-    document.addEventListener('DOMContentLoaded', function() {
-        const token = localStorage.getItem('adminToken');
+      }
+
+      function toggleDebug() {
+        const debugPanel = document.getElementById("debugPanel");
+        debugPanel.style.display =
+          debugPanel.style.display === "none" ? "block" : "none";
+      }
+
+      // Check authentication
+      document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem("adminToken");
         if (!token) {
-            window.location.href = 'login.html';
-            return;
+          window.location.href = "login.html";
+          return;
         }
-        
+
         logDebug("Admin token exists, loading applications");
-        
+
         // Load applications
         loadApplications();
-        
+
         // Set up event listeners
         document.getElementById("logoutBtn").addEventListener("click", logout);
-        document.getElementById("statusFilter").addEventListener("change", applyFilters);
-        document.getElementById("searchFilter").addEventListener("input", applyFilters);
-    });
-    
-    // Application data store
-    let allApplications = [];
-    
-    // Fetch applications from API
-    async function loadApplications() {
+        document
+          .getElementById("statusFilter")
+          .addEventListener("change", applyFilters);
+        document
+          .getElementById("searchFilter")
+          .addEventListener("input", applyFilters);
+      });
+
+      // Application data store
+      let allApplications = [];
+
+      // Fetch applications from API
+      async function loadApplications() {
         try {
-            document.getElementById("loadingApplications").style.display = "block";
-            document.getElementById("ansoegninger").innerHTML = "";
-            document.getElementById("noApplicationsMessage").classList.add("d-none");
-            
-            const token = localStorage.getItem('adminToken');
-            logDebug("Fetching applications with token");
-            
-            const response = await fetch("/api/admin/ansoegninger", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-            
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Token expired or invalid
-                    localStorage.removeItem('adminToken');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                throw new Error(`HTTP error: ${response.status}`);
+          document.getElementById("loadingApplications").style.display =
+            "block";
+          document.getElementById("ansoegninger").innerHTML = "";
+          document
+            .getElementById("noApplicationsMessage")
+            .classList.add("d-none");
+
+          const token = localStorage.getItem("adminToken");
+          logDebug("Fetching applications with token");
+
+          const response = await fetch("/api/admin/ansoegninger", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              // Token expired or invalid
+              localStorage.removeItem("adminToken");
+              window.location.href = "login.html";
+              return;
             }
-            
-            allApplications = await response.json();
-            logDebug(`Received ${allApplications.length} applications from API`);
-            
-            // Debug the first application if any exist
-            if (allApplications.length > 0) {
-                logDebug(`Sample application: ${JSON.stringify(allApplications[0])}`);
-            }
-            
-            // Update counts
-            updateCountBadges();
-            
-            // Display applications
-            applyFilters();
-            
+            throw new Error(`HTTP error: ${response.status}`);
+          }
+
+          allApplications = await response.json();
+          logDebug(`Received ${allApplications.length} applications from API`);
+
+          // Debug the first application if any exist
+          if (allApplications.length > 0) {
+            logDebug(
+              `Sample application: ${JSON.stringify(allApplications[0])}`
+            );
+          }
+
+          // Update counts
+          updateCountBadges();
+
+          // Display applications
+          applyFilters();
         } catch (error) {
-            showMessage("Der opstod en fejl ved indlæsning af ansøgninger: " + error.message, "error");
-            logDebug(`Error loading applications: ${error.message}`);
+          showMessage(
+            "Der opstod en fejl ved indlæsning af ansøgninger: " +
+              error.message,
+            "error"
+          );
+          logDebug(`Error loading applications: ${error.message}`);
         } finally {
-            document.getElementById("loadingApplications").style.display = "none";
+          document.getElementById("loadingApplications").style.display = "none";
         }
-    }
-    
-    // Update status counts
-    function updateCountBadges() {
-        const pendingCount = allApplications.filter(app => app.status === 'pending').length;
-        const approvedCount = allApplications.filter(app => app.status === 'approved').length;
-        const rejectedCount = allApplications.filter(app => app.status === 'rejected').length;
-        
+      }
+
+      // Update status counts
+      function updateCountBadges() {
+        const pendingCount = allApplications.filter(
+          app => app.status === "pending"
+        ).length;
+        const approvedCount = allApplications.filter(
+          app => app.status === "approved"
+        ).length;
+        const rejectedCount = allApplications.filter(
+          app => app.status === "rejected"
+        ).length;
+
         document.getElementById("pendingCount").textContent = pendingCount;
         document.getElementById("approvedCount").textContent = approvedCount;
         document.getElementById("rejectedCount").textContent = rejectedCount;
-    }
-    
-    // Apply filters and display applications
-    function applyFilters() {
+      }
+
+      // Apply filters and display applications
+      function applyFilters() {
         const statusFilter = document.getElementById("statusFilter").value;
-        const searchFilter = document.getElementById("searchFilter").value.toLowerCase();
-        
-        logDebug(`Applying filters: status=${statusFilter}, search="${searchFilter}"`);
-        
+        const searchFilter = document
+          .getElementById("searchFilter")
+          .value.toLowerCase();
+
+        logDebug(
+          `Applying filters: status=${statusFilter}, search="${searchFilter}"`
+        );
+
         // Filter applications
         const filtered = allApplications.filter(app => {
-            const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-            const searchText = searchFilter.toLowerCase();
-            const matchesSearch = 
-                (app.beskrivelse && app.beskrivelse.toLowerCase().includes(searchText)) ||
-                (app.navn && app.navn.toLowerCase().includes(searchText)) ||
-                (app.email && app.email.toLowerCase().includes(searchText));
-            return matchesStatus && (!searchFilter || matchesSearch);
+          const matchesStatus =
+            statusFilter === "all" || app.status === statusFilter;
+          const searchText = searchFilter.toLowerCase();
+          const matchesSearch =
+            (app.beskrivelse &&
+              app.beskrivelse.toLowerCase().includes(searchText)) ||
+            (app.navn && app.navn.toLowerCase().includes(searchText)) ||
+            (app.email && app.email.toLowerCase().includes(searchText));
+          return matchesStatus && (!searchFilter || matchesSearch);
         });
-        
+
         logDebug(`Filtered to ${filtered.length} applications`);
-        
+
         // Display applications
         displayApplications(filtered);
-    }
-    
-    // Display applications in the UI
-    function displayApplications(applications) {
+      }
+
+      // Display applications in the UI
+      function displayApplications(applications) {
         const container = document.getElementById("ansoegninger");
         container.innerHTML = "";
-        
+
         if (applications.length === 0) {
-            document.getElementById("noApplicationsMessage").classList.remove("d-none");
-            return;
+          document
+            .getElementById("noApplicationsMessage")
+            .classList.remove("d-none");
+          return;
         }
-        
-        document.getElementById("noApplicationsMessage").classList.add("d-none");
-        
+
+        document
+          .getElementById("noApplicationsMessage")
+          .classList.add("d-none");
+
         applications.forEach(app => {
-            logDebug(`Rendering application #${app.id}`);
-            
-            const card = document.createElement('div');
-            card.className = `card mb-3 application-card ${app.status}`;
-            card.dataset.id = app.id;
-            
-            // Format date
-            const oprettetDato = app.oprettet ? new Date(app.oprettet) : null;
-            const formattertDato = oprettetDato ? 
-                new Intl.DateTimeFormat('da-DK', {
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }).format(oprettetDato) : '';
-            
-            // Format amount with thousand separators
-            const formattertBelob = new Intl.NumberFormat('da-DK', {
-                style: 'currency',
-                currency: 'DKK',
-                minimumFractionDigits: 0
-            }).format(app.belob);
-            
-            // Status badge class
-            const statusClass = {
-                'pending': 'secondary',
-                'approved': 'success',
-                'rejected': 'danger'
-            }[app.status] || 'secondary';
-            
-            // Status text
-            const statusText = {
-                'pending': 'Afventer',
-                'approved': 'Godkendt',
-                'rejected': 'Afvist'
-            }[app.status] || 'Afventer';
-            
-            // Check if beskrivelse exists
-            const beskrivelse = app.beskrivelse || "Ingen beskrivelse";
-            logDebug(`Application #${app.id} description: ${beskrivelse.substring(0, 20)}...`);
-            
-            card.innerHTML = `
+          logDebug(`Rendering application #${app.id}`);
+
+          const card = document.createElement("div");
+          card.className = `card mb-3 application-card ${app.status}`;
+          card.dataset.id = app.id;
+
+          // Format date
+          const oprettetDato = app.oprettet ? new Date(app.oprettet) : null;
+          const formattertDato = oprettetDato
+            ? new Intl.DateTimeFormat("da-DK", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }).format(oprettetDato)
+            : "";
+
+          // Format amount with thousand separators
+          const formattertBelob = new Intl.NumberFormat("da-DK", {
+            style: "currency",
+            currency: "DKK",
+            minimumFractionDigits: 0,
+          }).format(app.belob);
+
+          // Status badge class
+          const statusClass =
+            {
+              pending: "secondary",
+              approved: "success",
+              rejected: "danger",
+            }[app.status] || "secondary";
+
+          // Status text
+          const statusText =
+            {
+              pending: "Afventer",
+              approved: "Godkendt",
+              rejected: "Afvist",
+            }[app.status] || "Afventer";
+
+          // Check if beskrivelse exists
+          const beskrivelse = app.beskrivelse || "Ingen beskrivelse";
+          logDebug(
+            `Application #${app.id} description: ${beskrivelse.substring(0, 20)}...`
+          );
+
+          card.innerHTML = `
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span class="badge badge-${statusClass}">${statusText}</span>
                     <span>${formattertDato}</span>
@@ -340,124 +393,141 @@
                         <span>${formattertBelob}</span>
                     </h5>
                     <div class="mb-2">
-                        <strong>Ansøger:</strong> ${escapeHTML(app.navn || 'Ikke angivet')}<br>
-                        <strong>Email:</strong> <a href="mailto:${escapeHTML(app.email || '')}" style="color: #17a2b8;">${escapeHTML(app.email || 'Ikke angivet')}</a>
+                        <strong>Ansøger:</strong> ${escapeHTML(app.navn || "Ikke angivet")}<br>
+                        <strong>Email:</strong> <a href="mailto:${escapeHTML(app.email || "")}" style="color: #17a2b8;">${escapeHTML(app.email || "Ikke angivet")}</a>
                         <!-- Personlige oplysninger vises kun i admin panel - ikke på offentlige sider -->
                     </div>
                     <p class="card-text">${escapeHTML(beskrivelse)}</p>
                 </div>
                 <div class="card-footer">
-                    ${app.status === 'pending' ? `
+                    ${
+                      app.status === "pending"
+                        ? `
                         <div class="btn-group w-100">
                             <button class="btn btn-success approve-btn" data-id="${app.id}">Godkend</button>
                             <button class="btn btn-danger reject-btn" data-id="${app.id}">Afvis</button>
                         </div>
-                    ` : `
+                    `
+                        : `
                         <button class="btn btn-secondary reset-btn w-100" data-id="${app.id}">Nulstil status</button>
-                    `}
+                    `
+                    }
                 </div>
             `;
-            
-            container.appendChild(card);
+
+          container.appendChild(card);
         });
-        
+
         // Add event listeners to buttons
         document.querySelectorAll(".approve-btn").forEach(btn => {
-            btn.addEventListener("click", () => updateApplicationStatus(btn.dataset.id, 'approved'));
+          btn.addEventListener("click", () =>
+            updateApplicationStatus(btn.dataset.id, "approved")
+          );
         });
-        
+
         document.querySelectorAll(".reject-btn").forEach(btn => {
-            btn.addEventListener("click", () => updateApplicationStatus(btn.dataset.id, 'rejected'));
+          btn.addEventListener("click", () =>
+            updateApplicationStatus(btn.dataset.id, "rejected")
+          );
         });
-        
+
         document.querySelectorAll(".reset-btn").forEach(btn => {
-            btn.addEventListener("click", () => updateApplicationStatus(btn.dataset.id, 'pending'));
+          btn.addEventListener("click", () =>
+            updateApplicationStatus(btn.dataset.id, "pending")
+          );
         });
-    }
-    
-    // Update application status
-    async function updateApplicationStatus(id, status) {
+      }
+
+      // Update application status
+      async function updateApplicationStatus(id, status) {
         try {
-            const token = localStorage.getItem('adminToken');
-            const response = await fetch(`/api/admin/ansoegning/${id}/status`, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ status })
-            });
-            
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Token expired or invalid
-                    localStorage.removeItem('adminToken');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                throw new Error(`HTTP error: ${response.status}`);
+          const token = localStorage.getItem("adminToken");
+          const response = await fetch(`/api/admin/ansoegning/${id}/status`, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status }),
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              // Token expired or invalid
+              localStorage.removeItem("adminToken");
+              window.location.href = "login.html";
+              return;
             }
-            
-            const result = await response.json();
-            
-            // Update application status in local data
-            const index = allApplications.findIndex(app => app.id == id);
-            if (index !== -1) {
-                allApplications[index].status = status;
-                updateCountBadges();
-                applyFilters();
-            }
-            
-            showMessage(`Ansøgning #${id} er nu ${status === 'approved' ? 'godkendt' : status === 'rejected' ? 'afvist' : 'sat til afventende'}`, "success");
-            
+            throw new Error(`HTTP error: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          // Update application status in local data
+          const index = allApplications.findIndex(app => app.id == id);
+          if (index !== -1) {
+            allApplications[index].status = status;
+            updateCountBadges();
+            applyFilters();
+          }
+
+          showMessage(
+            `Ansøgning #${id} er nu ${status === "approved" ? "godkendt" : status === "rejected" ? "afvist" : "sat til afventende"}`,
+            "success"
+          );
         } catch (error) {
-            showMessage("Der opstod en fejl: " + error.message, "error");
-            logDebug(`Error updating application: ${error.message}`);
+          showMessage("Der opstod en fejl: " + error.message, "error");
+          logDebug(`Error updating application: ${error.message}`);
         }
-    }
-    
-    // Helper function to show messages
-    function showMessage(message, type) {
+      }
+
+      // Helper function to show messages
+      function showMessage(message, type) {
         const messageBox = document.getElementById("adminMessage");
         messageBox.textContent = message;
-        messageBox.classList.remove("d-none", "alert-success", "alert-danger", "alert-info");
-        
+        messageBox.classList.remove(
+          "d-none",
+          "alert-success",
+          "alert-danger",
+          "alert-info"
+        );
+
         switch (type) {
-            case "success":
-                messageBox.classList.add("alert-success");
-                break;
-            case "error":
-                messageBox.classList.add("alert-danger");
-                break;
-            default:
-                messageBox.classList.add("alert-info");
+          case "success":
+            messageBox.classList.add("alert-success");
+            break;
+          case "error":
+            messageBox.classList.add("alert-danger");
+            break;
+          default:
+            messageBox.classList.add("alert-info");
         }
-        
+
         // Auto-hide after 5 seconds
         setTimeout(() => {
-            messageBox.classList.add("d-none");
+          messageBox.classList.add("d-none");
         }, 5000);
-    }
-    
-    // Logout function
-    function logout() {
-        localStorage.removeItem('adminToken');
-        window.location.href = 'login.html';
-    }
-    
-    // Helper function to prevent XSS
-    function escapeHTML(str) {
-        if (!str) return '';
+      }
+
+      // Logout function
+      function logout() {
+        localStorage.removeItem("adminToken");
+        window.location.href = "login.html";
+      }
+
+      // Helper function to prevent XSS
+      function escapeHTML(str) {
+        if (!str) return "";
         return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+  </body>
 </html>

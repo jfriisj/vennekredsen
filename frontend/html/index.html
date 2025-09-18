@@ -1,105 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vennekredsen - Hashøjskolen</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+      /* Contrast fixes */
+      .card {
+        background-color: #444 !important;
+      }
+      .card-body {
+        background-color: #444 !important;
+        color: #fff !important;
+      }
+      .card-title,
+      .card-text {
+        color: #fff !important;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #fff !important;
+      }
+      p {
+        color: #fff !important;
+      }
+      .card p {
+        color: #fff !important;
+        text-align: left;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Vennekredsen - Hashøjskolen</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-  <style>
-    /* Contrast fixes */
-    .card {
-      background-color: #444 !important;
-    }
-    .card-body {
-      background-color: #444 !important;
-      color: #fff !important;
-    }
-    .card-title, .card-text {
-      color: #fff !important;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #fff !important;
-    }
-    p {
-      color: #fff !important;
-    }
-    .card p {
-      color: #fff !important;
-      text-align: left;
-    }
-  </style>
-</head>
+  <body>
+    <!--Navigation bar-->
+    <div id="nav-placeholder"></div>
 
-<body>
-  <!--Navigation bar-->
-  <div id="nav-placeholder">
-
-  </div>
-
-  <script>
-    $(function () {
-      $("#nav-placeholder").load("navbar.html", function () {
-        // Initialize login button after navbar is loaded
-        if (typeof initializeLoginButton === 'function') {
-          initializeLoginButton();
-        } else {
-          $.getScript("login-button.js");
-        }
+    <script>
+      $(function () {
+        $("#nav-placeholder").load("navbar.html", function () {
+          // Initialize login button after navbar is loaded
+          if (typeof initializeLoginButton === "function") {
+            initializeLoginButton();
+          } else {
+            $.getScript("login-button.js");
+          }
+        });
       });
-    });
-  </script>
+    </script>
 
-  <!-- Main Content -->
-  <main class="container my-5">
-    <!-- Vennekredsen Description Section -->
-    <section id="vennekredsen" class="mb-5">
-      <div class="text-center mb-4">
-        <h2>Vennekredsen</h2>
-        <h3>Støttekreds for børn på Hashøjskolen</h3>
-        <p class="lead">Vennekredsen er en engageret støttegruppe, der arbejder dedikeret for at skabe bedre muligheder
-          for børnene på Hashøjskolen i Slots Bjergby. Gruppen består af frivillige, som alle er forældre til børn på
-          skolen, hvilket skaber en stærk forbindelse mellem støttegruppens arbejde og elevernes hverdag.</p>
-      </div>
-      
-      <div class="card mb-4">
-        <div class="card-body">
-          <h4 class="card-title">Hvad støtter vi?</h4>
-          <p class="card-text text-center">Gruppen samler penge ind til at støtte forskellige aktiviteter og faciliteter, der gør hverdagen både sjovere
-            og mere lærerig for skolens elever.</p>
-            <p class="text-center">Støtter blandt andet:</p>
-            <li>Leg og aktiviteter – Støtte til kreative lege, der fremmer børns fantasi og sociale færdigheder. </li>
-            <li>Lejrture – Økonomisk hjælp til skolens lejrture, så alle børn kan deltage uanset økonomisk situation. </li>
-            <li>Faciliteter og udstyr – Støtte til forbedring af skolens faciliteter og materialer, der gavner eleverne. </li>
-            <li>Arrangementer – Støtte til arrangementer, der skaber fællesskab og glæde blandt eleverne.</li>
+    <!-- Main Content -->
+    <main class="container my-5">
+      <!-- Vennekredsen Description Section -->
+      <section id="vennekredsen" class="mb-5">
+        <div class="text-center mb-4">
+          <h2>Vennekredsen</h2>
+          <h3>Støttekreds for børn på Hashøjskolen</h3>
+          <p class="lead">
+            Vennekredsen er en engageret støttegruppe, der arbejder dedikeret
+            for at skabe bedre muligheder for børnene på Hashøjskolen i Slots
+            Bjergby. Gruppen består af frivillige, som alle er forældre til børn
+            på skolen, hvilket skaber en stærk forbindelse mellem støttegruppens
+            arbejde og elevernes hverdag.
           </p>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Hvordan tjener vi penge?</h4>
-          <p class="card-text text-center">Vennekredsen tjener penge gennem tre årlige fester, som de arrangerer for skolens børn. Disse fester inkluderer
-            en sommerfest, en julefest og en fastelavnsfest. Udover at skabe glæde og fællesskab blandt eleverne, bidrager
-            festerne også til at samle penge ind. Gennem disse arrangementer formår Vennekredsen at indsamle mellem 10.000 og
-            15.000 kr. årligt. Disse midler er en vigtig økonomisk støtte for at forbedre midlerne for de børn, der går på
-            skolen.</p>
-          <p class="card-text text-center">Med Vennekredsens indsats sikres det, at alle børn på Hashøjskolen får mulighed for at deltage i aktiviteter, der
-            udvikler dem både fagligt og socialt, og som giver dem minder for livet.</p>
+        <div class="card mb-4">
+          <div class="card-body">
+            <h4 class="card-title">Hvad støtter vi?</h4>
+            <p class="card-text text-center">
+              Gruppen samler penge ind til at støtte forskellige aktiviteter og
+              faciliteter, der gør hverdagen både sjovere og mere lærerig for
+              skolens elever.
+            </p>
+            <p class="text-center">Støtter blandt andet:</p>
+            <ul>
+              <li>
+                Leg og aktiviteter – Støtte til kreative lege, der fremmer børns
+                fantasi og sociale færdigheder.
+              </li>
+              <li>
+                Lejrture – Økonomisk hjælp til skolens lejrture, så alle børn
+                kan deltage uanset økonomisk situation.
+              </li>
+              <li>
+                Faciliteter og udstyr – Støtte til forbedring af skolens
+                faciliteter og materialer, der gavner eleverne.
+              </li>
+              <li>
+                Arrangementer – Støtte til arrangementer, der skaber fællesskab
+                og glæde blandt eleverne.
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <!-- Footer -->
-  <footer class="bg-dark text-white text-center py-4">
-    <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
-  </footer>
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Hvordan tjener vi penge?</h4>
+            <p class="card-text text-center">
+              Vennekredsen tjener penge gennem tre årlige fester, som de
+              arrangerer for skolens børn. Disse fester inkluderer en
+              sommerfest, en julefest og en fastelavnsfest. Udover at skabe
+              glæde og fællesskab blandt eleverne, bidrager festerne også til at
+              samle penge ind. Gennem disse arrangementer formår Vennekredsen at
+              indsamle mellem 10.000 og 15.000 kr. årligt. Disse midler er en
+              vigtig økonomisk støtte for at forbedre midlerne for de børn, der
+              går på skolen.
+            </p>
+            <p class="card-text text-center">
+              Med Vennekredsens indsats sikres det, at alle børn på Hashøjskolen
+              får mulighed for at deltage i aktiviteter, der udvikler dem både
+              fagligt og socialt, og som giver dem minder for livet.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4">
+      <p>&copy; 2024 Vennekredsen. Alle rettigheder forbeholdes.</p>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

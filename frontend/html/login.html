@@ -1,166 +1,188 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="da">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Vennekredsen for Hashøjskolen</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <style>
-        /* Ensure proper contrast */
-        .card {
-            background-color: #444 !important;
-        }
-        .card-body {
-            color: white !important;
-        }
-        label {
-            color: white !important;
-        }
-        .form-control {
-            background-color: #555;
-            color: white;
-            border: 1px solid #666;
-        }
-        .form-control:focus {
-            background-color: #555;
-            color: white;
-        }
+      /* Ensure proper contrast */
+      .card {
+        background-color: #444 !important;
+      }
+      .card-body {
+        color: white !important;
+      }
+      label {
+        color: white !important;
+      }
+      .form-control {
+        background-color: #555;
+        color: white;
+        border: 1px solid #666;
+      }
+      .form-control:focus {
+        background-color: #555;
+        color: white;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
 
     <script>
-        $(function () {
-            $("#nav-placeholder").load("navbar.html");
-        });
+      $(function () {
+        $("#nav-placeholder").load("navbar.html");
+      });
     </script>
 
     <main class="container my-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <!-- Intro section -->
-                <section class="text-center mb-5">
-                    <h2>Admin Login</h2>
-                    <p class="lead">Log ind for at administrere ansøgninger</p>
-                </section>
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <!-- Intro section -->
+          <section class="text-center mb-5">
+            <h2>Admin Login</h2>
+            <p class="lead">Log ind for at administrere ansøgninger</p>
+          </section>
 
-                <!-- Login form section -->
-                <section id="vennekredsen" class="mb-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <div id="loginMessage" class="alert d-none" role="alert"></div>
+          <!-- Login form section -->
+          <section id="vennekredsen" class="mb-5">
+            <div class="card">
+              <div class="card-body">
+                <div id="loginMessage" class="alert d-none" role="alert"></div>
 
-                            <!-- Login form -->
-                            <div class="text-center mb-4">
-                                <div class="form-group">
-                                    <label for="username">Brugernavn:</label>
-                                    <input type="text" class="form-control" id="username">
-                                </div>
+                <!-- Login form -->
+                <div class="text-center mb-4">
+                  <div class="form-group">
+                    <label for="username">Brugernavn:</label>
+                    <input type="text" class="form-control" id="username" />
+                  </div>
 
-                                <div class="form-group">
-                                    <label for="password">Adgangskode:</label>
-                                    <input type="password" class="form-control" id="password">
-                                </div>
+                  <div class="form-group">
+                    <label for="password">Adgangskode:</label>
+                    <input type="password" class="form-control" id="password" />
+                  </div>
 
-                                <button type="button" onclick="doLogin()" class="btn btn-primary btn-lg" id="loginBtn">
-                                    Log ind
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                  <button
+                    type="button"
+                    onclick="doLogin()"
+                    class="btn btn-primary btn-lg"
+                    id="loginBtn"
+                  >
+                    Log ind
+                  </button>
+                </div>
+              </div>
             </div>
+          </section>
         </div>
+      </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-4">
-        <p>&copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.</p>
+      <p>
+        &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
+      </p>
     </footer>
-    
+
     <script>
-        // Handle login
-        function doLogin() {
-            const messageBox = document.getElementById('loginMessage');
-            messageBox.classList.add('d-none');
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            
-            if (!username || !password) {
-                showMessage("Udfyld venligst både brugernavn og adgangskode", "danger");
-                return;
-            }
-            
-            // Disable button during login
-            const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logger ind...';
-            
-            // Create the request data
-            const loginData = { username, password };
-            
-            // Make the request using fetch API
-            fetch('/api/admin/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(loginData)
-            })
-            .then(response => {
-                return response.json().then(data => ({ ok: response.ok, status: response.status, data }));
-            })
-            .then(result => {
-                if (result.ok) {
-                    // Success case
-                    showMessage("Login successful! Omdirigerer...", "success");
-                    
-                    // Store token and redirect
-                    localStorage.setItem('adminToken', result.data.token);
-                    
-                    setTimeout(() => {
-                        window.location.href = 'admin-panel.html';
-                    }, 1000);
-                } else {
-                    // Error case
-                    const errorMsg = result.data.message || "Login fejlede";
-                    showMessage(errorMsg, "danger");
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Log ind';
-                }
-            })
-            .catch(error => {
-                // Network or other errors
-                showMessage("Fejl ved forbindelse til serveren", "danger");
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Log ind';
-            });
+      // Handle login
+      function doLogin() {
+        const messageBox = document.getElementById("loginMessage");
+        messageBox.classList.add("d-none");
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (!username || !password) {
+          showMessage(
+            "Udfyld venligst både brugernavn og adgangskode",
+            "danger"
+          );
+          return;
         }
 
-        // Helper function to show messages
-        function showMessage(message, type) {
-            const messageBox = document.getElementById('loginMessage');
-            messageBox.textContent = message;
-            messageBox.classList.remove('d-none');
-            messageBox.classList.remove('alert-success', 'alert-danger', 'alert-info');
-            messageBox.classList.add(`alert-${type}`);
-        }
+        // Disable button during login
+        const loginBtn = document.getElementById("loginBtn");
+        loginBtn.disabled = true;
+        loginBtn.innerHTML =
+          '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logger ind...';
 
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                showMessage("Allerede logget ind, viderestiller...", "info");
-                setTimeout(() => {
-                    window.location.href = 'admin-panel.html';
-                }, 1000);
+        // Create the request data
+        const loginData = { username, password };
+
+        // Make the request using fetch API
+        fetch("/api/admin/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        })
+          .then(response => {
+            return response.json().then(data => ({
+              ok: response.ok,
+              status: response.status,
+              data,
+            }));
+          })
+          .then(result => {
+            if (result.ok) {
+              // Success case
+              showMessage("Login successful! Omdirigerer...", "success");
+
+              // Store token and redirect
+              localStorage.setItem("adminToken", result.data.token);
+
+              setTimeout(() => {
+                window.location.href = "admin-panel.html";
+              }, 1000);
+            } else {
+              // Error case
+              const errorMsg = result.data.message || "Login fejlede";
+              showMessage(errorMsg, "danger");
+              loginBtn.disabled = false;
+              loginBtn.textContent = "Log ind";
             }
-        });
+          })
+          .catch(error => {
+            // Network or other errors
+            showMessage("Fejl ved forbindelse til serveren", "danger");
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Log ind";
+          });
+      }
+
+      // Helper function to show messages
+      function showMessage(message, type) {
+        const messageBox = document.getElementById("loginMessage");
+        messageBox.textContent = message;
+        messageBox.classList.remove("d-none");
+        messageBox.classList.remove(
+          "alert-success",
+          "alert-danger",
+          "alert-info"
+        );
+        messageBox.classList.add(`alert-${type}`);
+      }
+
+      // Check if already logged in
+      document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("adminToken");
+        if (token) {
+          showMessage("Allerede logget ind, viderestiller...", "info");
+          setTimeout(() => {
+            window.location.href = "admin-panel.html";
+          }, 1000);
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

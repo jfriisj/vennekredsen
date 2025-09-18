@@ -1,0 +1,24 @@
+{
+  "name": "vennekredsen-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Vennekredsen website",
+  "scripts": {
+    "lint": "eslint html/**/*.js",
+    "lint:fix": "eslint html/**/*.js --fix",
+    "format": "prettier --write html/**/*.{html,css,js}",
+    "format:check": "prettier --check html/**/*.{html,css,js}",
+    "validate:html": "html-validate html/**/*.html",
+    "quality:check": "npm run lint && npm run format:check && npm run validate:html"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^3.0.3",
+    "html-validate": "^8.5.0",
+    "stylelint": "^15.10.3",
+    "stylelint-config-standard": "^34.0.0"
+  }
+}
