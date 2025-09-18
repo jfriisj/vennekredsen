@@ -10,10 +10,7 @@
     <title>Admin Panel - Vennekredsen for Hashøjskolen</title>
 
     <!-- Google Fonts -->
-    <link r        try {
-          document.getElementById("loading-applications").style.display =
-            "block";
-          document.getElementById("applications").innerHTML = "";preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -424,7 +421,8 @@
           );
           logDebug(`Error loading applications: ${error.message}`);
         } finally {
-          document.getElementById("loading-applications").style.display = "none";
+          document.getElementById("loading-applications").style.display =
+            "none";
         }
       }
 
