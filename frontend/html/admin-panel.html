@@ -408,7 +408,16 @@
                             <button class="btn btn-danger reject-btn" data-id="${app.id}">Afvis</button>
                         </div>
                     `
-                        : `
+                        : app.status === "rejected"
+                          ? `
+                        <div class="btn-group w-100">
+                            <button class="btn btn-secondary reset-btn" data-id="${app.id}">Nulstil status</button>
+                            <button class="btn btn-danger delete-btn" data-id="${app.id}">
+                                <i class="fas fa-trash"></i> Slet ansøgning
+                            </button>
+                        </div>
+                    `
+                          : `
                         <button class="btn btn-secondary reset-btn w-100" data-id="${app.id}">Nulstil status</button>
                     `
                     }
@@ -435,6 +444,22 @@
           btn.addEventListener("click", () =>
             updateApplicationStatus(btn.dataset.id, "pending")
           );
+        });
+
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            const app = allApplications.find(a => a.id == id);
+            const navn = app ? app.navn : `#${id}`;
+
+            if (
+              confirm(
+                `Er du sikker på at du vil slette den afviste ansøgning fra ${navn}? Dette kan ikke fortrydes.`
+              )
+            ) {
+              deleteApplication(id);
+            }
+          });
         });
       }
 
@@ -478,6 +503,55 @@
         } catch (error) {
           showMessage("Der opstod en fejl: " + error.message, "error");
           logDebug(`Error updating application: ${error.message}`);
+        }
+      }
+
+      // Delete rejected application
+      async function deleteApplication(id) {
+        try {
+          const token = localStorage.getItem("adminToken");
+          const response = await fetch(`/api/admin/ansoegning/${id}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              // Token expired or invalid
+              localStorage.removeItem("adminToken");
+              window.location.href = "login.html";
+              return;
+            }
+
+            const errorData = await response.json();
+            throw new Error(
+              errorData.message || `HTTP error: ${response.status}`
+            );
+          }
+
+          const result = await response.json();
+
+          // Remove application from local data
+          const index = allApplications.findIndex(app => app.id == id);
+          if (index !== -1) {
+            allApplications.splice(index, 1);
+            updateCountBadges();
+            applyFilters();
+          }
+
+          showMessage(
+            result.message || `Ansøgning #${id} er blevet slettet`,
+            "success"
+          );
+          logDebug(`Successfully deleted application #${id}`);
+        } catch (error) {
+          showMessage(
+            "Der opstod en fejl ved sletning: " + error.message,
+            "error"
+          );
+          logDebug(`Error deleting application: ${error.message}`);
         }
       }
 

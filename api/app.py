@@ -170,6 +170,39 @@ def admin_update_status(current_user, id):
     return jsonify({"message": f"Application {id} status updated to {status}"}), 200
 
 
+# Admin - Delete rejected application
+@app.route("/api/admin/ansoegning/<int:id>", methods=["DELETE"])
+@token_required
+def admin_delete_application(current_user, id):
+    ansogning = Ansoegning.query.get(id)
+
+    if not ansogning:
+        return jsonify({"message": "Application not found"}), 404
+
+    # Only allow deletion of rejected applications
+    if ansogning.status != "rejected":
+        return jsonify({"message": "Only rejected applications can be deleted"}), 400
+
+    # Store application info for response before deletion
+    application_info = {
+        "id": ansogning.id,
+        "navn": ansogning.navn,
+        "status": ansogning.status,
+    }
+
+    db.session.delete(ansogning)
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "message": f"Rejected application {id} ({application_info['navn']}) has been deleted successfully"
+            }
+        ),
+        200,
+    )
+
+
 # Public - Get approved projects (no personal info)
 @app.route("/api/approved-projects", methods=["GET"])
 def get_approved_projects():
