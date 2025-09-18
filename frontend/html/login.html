@@ -34,22 +34,55 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   </head>
   <body>
-    <!--Navigation bar-->
-    <div id="nav-placeholder"></div>
-
-    <!-- Page Header -->
-    <header class="bg-primary text-white text-center py-5">
+        <!-- Hero Section -->
+    <header
+      class="hero-section d-flex align-items-center justify-content-center text-center text-white"
+      id="header"
+    >
       <div class="container">
-        <h1 class="display-4">Admin Login</h1>
-        <p class="lead">Log ind for at administrere ansøgninger</p>
+        <h1 class="hero-title mb-4">
+          Admin Login
+        </h1>
+        <p class="hero-subtitle lead mb-4">
+          Log ind for at administrere ansøgninger.
+        </p>
+        <div class="hero-actions">
+          <a
+            href="ansogning.html"
+            class="btn btn-primary btn-lg me-3"
+            role="button"
+            aria-label="Ansøg om støtte fra Vennekredsen"
+          >
+            <i class="fas fa-file-alt me-2"></i>Ansøg om støtte
+          </a>
+          <a
+            href="tilmelding.html"
+            class="btn btn-primary btn-lg me-3"
+            role="button"
+            aria-label="Tilmeld dig til arrangementer"
+          >
+            <i class="fas fa-calendar-plus me-2"></i>Tilmeld til Events
+          </a>
+          <a
+            href="about.html"
+            class="btn btn-primary btn-lg me-3"
+            role="button"
+            aria-label="Læs om Vennekredsen"
+          >
+            <i class="fas fa-info-circle me-2"></i>Om Os
+          </a>
+    
+          <a
+            href="login.html"
+            class="btn btn-primary btn-lg"
+            role="button"
+            aria-label="Login"
+          >
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </a>
+        </div>
       </div>
     </header>
-
-    <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
-      });
-    </script>
 
     <main class="container mt-5 pt-5">
       <div class="row">

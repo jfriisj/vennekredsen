@@ -34,20 +34,35 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   </head>
   <body>
-    <!--Navigation bar-->
-    <div id="nav-placeholder"></div>
-
-    <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
-      });
-    </script>
-
-    <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html");
-      });
-    </script>
+    <!-- Page Header -->
+    <header class="bg-primary text-white text-center py-5">
+      <div class="container">
+        <h1 class="display-4">Admin Panel</h1>
+        <p class="lead">Administrer ansøgninger og brugere</p>
+        
+        <!-- Navigation Links -->
+        <div class="mt-4">
+          <a href="index.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-home me-2"></i>Hjem
+          </a>
+          <a href="about.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-info-circle me-2"></i>Om Os
+          </a>
+          <a href="tilmelding.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-calendar-plus me-2"></i>Tilmeld til Events
+          </a>
+          <a href="ansogning.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-file-alt me-2"></i>Ansøg om Støtte
+          </a>
+          <a href="admin-panel.html" class="btn btn-secondary btn-lg me-3" role="button">
+            <i class="fas fa-cog me-2"></i>Admin Panel
+          </a>
+          <a href="login.html" class="btn btn-primary btn-lg" role="button">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </a>
+        </div>
+      </div>
+    </header>
 
     <main class="container my-5">
       <div class="row">

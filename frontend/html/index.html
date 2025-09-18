@@ -39,9 +39,6 @@
   </head>
 
   <body>
-    <!--Navigation bar-->
-    <div id="nav-placeholder"></div>
-
     <!-- Hero Section -->
     <header
       class="hero-section d-flex align-items-center justify-content-center text-center text-white"
@@ -56,6 +53,14 @@
           Slots Bjergby.
         </p>
         <div class="hero-actions">
+          <a
+            href="index.html"
+            class="btn btn-primary btn-lg me-3"
+            role="button"
+            aria-label="Hjem"
+          >
+            <i class="fas fa-home me-2"></i>Hjem
+          </a>
           <a
             href="ansogning.html"
             class="btn btn-primary btn-lg me-3"
@@ -76,26 +81,23 @@
             href="about.html"
             class="btn btn-primary btn-lg me-3"
             role="button"
-            aria-label="Læs"
+            aria-label="Læs om Vennekredsen"
           >
-            <i class="fas fa-book me-2"></i>Læs om Vennekredsen
+            <i class="fas fa-info-circle me-2"></i>Om Os
+          </a>
+    
+          <a
+            href="login.html"
+            class="btn btn-primary btn-lg"
+            role="button"
+            aria-label="Login"
+          >
+            <i class="fas fa-sign-in-alt me-2"></i>Login
           </a>
         </div>
       </div>
     </header>
 
-    <script>
-      $(function () {
-        $("#nav-placeholder").load("navbar.html", function () {
-          // Initialize login button after navbar is loaded
-          if (typeof initializeLoginButton === "function") {
-            initializeLoginButton();
-          } else {
-            $.getScript("login-button.js");
-          }
-        });
-      });
-    </script>
 
     <!-- Main Content -->
     <main class="container mt-5 pt-5">
