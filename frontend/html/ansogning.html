@@ -3,21 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Søg støtte fra Vennekredsen for Hashøjskolen - Ansøg om støtte til aktiviteter og projekter der gavner børnene" />
+    <meta
+      name="description"
+      content="Søg støtte fra Vennekredsen for Hashøjskolen - Ansøg om støtte til aktiviteter og projekter der gavner børnene"
+    />
     <title>Søg støtte - Vennekredsen for Hashøjskolen</title>
-    
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Bootstrap and FontAwesome -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   </head>
@@ -307,7 +319,7 @@
               <div class="card-body">
                 <h4 class="card-title text-center">Godkendte Ansøgninger</h4>
 
-                <div class="text-center mb-3" id="loadingApplications">
+                <div class="text-center mb-3" id="loading-applications">
                   <div class="spinner-border text-primary" role="status">
                     <span class="sr-only">Indlæser...</span>
                   </div>
@@ -654,7 +666,7 @@
       // Load approved projects for public display
       async function loadApprovedProjects() {
         try {
-          document.getElementById("loadingApplications").style.display =
+          document.getElementById("loading-applications").style.display =
             "block";
           document.getElementById("approvedProjects").innerHTML = "";
           document.getElementById("noApprovedProjects").classList.add("d-none");
@@ -712,7 +724,7 @@
         } catch (error) {
           console.error("Error loading approved projects:", error);
         } finally {
-          document.getElementById("loadingApplications").style.display = "none";
+          document.getElementById("loading-applications").style.display = "none";
         }
       }
 

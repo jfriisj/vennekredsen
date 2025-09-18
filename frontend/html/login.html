@@ -3,21 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Admin login til Vennekredsens administrationspanel for at administrere ansøgninger" />
+    <meta
+      name="description"
+      content="Admin login til Vennekredsens administrationspanel for at administrere ansøgninger"
+    />
     <title>Login - Vennekredsen for Hashøjskolen</title>
-    
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Bootstrap and FontAwesome -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   </head>
@@ -31,7 +43,7 @@
       });
     </script>
 
-    <main class="container my-5" role="main">
+        <main class="container mt-5 pt-5">
       <div class="row">
         <div class="col-md-6 offset-md-3">
           <!-- Intro section -->
@@ -52,10 +64,10 @@
                     <label for="username">
                       <i class="fas fa-user me-2"></i>Brugernavn:
                     </label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      id="username" 
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username"
                       required
                       placeholder="Indtast brugernavn"
                       autocomplete="username"
@@ -66,10 +78,10 @@
                     <label for="password">
                       <i class="fas fa-key me-2"></i>Adgangskode:
                     </label>
-                    <input 
-                      type="password" 
-                      class="form-control" 
-                      id="password" 
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
                       required
                       placeholder="Indtast adgangskode"
                       autocomplete="current-password"
@@ -102,10 +114,12 @@
 
     <script>
       // Handle login form submission
-      document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        doLogin();
-      });
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          doLogin();
+        });
 
       // Handle login
       function doLogin() {

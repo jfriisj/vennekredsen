@@ -3,21 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Admin panel for Vennekredsen - Administrer ansøgninger og brugere" />
+    <meta
+      name="description"
+      content="Admin panel for Vennekredsen - Administrer ansøgninger og brugere"
+    />
     <title>Admin Panel - Vennekredsen for Hashøjskolen</title>
-    
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link r        try {
+          document.getElementById("loading-applications").style.display =
+            "block";
+          document.getElementById("applications").innerHTML = "";preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Bootstrap and FontAwesome -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   </head>
@@ -43,7 +58,10 @@
           <!-- Header section -->
           <section class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h1><i class="fas fa-shield-alt me-3 text-primary"></i>Administration</h1>
+              <h1>
+                <i class="fas fa-shield-alt me-3 text-primary"></i
+                >Administration
+              </h1>
               <div class="d-flex gap-2">
                 <button id="manageUsersBtn" class="btn btn-info me-2">
                   <i class="fas fa-users-cog me-2"></i>Administrer Brugere
@@ -57,12 +75,24 @@
             <!-- Tab Navigation -->
             <ul class="nav nav-tabs" id="adminTabs" role="tablist">
               <li class="nav-item" role="presentation">
-                <a class="nav-link active" id="applications-tab" data-toggle="tab" href="#applications" role="tab">
+                <a
+                  class="nav-link active"
+                  id="applications-tab"
+                  data-toggle="tab"
+                  href="#applications"
+                  role="tab"
+                >
                   <i class="fas fa-file-alt me-2"></i>Ansøgninger
                 </a>
               </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" id="users-tab" data-toggle="tab" href="#users" role="tab">
+                <a
+                  class="nav-link"
+                  id="users-tab"
+                  data-toggle="tab"
+                  href="#users"
+                  role="tab"
+                >
                   <i class="fas fa-users me-2"></i>Admin Brugere
                 </a>
               </li>
@@ -73,10 +103,12 @@
 
           <!-- Tab Content -->
           <div class="tab-content" id="adminTabContent">
-            
             <!-- Applications Tab -->
-            <div class="tab-pane fade show active" id="applications" role="tabpanel">
-              
+            <div
+              class="tab-pane fade show active"
+              id="applications"
+              role="tabpanel"
+            >
               <!-- Application Stats -->
               <div class="row mb-4">
                 <div class="col-md-4">
@@ -102,7 +134,7 @@
                 </div>
               </div>
 
-              <div class="text-center mb-4" id="loadingApplications">
+              <div class="text-center mb-4" id="loading-applications">
                 <div class="spinner-border text-primary" role="status">
                   <span class="sr-only">Indlæser ansøgninger...</span>
                 </div>
@@ -163,29 +195,50 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="col-md-4">
                   <!-- Add New User -->
                   <div class="card mb-3">
                     <div class="card-header">
-                      <h4><i class="fas fa-user-plus me-2"></i>Ny Admin Bruger</h4>
+                      <h4>
+                        <i class="fas fa-user-plus me-2"></i>Ny Admin Bruger
+                      </h4>
                     </div>
                     <div class="card-body">
                       <form id="addUserForm">
                         <div class="form-group">
                           <label for="newUsername">Brugernavn:</label>
-                          <input type="text" class="form-control" id="newUsername" required 
-                                 placeholder="Indtast brugernavn" minlength="3">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="newUsername"
+                            required
+                            placeholder="Indtast brugernavn"
+                            minlength="3"
+                          />
                         </div>
                         <div class="form-group">
                           <label for="newPassword">Adgangskode:</label>
-                          <input type="password" class="form-control" id="newPassword" required 
-                                 placeholder="Indtast adgangskode" minlength="6">
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="newPassword"
+                            required
+                            placeholder="Indtast adgangskode"
+                            minlength="6"
+                          />
                         </div>
                         <div class="form-group">
-                          <label for="confirmPassword">Bekræft adgangskode:</label>
-                          <input type="password" class="form-control" id="confirmPassword" required 
-                                 placeholder="Gentag adgangskode">
+                          <label for="confirmPassword"
+                            >Bekræft adgangskode:</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="confirmPassword"
+                            required
+                            placeholder="Gentag adgangskode"
+                          />
                         </div>
                         <button type="submit" class="btn btn-success btn-block">
                           <i class="fas fa-plus me-2"></i>Opret Bruger
@@ -202,16 +255,36 @@
                     <div class="card-body">
                       <form id="changePasswordForm">
                         <div class="form-group">
-                          <label for="currentPassword">Nuværende adgangskode:</label>
-                          <input type="password" class="form-control" id="currentPassword" required>
+                          <label for="currentPassword"
+                            >Nuværende adgangskode:</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="currentPassword"
+                            required
+                          />
                         </div>
                         <div class="form-group">
                           <label for="newPasswordChange">Ny adgangskode:</label>
-                          <input type="password" class="form-control" id="newPasswordChange" required minlength="6">
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="newPasswordChange"
+                            required
+                            minlength="6"
+                          />
                         </div>
                         <div class="form-group">
-                          <label for="confirmPasswordChange">Bekræft ny adgangskode:</label>
-                          <input type="password" class="form-control" id="confirmPasswordChange" required>
+                          <label for="confirmPasswordChange"
+                            >Bekræft ny adgangskode:</label
+                          >
+                          <input
+                            type="password"
+                            class="form-control"
+                            id="confirmPasswordChange"
+                            required
+                          />
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">
                           <i class="fas fa-save me-2"></i>Skift Password
@@ -279,15 +352,21 @@
         document
           .getElementById("searchFilter")
           .addEventListener("input", applyFilters);
-        
+
         // Admin user management event listeners
-        document.getElementById("addUserForm").addEventListener("submit", addNewUser);
-        document.getElementById("changePasswordForm").addEventListener("submit", changePassword);
-        
+        document
+          .getElementById("addUserForm")
+          .addEventListener("submit", addNewUser);
+        document
+          .getElementById("changePasswordForm")
+          .addEventListener("submit", changePassword);
+
         // Tab switching
-        document.getElementById("users-tab").addEventListener("click", function() {
-          loadUsers();
-        });
+        document
+          .getElementById("users-tab")
+          .addEventListener("click", function () {
+            loadUsers();
+          });
       });
 
       // Application data store
@@ -345,7 +424,7 @@
           );
           logDebug(`Error loading applications: ${error.message}`);
         } finally {
-          document.getElementById("loadingApplications").style.display = "none";
+          document.getElementById("loading-applications").style.display = "none";
         }
       }
 
@@ -686,7 +765,10 @@
           const users = await response.json();
           displayUsers(users);
         } catch (error) {
-          showMessage("Fejl ved indlæsning af brugere: " + error.message, "error");
+          showMessage(
+            "Fejl ved indlæsning af brugere: " + error.message,
+            "error"
+          );
         } finally {
           document.getElementById("loadingUsers").style.display = "none";
         }
@@ -698,25 +780,30 @@
         container.innerHTML = "";
 
         if (users.length === 0) {
-          container.innerHTML = '<p class="text-muted">Ingen admin brugere fundet.</p>';
+          container.innerHTML =
+            '<p class="text-muted">Ingen admin brugere fundet.</p>';
           return;
         }
 
         users.forEach(user => {
           const userCard = document.createElement("div");
           userCard.className = "user-card";
-          
+
           userCard.innerHTML = `
             <div class="user-info">
               <h5><i class="fas fa-user me-2"></i>${escapeHTML(user.username)}</h5>
               <small>Admin bruger</small>
             </div>
             <div class="user-actions">
-              ${users.length > 1 ? `
+              ${
+                users.length > 1
+                  ? `
                 <button class="btn btn-sm btn-danger delete-user-btn" data-id="${user.id}" data-username="${escapeHTML(user.username)}">
                   <i class="fas fa-trash"></i>
                 </button>
-              ` : '<small class="text-muted">Sidste admin</small>'}
+              `
+                  : '<small class="text-muted">Sidste admin</small>'
+              }
             </div>
           `;
 
@@ -727,7 +814,11 @@
         document.querySelectorAll(".delete-user-btn").forEach(btn => {
           btn.addEventListener("click", () => {
             const username = btn.dataset.username;
-            if (confirm(`Er du sikker på at du vil slette admin brugeren "${username}"?`)) {
+            if (
+              confirm(
+                `Er du sikker på at du vil slette admin brugeren "${username}"?`
+              )
+            ) {
               deleteUser(btn.dataset.id);
             }
           });
@@ -737,10 +828,11 @@
       // Add new admin user
       async function addNewUser(event) {
         event.preventDefault();
-        
+
         const username = document.getElementById("newUsername").value.trim();
         const password = document.getElementById("newPassword").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
 
         if (password !== confirmPassword) {
           showMessage("Adgangskoderne matcher ikke!", "error");
@@ -770,14 +862,17 @@
 
           const result = await response.json();
           showMessage(`Admin bruger "${username}" er oprettet!`, "success");
-          
+
           // Clear form
           document.getElementById("addUserForm").reset();
-          
+
           // Reload users
           loadUsers();
         } catch (error) {
-          showMessage("Fejl ved oprettelse af bruger: " + error.message, "error");
+          showMessage(
+            "Fejl ved oprettelse af bruger: " + error.message,
+            "error"
+          );
         }
       }
 
@@ -807,10 +902,13 @@
       // Change password
       async function changePassword(event) {
         event.preventDefault();
-        
-        const currentPassword = document.getElementById("currentPassword").value;
+
+        const currentPassword =
+          document.getElementById("currentPassword").value;
         const newPassword = document.getElementById("newPasswordChange").value;
-        const confirmPassword = document.getElementById("confirmPasswordChange").value;
+        const confirmPassword = document.getElementById(
+          "confirmPasswordChange"
+        ).value;
 
         if (newPassword !== confirmPassword) {
           showMessage("De nye adgangskoder matcher ikke!", "error");
@@ -818,7 +916,10 @@
         }
 
         if (newPassword.length < 6) {
-          showMessage("Den nye adgangskode skal være mindst 6 tegn lang!", "error");
+          showMessage(
+            "Den nye adgangskode skal være mindst 6 tegn lang!",
+            "error"
+          );
           return;
         }
 
@@ -830,21 +931,26 @@
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ 
-              currentPassword, 
-              newPassword 
+            body: JSON.stringify({
+              currentPassword,
+              newPassword,
             }),
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Kunne ikke skifte adgangskode");
+            throw new Error(
+              errorData.message || "Kunne ikke skifte adgangskode"
+            );
           }
 
           showMessage("Adgangskode er ændret!", "success");
           document.getElementById("changePasswordForm").reset();
         } catch (error) {
-          showMessage("Fejl ved ændring af adgangskode: " + error.message, "error");
+          showMessage(
+            "Fejl ved ændring af adgangskode: " + error.message,
+            "error"
+          );
         }
       }
 

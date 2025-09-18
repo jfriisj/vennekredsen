@@ -247,7 +247,7 @@ def admin_create_user(current_user):
         db.session.add(new_admin)
         db.session.commit()
         return jsonify({"message": f"Admin bruger '{username}' er oprettet"}), 201
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved oprettelse af bruger"}), 500
 
@@ -275,7 +275,7 @@ def admin_delete_user(current_user, user_id):
         db.session.delete(user_to_delete)
         db.session.commit()
         return jsonify({"message": f"Admin bruger '{username}' er slettet"}), 200
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved sletning af bruger"}), 500
 
@@ -304,7 +304,7 @@ def admin_change_password(current_user):
         current_user.password_hash = hashlib.sha256(new_password.encode()).hexdigest()
         db.session.commit()
         return jsonify({"message": "Adgangskode er ændret"}), 200
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved ændring af adgangskode"}), 500
 
