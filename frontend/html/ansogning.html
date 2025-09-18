@@ -38,13 +38,30 @@
     <!--Navigation bar-->
     <div id="nav-placeholder"></div>
 
+  <body>
+    <!--Navigation bar-->
+    <div id="nav-placeholder"></div>
+
+    <!-- Page Header -->
+    <header class="bg-primary text-white text-center py-5">
+      <div class="container">
+        <h1 class="display-4">Ansøg om Støtte</h1>
+        <p class="lead">Ansøg om økonomisk støtte til dit projekt</p>
+      </div>
+    </header>
+
     <script>
       $(function () {
-        $("#nav-placeholder").load("navbar.html");
+        $("#nav-placeholder").load("navbar.html", function () {
+          // Initialize login button after navbar is loaded
+          if (typeof initializeLoginButton === "function") {
+            initializeLoginButton();
+          } else {
+            $.getScript("login-button.js");
+          }
+        });
       });
-    </script>
-
-    <main class="container my-5">
+    </script>    <main class="container my-5">
       <div class="row">
         <div class="col-md-8 offset-md-2">
           <!-- Intro section -->
