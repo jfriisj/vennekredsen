@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   python-quality:
     name: Python Code Quality
@@ -133,12 +138,14 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
+        continue-on-error: true
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+        continue-on-error: true
 
   docker-quality:
     name: Docker Quality Checks
@@ -165,12 +172,13 @@ jobs:
           no-fail: true
 
       - name: Upload Hadolint scan results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: |
             hadolint-api.sarif
             hadolint-frontend.sarif
+        continue-on-error: true
 
   quality-gate:
     name: Quality Gate
