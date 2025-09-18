@@ -215,6 +215,16 @@
                           />
                         </div>
                         <div class="form-group">
+                          <label for="newEmail">Email:</label>
+                          <input
+                            type="email"
+                            class="form-control"
+                            id="newEmail"
+                            required
+                            placeholder="Indtast email adresse"
+                          />
+                        </div>
+                        <div class="form-group">
                           <label for="newPassword">Adgangskode:</label>
                           <input
                             type="password"
@@ -828,9 +838,15 @@
         event.preventDefault();
 
         const username = document.getElementById("newUsername").value.trim();
+        const email = document.getElementById("newEmail").value.trim();
         const password = document.getElementById("newPassword").value;
         const confirmPassword =
           document.getElementById("confirmPassword").value;
+
+        if (!email || !email.includes("@")) {
+          showMessage("Indtast en gyldig email adresse!", "error");
+          return;
+        }
 
         if (password !== confirmPassword) {
           showMessage("Adgangskoderne matcher ikke!", "error");
@@ -850,7 +866,7 @@
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, email, password }),
           });
 
           if (!response.ok) {

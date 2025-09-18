@@ -11,6 +11,7 @@ CREATE TABLE ansoegninger (
 CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(120) UNIQUE NOT NULL,
     password_hash VARCHAR(128) NOT NULL
 );
 

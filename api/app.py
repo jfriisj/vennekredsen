@@ -42,9 +42,15 @@ class Admin(db.Model):  # type: ignore
     __tablename__ = "admins"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
 
+    def set_password(self, password: str) -> None:
+        """Set password hash using SHA256"""
+        self.password_hash = hashlib.sha256(password.encode()).hexdigest()
+
     def check_password(self, password: str) -> bool:
+        """Check if provided password matches stored hash"""
         return self.password_hash == hashlib.sha256(password.encode()).hexdigest()
 
 
@@ -225,11 +231,15 @@ def admin_get_users(current_user):
 def admin_create_user(current_user):
     data = request.json
     username = data.get("username", "").strip()
+    email = data.get("email", "").strip()
     password = data.get("password", "")
 
     # Validation
     if not username or len(username) < 3:
         return jsonify({"message": "Brugernavn skal være mindst 3 tegn langt"}), 400
+
+    if not email or "@" not in email:
+        return jsonify({"message": "Gyldig email er påkrævet"}), 400
 
     if not password or len(password) < 6:
         return jsonify({"message": "Adgangskode skal være mindst 6 tegn lang"}), 400
@@ -239,9 +249,14 @@ def admin_create_user(current_user):
     if existing_admin:
         return jsonify({"message": "Brugernavn er allerede i brug"}), 409
 
+    # Check if email already exists
+    existing_email = Admin.query.filter_by(email=email).first()
+    if existing_email:
+        return jsonify({"message": "Email er allerede i brug"}), 409
+
     # Create new admin
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    new_admin = Admin(username=username, password_hash=password_hash)
+    new_admin = Admin(username=username, email=email)
+    new_admin.set_password(password)
 
     try:
         db.session.add(new_admin)
