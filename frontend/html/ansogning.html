@@ -3,225 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Søg støtte fra Vennekredsen for Hashøjskolen - Ansøg om støtte til aktiviteter og projekter der gavner børnene" />
     <title>Søg støtte - Vennekredsen for Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      rel="stylesheet"
-    />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <style>
-      /* Contrast fixes */
-      .card {
-        background-color: #444 !important;
-      }
-
-      .card-body {
-        background-color: #444 !important;
-      }
-
-      .card-title,
-      .card-text,
-      .card h5 {
-        color: #fff !important;
-      }
-
-      .text-muted {
-        color: #adb5bd !important;
-      }
-
-      label {
-        color: #fff !important;
-      }
-
-      .form-text.text-muted {
-        color: #adb5bd !important;
-      }
-
-      .form-control {
-        background-color: #495057 !important;
-        border-color: #6c757d !important;
-        color: #fff !important;
-      }
-
-      .form-control:focus {
-        background-color: #495057 !important;
-        color: #fff !important;
-      }
-
-      .form-control::placeholder {
-        color: #adb5bd !important;
-      }
-
-      .alert-info {
-        background-color: rgba(23, 162, 184, 0.2) !important;
-        color: #8ee0f1 !important;
-        border-color: rgba(23, 162, 184, 0.3) !important;
-      }
-
-      .alert-success {
-        background-color: rgba(40, 167, 69, 0.2) !important;
-        color: #8fd19e !important;
-        border-color: rgba(40, 167, 69, 0.3) !important;
-      }
-
-      .alert-danger {
-        background-color: rgba(220, 53, 69, 0.2) !important;
-        color: #f1aeb5 !important;
-        border-color: rgba(220, 53, 69, 0.3) !important;
-      }
-
-      /* Progress indicator styles */
-      .progress-indicator {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-      }
-
-      .progress-step {
-        flex: 1;
-        text-align: center;
-        position: relative;
-      }
-
-      .progress-step:not(:last-child)::after {
-        content: "";
-        position: absolute;
-        top: 15px;
-        left: 60%;
-        right: -40%;
-        height: 3px;
-        background-color: #6c757d;
-        z-index: 0;
-      }
-
-      .progress-step.active:not(:last-child)::after {
-        background-color: #007bff;
-      }
-
-      .progress-step .step-circle {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #6c757d;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.5rem auto;
-        position: relative;
-        z-index: 1;
-        font-weight: bold;
-      }
-
-      .progress-step.active .step-circle {
-        background-color: #007bff;
-      }
-
-      .progress-step.completed .step-circle {
-        background-color: #28a745;
-      }
-
-      .progress-step .step-label {
-        font-size: 0.875rem;
-        color: #adb5bd;
-      }
-
-      .progress-step.active .step-label {
-        color: #007bff;
-      }
-
-      .progress-step.completed .step-label {
-        color: #28a745;
-      }
-
-      /* Form section styles */
-      .form-section {
-        display: none;
-        animation: fadeIn 0.3s ease-in;
-      }
-
-      .form-section.active {
-        display: block;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-
-      /* Input improvements */
-      .input-group-text {
-        background-color: #495057 !important;
-        border-color: #6c757d !important;
-        color: #fff !important;
-      }
-
-      .form-control.is-invalid {
-        border-color: #dc3545 !important;
-      }
-
-      .form-control.is-valid {
-        border-color: #28a745 !important;
-      }
-
-      .invalid-feedback {
-        color: #f1aeb5 !important;
-      }
-
-      .valid-feedback {
-        color: #8fd19e !important;
-      }
-
-      /* Character counter */
-      .char-counter {
-        font-size: 0.875rem;
-        color: #adb5bd;
-        text-align: right;
-        margin-top: 0.25rem;
-      }
-
-      .char-counter.warning {
-        color: #ffc107;
-      }
-
-      .char-counter.danger {
-        color: #dc3545;
-      }
-
-      /* Navigation buttons */
-      .form-navigation {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid #6c757d;
-      }
-
-      /* Mobile optimizations */
-      @media (max-width: 768px) {
-        .progress-indicator {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .progress-step::after {
-          display: none;
-        }
-
-        .card-body {
-          padding: 1rem;
-        }
-      }
-    </style>
   </head>
 
   <body>

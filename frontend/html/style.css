@@ -1,4 +1,428 @@
 /* ================================
+   ADMIN PANEL STYLING
+   ================================ */
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  text-align: center;
+  transition: var(--transition-normal);
+  backdrop-filter: blur(10px);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.stat-card h3 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin: var(--spacing-2) 0;
+  color: var(--color-white);
+}
+
+.stat-card p {
+  margin: 0;
+  color: var(--color-gray-300);
+  font-weight: 500;
+}
+
+.nav-tabs {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-tabs .nav-link {
+  color: var(--color-gray-300);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  padding: var(--spacing-3) var(--spacing-6);
+  transition: var(--transition-fast);
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  background: rgba(99, 102, 241, 0.1);
+  font-weight: 600;
+}
+
+.user-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition-normal);
+}
+
+.user-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.user-info h5 {
+  margin: 0;
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.user-info small {
+  color: var(--color-gray-400);
+}
+
+.user-actions .btn {
+  margin-left: var(--spacing-2);
+}
+
+/* Form styling improvements */
+.card .form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-white);
+}
+
+.card .form-control:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+.card .form-control::placeholder {
+  color: var(--color-gray-400);
+}
+
+.card label {
+  color: var(--color-white);
+  font-weight: 500;
+  margin-bottom: var(--spacing-1);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ================================
+   CONTACT PAGE STYLING
+   ================================ */
+
+.contact-card {
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition-normal);
+  height: 100%;
+  backdrop-filter: blur(10px);
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.contact-card i {
+  transition: var(--transition-normal);
+}
+
+.contact-card:hover i {
+  transform: scale(1.1);
+}
+
+.contact-card a {
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
+}
+
+.faq-item {
+  padding: var(--spacing-4) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-item h3 {
+  margin-bottom: var(--spacing-2);
+  color: var(--color-white);
+}
+
+.faq-item p {
+  margin-bottom: 0;
+  color: var(--color-gray-300);
+}
+
+/* ================================
+   LOGIN FORM STYLING
+   ================================ */
+
+.login-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-form .form-group {
+  margin-bottom: var(--spacing-6);
+}
+
+.login-form label {
+  font-weight: 600;
+  margin-bottom: var(--spacing-2);
+  display: block;
+}
+
+.login-form .form-control {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+}
+
+.login-form .btn {
+  width: 100%;
+  padding: var(--spacing-4);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+}
+
+/* ================================
+   EVENT LIST STYLING
+   ================================ */
+
+.event-list .alert {
+  transition: var(--transition-normal);
+  cursor: default;
+}
+
+.event-list .alert:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.event-list .alert i {
+  opacity: 0.8;
+}
+
+/* ================================
+   VALUE CARDS STYLING
+   ================================ */
+
+.value-card {
+  padding: var(--spacing-6);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition-normal);
+  height: 100%;
+  backdrop-filter: blur(10px);
+}
+
+.value-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.value-card i {
+  transition: var(--transition-normal);
+}
+
+.value-card:hover i {
+  transform: scale(1.1);
+}
+
+/* ================================
+   WIZARD FORM STYLING
+   ================================ */
+
+/* Progress indicator styles */
+.progress-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-8);
+  padding: var(--spacing-4);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+.progress-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.progress-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 60%;
+  right: -40%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-gray-600), var(--color-gray-700));
+  z-index: 0;
+  border-radius: var(--radius-sm);
+}
+
+.progress-step.active:not(:last-child)::after,
+.progress-step.completed:not(:last-child)::after {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+}
+
+.progress-step .step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gray-600), var(--color-gray-700));
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-2) auto;
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-normal);
+}
+
+.progress-step.active .step-circle {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.progress-step.completed .step-circle {
+  background: linear-gradient(135deg, var(--color-success), #059669);
+}
+
+.progress-step .step-label {
+  font-size: var(--text-sm);
+  color: var(--color-gray-400);
+  font-weight: 500;
+}
+
+.progress-step.active .step-label {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.progress-step.completed .step-label {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* Form section styles */
+.form-section {
+  display: none;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.form-section.active {
+  display: block;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Character counter */
+.char-counter {
+  font-size: var(--text-sm);
+  color: var(--color-gray-400);
+  text-align: right;
+  margin-top: var(--spacing-1);
+  font-weight: 500;
+}
+
+.char-counter.warning {
+  color: var(--color-warning);
+}
+
+.char-counter.danger {
+  color: var(--color-danger);
+}
+
+/* Navigation buttons */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-8);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Loading spinner for approved projects */
+#loadingApplications {
+  padding: var(--spacing-8);
+}
+
+#loadingApplications .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Review section styling */
+.review-section .card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile optimizations for wizard */
+@media (max-width: 768px) {
+  .progress-indicator {
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding: var(--spacing-3);
+  }
+
+  .progress-step::after {
+    display: none;
+  }
+
+  .progress-step .step-circle {
+    width: 35px;
+    height: 35px;
+  }
+
+  .form-navigation {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+
+  .form-navigation .btn {
+    width: 100%;
+  }
+}
+
+/* ================================
    HERO SECTION STYLING
    ================================ */
 

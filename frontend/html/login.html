@@ -3,34 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Admin login til Vennekredsens administrationspanel for at administrere ansøgninger" />
     <title>Login - Vennekredsen for Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <style>
-      /* Ensure proper contrast */
-      .card {
-        background-color: #444 !important;
-      }
-      .card-body {
-        color: white !important;
-      }
-      label {
-        color: white !important;
-      }
-      .form-control {
-        background-color: #555;
-        color: white;
-        border: 1px solid #666;
-      }
-      .form-control:focus {
-        background-color: #555;
-        color: white;
-      }
-    </style>
   </head>
   <body>
     <!--Navigation bar-->
@@ -42,44 +31,63 @@
       });
     </script>
 
-    <main class="container my-5">
+    <main class="container my-5" role="main">
       <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-6 offset-md-3">
           <!-- Intro section -->
-          <section class="text-center mb-5">
-            <h2>Admin Login</h2>
+          <div class="text-center mb-5">
+            <h1><i class="fas fa-lock me-3 text-primary"></i>Admin Login</h1>
             <p class="lead">Log ind for at administrere ansøgninger</p>
-          </section>
+          </div>
 
           <!-- Login form section -->
-          <section id="vennekredsen" class="mb-5">
-            <div class="card">
+          <section id="vennekredsen" class="mb-5" aria-label="Login formular">
+            <article class="card">
               <div class="card-body">
                 <div id="loginMessage" class="alert d-none" role="alert"></div>
 
                 <!-- Login form -->
-                <div class="text-center mb-4">
+                <form id="loginForm" class="login-form">
                   <div class="form-group">
-                    <label for="username">Brugernavn:</label>
-                    <input type="text" class="form-control" id="username" />
+                    <label for="username">
+                      <i class="fas fa-user me-2"></i>Brugernavn:
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="username" 
+                      required
+                      placeholder="Indtast brugernavn"
+                      autocomplete="username"
+                    />
                   </div>
 
                   <div class="form-group">
-                    <label for="password">Adgangskode:</label>
-                    <input type="password" class="form-control" id="password" />
+                    <label for="password">
+                      <i class="fas fa-key me-2"></i>Adgangskode:
+                    </label>
+                    <input 
+                      type="password" 
+                      class="form-control" 
+                      id="password" 
+                      required
+                      placeholder="Indtast adgangskode"
+                      autocomplete="current-password"
+                    />
                   </div>
 
-                  <button
-                    type="button"
-                    onclick="doLogin()"
-                    class="btn btn-primary btn-lg"
-                    id="loginBtn"
-                  >
-                    Log ind
-                  </button>
-                </div>
+                  <div class="text-center">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-lg"
+                      id="loginBtn"
+                    >
+                      <i class="fas fa-sign-in-alt me-2"></i>Log ind
+                    </button>
+                  </div>
+                </form>
               </div>
-            </div>
+            </article>
           </section>
         </div>
       </div>
@@ -93,6 +101,12 @@
     </footer>
 
     <script>
+      // Handle login form submission
+      document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        doLogin();
+      });
+
       // Handle login
       function doLogin() {
         const messageBox = document.getElementById("loginMessage");
@@ -113,7 +127,7 @@
         const loginBtn = document.getElementById("loginBtn");
         loginBtn.disabled = true;
         loginBtn.innerHTML =
-          '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logger ind...';
+          '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Logger ind...';
 
         // Create the request data
         const loginData = { username, password };
@@ -148,16 +162,21 @@
               // Error case
               const errorMsg = result.data.message || "Login fejlede";
               showMessage(errorMsg, "danger");
-              loginBtn.disabled = false;
-              loginBtn.textContent = "Log ind";
+              resetLoginButton();
             }
           })
           .catch(error => {
             // Network or other errors
             showMessage("Fejl ved forbindelse til serveren", "danger");
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Log ind";
+            resetLoginButton();
           });
+      }
+
+      // Reset login button
+      function resetLoginButton() {
+        const loginBtn = document.getElementById("loginBtn");
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Log ind';
       }
 
       // Helper function to show messages

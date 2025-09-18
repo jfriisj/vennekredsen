@@ -3,90 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Tilmeld dig Vennekredsens arrangementer - Sommerfest, Julefest og Fastelavn for børn på Hashøjskolen" />
     <title>Tilmelding - Vennekredsen for Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <style>
-      /* Contrast fixes */
-      .card {
-        background-color: #444 !important;
-      }
-      .card-body {
-        background-color: #444 !important;
-      }
-      .card-title,
-      .card-text,
-      .card h4,
-      .card h5 {
-        color: #fff !important;
-      }
-      .alert-info {
-        background-color: rgba(23, 162, 184, 0.2) !important;
-        color: #8ee0f1 !important;
-        border-color: rgba(23, 162, 184, 0.3) !important;
-      }
-      .alert-success {
-        background-color: rgba(40, 167, 69, 0.2) !important;
-        color: #8fd19e !important;
-        border-color: rgba(40, 167, 69, 0.3) !important;
-      }
-      small.text-muted {
-        color: #adb5bd !important;
-      }
-      /* Contrast fixes */
-      .card {
-        background-color: #444 !important;
-      }
-      .card-body {
-        background-color: #444 !important;
-      }
-      .card-title,
-      .card-text,
-      .card h5 {
-        color: #fff !important;
-      }
-      .text-muted {
-        color: #adb5bd !important;
-      }
-      label {
-        color: #fff !important;
-      }
-      .form-text.text-muted {
-        color: #adb5bd !important;
-      }
-      .form-control {
-        background-color: #555 !important;
-        border-color: #666 !important;
-        color: #fff !important;
-      }
-      .form-control:focus {
-        background-color: #555 !important;
-        color: #fff !important;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-      }
-      .form-control::placeholder {
-        color: #adb5bd !important;
-      }
-      .alert-info {
-        background-color: rgba(23, 162, 184, 0.2) !important;
-        color: #8ee0f1 !important;
-        border-color: rgba(23, 162, 184, 0.3) !important;
-      }
-      .alert-success {
-        background-color: rgba(40, 167, 69, 0.2) !important;
-        color: #8fd19e !important;
-        border-color: rgba(40, 167, 69, 0.3) !important;
-      }
-      .alert-danger {
-        background-color: rgba(220, 53, 69, 0.2) !important;
-        color: #f1aeb5 !important;
-        border-color: rgba(220, 53, 69, 0.3) !important;
-      }
-    </style>
   </head>
   <body>
     <!--Navigation bar-->
@@ -98,64 +31,83 @@
       });
     </script>
 
-    <main class="container my-5">
+    <main class="container my-5" role="main">
       <div class="row">
         <div class="col-md-8 offset-md-2">
-          <!-- Intro section -->
-
           <!-- Main content section -->
-          <section id="vennekredsen" class="mb-5">
-            <section class="text-center mb-5">
-              <h2>Tilmelding til Arrangementer</h2>
+          <section id="vennekredsen" class="mb-5" aria-label="Tilmelding til arrangementer">
+            <div class="text-center mb-5">
+              <h1>Tilmelding til Arrangementer</h1>
               <p class="lead">
                 Vennekredsen står for at arrangere fester og aktiviteter for
                 skolens børn
               </p>
-            </section>
-            <div class="card mb-4">
+            </div>
+
+            <article class="card mb-4">
               <div class="card-body">
-                <h4 class="card-title text-center">Kommende Arrangementer</h4>
+                <h2 class="card-title text-center">
+                  <i class="fas fa-calendar-alt me-3 text-primary"></i>Kommende Arrangementer
+                </h2>
                 <p class="card-text">
                   Vi vil gerne invitere dig til at deltage i vores kommende
                   fester og arrangementer. Tilmeld dig via linket herunder.
                 </p>
 
-                <div class="alert alert-info" role="alert">
-                  <strong>Sommerfest:</strong> den 29. august 2025 kl. 18:00
-                </div>
+                <div class="event-list">
+                  <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-sun fa-2x me-3 text-warning"></i>
+                    <div>
+                      <strong>Sommerfest</strong><br>
+                      <span class="text-muted">29. august 2025 kl. 18:00</span>
+                    </div>
+                  </div>
 
-                <div class="alert alert-info" role="alert">
-                  <strong>Julefest:</strong> den 28. November 2025 kl. 18:00
-                </div>
+                  <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-snowflake fa-2x me-3 text-info"></i>
+                    <div>
+                      <strong>Julefest</strong><br>
+                      <span class="text-muted">28. november 2025 kl. 18:00</span>
+                    </div>
+                  </div>
 
-                <div class="alert alert-info" role="alert">
-                  <strong>Fastelavn:</strong> den 20. februar 2026 kl. 18:00
+                  <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="fas fa-mask fa-2x me-3 text-success"></i>
+                    <div>
+                      <strong>Fastelavn</strong><br>
+                      <span class="text-muted">20. februar 2026 kl. 18:00</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="text-center my-4">
                   <a
                     href="https://hashoej-if.dk/"
                     class="btn btn-primary btn-lg"
-                    >TILMELD HER!</a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Tilmeld dig arrangementer på Hashøj IF's hjemmeside"
                   >
-                  <p>
-                    <small class="text-muted mt-2"
-                      >Tilmelding via Hashøj IF's hjemmeside under "Events,
-                      tilmeldingen medregner automatisk et barn"</small
-                    >
+                    <i class="fas fa-external-link-alt me-2"></i>TILMELD HER!
+                  </a>
+                  <p class="mt-3">
+                    <small class="text-muted">
+                      Tilmelding via Hashøj IF's hjemmeside under "Events".
+                      Tilmeldingen medregner automatisk ét barn.
+                    </small>
                   </p>
                 </div>
               </div>
-            </div>
+            </article>
 
-            <div class="card">
+            <article class="card">
               <div class="card-body">
-                <h4 class="card-title text-center">
-                  Hashøj IF og Vennekredsen
-                </h4>
-                <h5 class="text-center mb-3">
+                <h2 class="card-title text-center">
+                  <i class="fas fa-handshake me-3 text-primary"></i>Hashøj IF og Vennekredsen
+                </h2>
+                <h3 class="h5 text-center mb-3">
                   Samarbejde for et stærkt lokalsamfund
-                </h5>
+                </h3>
 
                 <p class="card-text">
                   Hashøj Idrætsforening (Hashøj IF) og Vennekredsen har begge en
@@ -170,11 +122,12 @@
                 </p>
 
                 <div class="alert alert-success mt-3">
+                  <i class="fas fa-info-circle me-2"></i>
                   <strong>Vigtigt:</strong> Alle penge som Vennekredsen tjener
                   bruges på de børn som går på Hashøjskolen
                 </div>
               </div>
-            </div>
+            </article>
           </section>
         </div>
       </div>

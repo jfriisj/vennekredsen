@@ -3,44 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="description" content="Lær mere om Vennekredsen for Hashøjskolen - Vores mål, vision og værdier for at støtte alle børn på skolen" />
     <title>Om Os - Vennekredsen for Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <style>
-      /* Contrast fixes */
-      .card {
-        background-color: #444 !important;
-      }
-      .card-body {
-        background-color: #444 !important;
-        color: #fff !important;
-      }
-      .card-title,
-      .card-text {
-        color: #fff !important;
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        color: #fff !important;
-      }
-      p {
-        color: #fff !important;
-      }
-      .card p {
-        color: #fff !important;
-      }
-      .col-md-4 p {
-        color: #fff !important;
-      }
-    </style>
   </head>
 
   <body>
@@ -60,19 +39,21 @@
       });
     </script>
 
-    <main class="container my-5">
-      <section id="vennekredsen" class="mb-5">
+    <main class="container my-5" role="main">
+      <section id="vennekredsen" class="mb-5" aria-label="Om Vennekredsen">
         <div class="text-center mb-4">
-          <h2>Vores Mål</h2>
+          <h1>Vores Mål</h1>
           <p class="lead">
             Vennekredsen arbejder for at alle børn på Hashøjskolen får lige
             muligheder
           </p>
         </div>
 
-        <div class="card mb-4">
+        <article class="card mb-4">
           <div class="card-body">
-            <h4 class="card-title text-center">Vision</h4>
+            <h2 class="card-title text-center">
+              <i class="fas fa-eye me-3 text-primary"></i>Vision
+            </h2>
             <p class="card-text">
               Vennekredsen har som formål at skabe en inkluderende og berigende
               skoleoplevelse for alle børn på Hashøjskolen.
@@ -82,11 +63,13 @@
               skolens aktiviteter på grund af økonomiske udfordringer.
             </p>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
+        <article class="card">
           <div class="card-body">
-            <h4 class="card-title text-center">Værdier</h4>
+            <h2 class="card-title text-center">
+              <i class="fas fa-heart me-3 text-primary"></i>Værdier
+            </h2>
             <p class="card-text">
               Vores mål er at give alle børn mulighed for at deltage i kreative,
               udviklende og lærerige aktiviteter, som styrker fællesskabet og
@@ -97,29 +80,38 @@
 
             <div class="row mt-4">
               <div class="col-md-4 text-center">
-                <h5>Fællesskab</h5>
-                <p>
-                  Vi tror på at stærke fællesskaber skaber trygge rammer for
-                  børnenes udvikling
-                </p>
+                <div class="value-card">
+                  <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                  <h3 class="h5">Fællesskab</h3>
+                  <p>
+                    Vi tror på at stærke fællesskaber skaber trygge rammer for
+                    børnenes udvikling
+                  </p>
+                </div>
               </div>
               <div class="col-md-4 text-center">
-                <h5>Inklusion</h5>
-                <p>
-                  Alle børn skal have mulighed for at deltage i aktiviteter
-                  uanset baggrund
-                </p>
+                <div class="value-card">
+                  <i class="fas fa-hands-helping fa-3x text-primary mb-3"></i>
+                  <h3 class="h5">Inklusion</h3>
+                  <p>
+                    Alle børn skal have mulighed for at deltage i aktiviteter
+                    uanset baggrund
+                  </p>
+                </div>
               </div>
               <div class="col-md-4 text-center">
-                <h5>Engagement</h5>
-                <p>
-                  Vi engagerer os aktivt i at skabe positive oplevelser for
-                  skolens børn
-                </p>
+                <div class="value-card">
+                  <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
+                  <h3 class="h5">Engagement</h3>
+                  <p>
+                    Vi engagerer os aktivt i at skabe positive oplevelser for
+                    skolens børn
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </article>
       </section>
     </main>
 

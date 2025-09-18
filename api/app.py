@@ -203,6 +203,112 @@ def admin_delete_application(current_user, id):
     )
 
 
+# Admin - Get all admin users
+@app.route("/api/admin/users", methods=["GET"])
+@token_required
+def admin_get_users(current_user):
+    users = Admin.query.all()
+    return jsonify(
+        [
+            {
+                "id": user.id,
+                "username": user.username,
+            }
+            for user in users
+        ]
+    )
+
+
+# Admin - Create new admin user
+@app.route("/api/admin/users", methods=["POST"])
+@token_required
+def admin_create_user(current_user):
+    data = request.json
+    username = data.get("username", "").strip()
+    password = data.get("password", "")
+
+    # Validation
+    if not username or len(username) < 3:
+        return jsonify({"message": "Brugernavn skal være mindst 3 tegn langt"}), 400
+
+    if not password or len(password) < 6:
+        return jsonify({"message": "Adgangskode skal være mindst 6 tegn lang"}), 400
+
+    # Check if username already exists
+    existing_admin = Admin.query.filter_by(username=username).first()
+    if existing_admin:
+        return jsonify({"message": "Brugernavn er allerede i brug"}), 409
+
+    # Create new admin
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    new_admin = Admin(username=username, password_hash=password_hash)
+
+    try:
+        db.session.add(new_admin)
+        db.session.commit()
+        return jsonify({"message": f"Admin bruger '{username}' er oprettet"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Fejl ved oprettelse af bruger"}), 500
+
+
+# Admin - Delete admin user
+@app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
+@token_required
+def admin_delete_user(current_user, user_id):
+    # Check if there are multiple admin users
+    total_admins = Admin.query.count()
+    if total_admins <= 1:
+        return jsonify({"message": "Kan ikke slette den sidste admin bruger"}), 400
+
+    # Prevent self-deletion
+    if current_user.id == user_id:
+        return jsonify({"message": "Du kan ikke slette din egen bruger"}), 400
+
+    # Find and delete user
+    user_to_delete = Admin.query.get(user_id)
+    if not user_to_delete:
+        return jsonify({"message": "Bruger ikke fundet"}), 404
+
+    try:
+        username = user_to_delete.username
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        return jsonify({"message": f"Admin bruger '{username}' er slettet"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Fejl ved sletning af bruger"}), 500
+
+
+# Admin - Change password
+@app.route("/api/admin/change-password", methods=["PUT"])
+@token_required
+def admin_change_password(current_user):
+    data = request.json
+    current_password = data.get("currentPassword", "")
+    new_password = data.get("newPassword", "")
+
+    # Validation
+    if not current_password:
+        return jsonify({"message": "Nuværende adgangskode er påkrævet"}), 400
+
+    if not new_password or len(new_password) < 6:
+        return jsonify({"message": "Ny adgangskode skal være mindst 6 tegn lang"}), 400
+
+    # Verify current password
+    if not current_user.check_password(current_password):
+        return jsonify({"message": "Nuværende adgangskode er forkert"}), 401
+
+    # Update password
+    try:
+        current_user.password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        db.session.commit()
+        return jsonify({"message": "Adgangskode er ændret"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Fejl ved ændring af adgangskode"}), 500
+
+
 # Public - Get approved projects (no personal info)
 @app.route("/api/approved-projects", methods=["GET"])
 def get_approved_projects():

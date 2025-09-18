@@ -4,41 +4,18 @@
     <meta charset="UTF-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vennekredsen - Hashøjskolen</title>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      header {
-        background: url("skole.png") no-repeat center center/cover !important;
-        color: #000;
-      }
-
-      body {
-        background-color: #343a40 !important;
-        color: #fff;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        color: #fff;
-      }
-
-      p {
-        color: #fff;
-        line-height: 1.6;
-        text-align: center;
-      }
-
-      .login-btn {
-        margin-left: 15px;
-      }
-    </style>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap and FontAwesome -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
+    <link href="style.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -72,8 +49,8 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="tilmelding.html" aria-label="Tilmeld dig som medlem">
-                <i class="fas fa-user-plus me-1"></i>Tilmelding
+              <a class="nav-link" href="tilmelding.html" aria-label="Tilmeld dig til arrangementer">
+                <i class="fas fa-calendar-plus me-1"></i>Tilmeld til Events
               </a>
             </li>
             <li class="nav-item">
@@ -100,11 +77,11 @@
           Slots Bjergby.
         </p>
         <div class="hero-actions">
-          <a href="tilmelding.html" class="btn btn-primary btn-lg me-3" role="button" aria-label="Bliv medlem af Vennekredsen">
-            <i class="fas fa-user-plus me-2"></i>Bliv medlem
-          </a>
-          <a href="ansogning.html" class="btn btn-secondary btn-lg" role="button" aria-label="Ansøg om støtte">
+          <a href="ansogning.html" class="btn btn-primary btn-lg me-3" role="button" aria-label="Ansøg om støtte fra Vennekredsen">
             <i class="fas fa-file-alt me-2"></i>Ansøg om støtte
+          </a>
+          <a href="tilmelding.html" class="btn btn-secondary btn-lg" role="button" aria-label="Tilmeld dig til arrangementer">
+            <i class="fas fa-calendar-plus me-2"></i>Tilmeld til Events
           </a>
         </div>
       </div>
