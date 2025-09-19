@@ -18,24 +18,27 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
+      - POSTGRES_DB=${POSTGRES_DB:-vennekredsen_prod}
+      - POSTGRES_USER=${POSTGRES_USER:-vennekredsen_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_this_password}
+      - JWT_SECRET=${JWT_SECRET:-change_this_jwt_secret}
+    ports:
+      - "5000:5000"  # Expose API port like in local setup
     networks:
       - vennekredsen_net
       - cloudflare
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     container_name: vennekredsen-db
-    image: postgres:latest
+    image: postgres:15  # Use same version as local
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-vennekredsen_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-vennekredsen_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_this_password}
     ports:
       - "5432:5432"
     volumes:
@@ -43,6 +46,11 @@ services:
       - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - vennekredsen_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vennekredsen_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       
   cloudflare_tunnel:
     image: cloudflare/cloudflared:latest
