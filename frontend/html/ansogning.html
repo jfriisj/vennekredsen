@@ -102,15 +102,6 @@
           >
             <i class="fas fa-file-alt me-2"></i>Ansøg om støtte
           </a>
-          <button
-            type="button"
-            class="btn btn-info btn-lg me-3"
-            data-toggle="modal"
-            data-target="#exampleModal"
-            aria-label="Se eksempel på ansøgning"
-          >
-            <i class="fas fa-lightbulb me-2"></i>Se eksempel
-          </button>
           <a
             href="tilmelding.html"
             class="btn btn-primary btn-lg me-3"
@@ -127,14 +118,7 @@
           >
             <i class="fas fa-info-circle me-2"></i>Om Os
           </a>
-          <a
-            href="admin-login.html"
-            class="btn btn-primary btn-lg"
-            role="button"
-            aria-label="Login"
-          >
-            <i class="fas fa-sign-in-alt me-2"></i>Login
-          </a>
+          
         </div>
       </div>
     </header>
@@ -152,8 +136,17 @@
             <div class="alert alert-info" role="alert">
               <i class="fas fa-lightbulb me-2"></i>
               <strong>Første gang du ansøger?</strong> 
-              Klik på <strong>"Se eksempel"</strong> knappen ovenfor for at se hvordan en god ansøgning ser ud!
+              Klik på <strong>"Se eksempel"</strong> knappen for at se hvordan en god ansøgning ser ud!
             </div>
+            <button
+            type="button"
+            class="btn btn-info btn-lg me-3"
+            data-toggle="modal"
+            data-target="#exampleModal"
+            aria-label="Se eksempel på ansøgning"
+          >
+            <i class="fas fa-lightbulb me-2"></i>Se eksempel
+          </button>
           </section>
 
           <!-- Application form section -->
@@ -205,6 +198,7 @@
                         required
                         placeholder="F.eks. Anna Jensen eller Klasse 3B"
                         aria-describedby="navnHelp"
+                        maxlength="100"
                       />
                       <small id="navnHelp" class="form-text text-muted">
                         Angiv navnet på personen, klassen eller gruppen der
@@ -225,6 +219,7 @@
                         required
                         placeholder="din@email.dk"
                         aria-describedby="emailHelp"
+                        maxlength="120"
                       />
                       <small id="emailHelp" class="form-text text-muted">
                         Vi kontakter dig på denne email med svar på din
@@ -619,6 +614,14 @@
       <p>
         &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
       </p>
+      <a
+            href="admin-login.html"
+            class="btn btn-primary btn-lg"
+            role="button"
+            aria-label="Login"
+          >
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+          </a>
     </footer>
 
     <script>
@@ -797,7 +800,7 @@
         }
         // Textarea validation with specific requirements
         else if (input.tagName === "TEXTAREA" && value) {
-          const maxLength = parseInt(input.maxLength) || 1000;
+          const maxLength = input.maxLength && input.maxLength > 0 ? parseInt(input.maxLength) : 1000;
           
           if (input.id === "projektFormaal" && value.length < 20) {
             isValid = false;
@@ -815,7 +818,7 @@
         }
         // Text input validation
         else if (input.type === "text" && value) {
-          const maxLength = parseInt(input.maxLength) || 100;
+          const maxLength = input.maxLength && input.maxLength > 0 ? parseInt(input.maxLength) : 100;
           if (value.length > maxLength) {
             isValid = false;
             message = `Må ikke overstige ${maxLength} tegn`;
