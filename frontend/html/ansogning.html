@@ -29,6 +29,44 @@
 
     <!-- Custom Styles -->
     <link href="style.css" rel="stylesheet" />
+    
+    <style>
+      .checkbox-group {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .checkbox-group .form-check {
+        margin-bottom: 0.75rem;
+        padding-left: 1.5rem;
+      }
+      
+      .checkbox-group .form-check:last-child {
+        margin-bottom: 0;
+      }
+      
+      .checkbox-group .form-check-input {
+        margin-top: 0.125rem;
+      }
+      
+      .checkbox-group .form-check-label {
+        color: #fff;
+        line-height: 1.4;
+      }
+      
+      .benefit-checkbox:checked + label {
+        color: #28a745 !important;
+        font-weight: 500;
+      }
+      
+      #benefitsError {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+    </style>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -64,6 +102,15 @@
           >
             <i class="fas fa-file-alt me-2"></i>Ansøg om støtte
           </a>
+          <button
+            type="button"
+            class="btn btn-info btn-lg me-3"
+            data-toggle="modal"
+            data-target="#exampleModal"
+            aria-label="Se eksempel på ansøgning"
+          >
+            <i class="fas fa-lightbulb me-2"></i>Se eksempel
+          </button>
           <a
             href="tilmelding.html"
             class="btn btn-primary btn-lg me-3"
@@ -102,6 +149,11 @@
               Vennekredsen støtter aktiviteter og projekter der gavner børnene
               på Hashøjskolen
             </p>
+            <div class="alert alert-info" role="alert">
+              <i class="fas fa-lightbulb me-2"></i>
+              <strong>Første gang du ansøger?</strong> 
+              Klik på <strong>"Se eksempel"</strong> knappen ovenfor for at se hvordan en god ansøgning ser ud!
+            </div>
           </section>
 
           <!-- Application form section -->
@@ -227,32 +279,175 @@
                       <div class="invalid-feedback"></div>
                     </div>
 
+                    <!-- Project Title -->
                     <div class="form-group">
-                      <label for="beskrivelse">
-                        Beskrivelse af projektet/aktiviteten:
+                      <label for="projektTitel">
+                        Projektets titel:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="projektTitel"
+                        name="projektTitel"
+                        required
+                        placeholder="F.eks. Hygge-spilindsats til regnvejrsdage"
+                        maxlength="100"
+                      />
+                      <small class="form-text text-muted">
+                        Giv dit projekt en kort, beskrivende titel
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Project Purpose -->
+                    <div class="form-group">
+                      <label for="projektFormaal">
+                        Projektets formål:
                         <span class="text-danger">*</span>
                       </label>
                       <textarea
                         class="form-control"
-                        id="beskrivelse"
-                        name="beskrivelse"
-                        rows="6"
+                        id="projektFormaal"
+                        name="projektFormaal"
+                        rows="3"
                         required
-                        placeholder="Beskriv dit projekt eller aktivitet..."
-                        aria-describedby="beskrivelseHelp"
-                        maxlength="1000"
+                        placeholder="Hvad ønsker I at opnå med dette projekt?"
+                        maxlength="300"
                       ></textarea>
-                      <small id="beskrivelseHelp" class="form-text text-muted">
-                        Forklar formålet med projektet og hvordan det vil gavne
-                        børnene på Hashøjskolen.
-                        <br /><strong>Eksempler:</strong> Sportsudstyr til
-                        pauserne, materialer til kreative projekter, udflugter
-                        eller læremidler.
+                      <small class="form-text text-muted">
+                        Beskriv kort hvad I vil opnå (max 300 tegn)
                       </small>
-                      <div class="char-counter">
-                        <span id="charCount">0</span>/1000 tegn
-                      </div>
                       <div class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- How it benefits all children -->
+                    <div class="form-group">
+                      <label class="form-label">
+                        Hvordan kommer det alle børn til gode:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <small class="form-text text-muted mb-2">
+                        Vælg mindst 2 punkter der beskriver hvordan projektet inkluderer alle børn:
+                      </small>
+                      
+                      <div class="checkbox-group">
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit1" name="benefits" value="Inkluderende aktiviteter - alle kan deltage uanset baggrund eller evner">
+                          <label class="form-check-label" for="benefit1">
+                            <strong>Inkluderende aktiviteter</strong> - alle kan deltage uanset baggrund eller evner
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit2" name="benefits" value="Tværgående fællesskab - skaber nye venskaber på tværs af klasser">
+                          <label class="form-check-label" for="benefit2">
+                            <strong>Tværgående fællesskab</strong> - skaber nye venskaber på tværs af klasser
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit3" name="benefits" value="Lige adgang - børn der ikke har meget hjemmefra får samme muligheder">
+                          <label class="form-check-label" for="benefit3">
+                            <strong>Lige adgang</strong> - børn der ikke har meget hjemmefra får samme muligheder
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit4" name="benefits" value="Læring og udvikling - styrker børnenes færdigheder gennem leg og aktivitet">
+                          <label class="form-check-label" for="benefit4">
+                            <strong>Læring og udvikling</strong> - styrker børnenes færdigheder gennem leg og aktivitet
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit5" name="benefits" value="Fysisk aktivitet - får børn i bevægelse og aktiv leg">
+                          <label class="form-check-label" for="benefit5">
+                            <strong>Fysisk aktivitet</strong> - får børn i bevægelse og aktiv leg
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input benefit-checkbox" type="checkbox" id="benefit6" name="benefits" value="Kreativ udfoldelse - mulighed for kunstnerisk og kreativ udvikling">
+                          <label class="form-check-label" for="benefit6">
+                            <strong>Kreativ udfoldelse</strong> - mulighed for kunstnerisk og kreativ udvikling
+                          </label>
+                        </div>
+                      </div>
+                      <div class="invalid-feedback" id="benefitsError"></div>
+                    </div>
+
+                    <!-- Concrete use of funds -->
+                    <div class="form-group">
+                      <label for="konkretBrug">
+                        Konkret brug af midlerne:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="konkretBrug"
+                        name="konkretBrug"
+                        rows="4"
+                        required
+                        placeholder="• Brætspil (8 forskellige): 600 kr.&#10;• Puslespil (6 stk): 300 kr.&#10;• Kort- og terningespil: 200 kr.&#10;• Opbevaring: 100 kr."
+                        maxlength="400"
+                      ></textarea>
+                      <small class="form-text text-muted">
+                        List konkrete ting I vil købe med estimerede priser (max 400 tegn)
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- How it will work -->
+                    <div class="form-group">
+                      <label for="hvordan">
+                        Sådan vil det fungere:
+                        <span class="text-danger">*</span>
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="hvordan"
+                        name="hvordan"
+                        rows="3"
+                        required
+                        placeholder="Hvordan vil I implementere og bruge projektet i praksis?"
+                        maxlength="300"
+                      ></textarea>
+                      <small class="form-text text-muted">
+                        Beskriv kort hvordan projektet vil fungere i hverdagen (max 300 tegn)
+                      </small>
+                      <div class="invalid-feedback"></div>
+                    </div>
+
+                    <!-- Long-term benefits -->
+                    <div class="form-group">
+                      <label for="langsigtet">
+                        Langsigtede fordele:
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="langsigtet"
+                        name="langsigtet"
+                        rows="2"
+                        placeholder="Hvilke fordele vil projektet have på længere sigt? (valgfrit)"
+                        maxlength="200"
+                      ></textarea>
+                      <small class="form-text text-muted">
+                        Valgfrit: Beskriv langsigtede effekter (max 200 tegn)
+                      </small>
+                    </div>
+
+                    <!-- Why important now -->
+                    <div class="form-group">
+                      <label for="hvorforNu">
+                        Hvorfor det er vigtigt nu:
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="hvorforNu"
+                        name="hvorforNu"
+                        rows="2"
+                        placeholder="Hvorfor er dette projekt særligt vigtigt lige nu? (valgfrit)"
+                        maxlength="200"
+                      ></textarea>
+                      <small class="form-text text-muted">
+                        Valgfrit: Forklar aktualiteten (max 200 tegn)
+                      </small>
                     </div>
 
                     <div class="form-navigation">
@@ -303,21 +498,46 @@
                               <strong>Beløb:</strong>
                               <span id="reviewBelob"></span> DKK
                             </p>
+                            <p>
+                              <strong>Projekt:</strong>
+                              <span id="reviewTitel"></span>
+                            </p>
                           </div>
                         </div>
-                        <p><strong>Beskrivelse:</strong></p>
-                        <p
-                          id="reviewBeskrivelse"
-                          style="
-                            background-color: #444;
-                            padding: 1rem;
-                            border-radius: 0.25rem;
-                          "
-                        ></p>
-                      </div>
-                    </div>
+                        
+                        <hr style="border-color: #666;">
+                        
+                        <div class="mb-3">
+                          <p><strong>Projektets formål:</strong></p>
+                          <p id="reviewFormaal" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;"></p>
+                        </div>
 
-                    <!-- GDPR Consent -->
+                        <div class="mb-3">
+                          <p><strong>Hvordan kommer det alle børn til gode:</strong></p>
+                          <ul id="reviewBenefits" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;"></ul>
+                        </div>
+
+                        <div class="mb-3">
+                          <p><strong>Konkret brug af midlerne:</strong></p>
+                          <p id="reviewKonkret" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0; white-space: pre-line;"></p>
+                        </div>
+
+                        <div class="mb-3">
+                          <p><strong>Sådan vil det fungere:</strong></p>
+                          <p id="reviewHvordan" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;"></p>
+                        </div>
+
+                        <div id="reviewLangsigtetSection" class="mb-3" style="display: none;">
+                          <p><strong>Langsigtede fordele:</strong></p>
+                          <p id="reviewLangsigtet" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;"></p>
+                        </div>
+
+                        <div id="reviewHvorforNuSection" class="mb-3" style="display: none;">
+                          <p><strong>Hvorfor det er vigtigt nu:</strong></p>
+                          <p id="reviewHvorforNu" style="background-color: #444; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;"></p>
+                        </div>
+                      </div>
+                    }                    <!-- GDPR Consent -->
                     <div class="form-group">
                       <div class="form-check">
                         <input
@@ -409,7 +629,6 @@
       // Initialize wizard
       document.addEventListener("DOMContentLoaded", function () {
         setupFormValidation();
-        setupCharacterCounter();
         setupWizardNavigation();
         loadApprovedProjects();
       });
@@ -474,15 +693,70 @@
       function validateStep(step) {
         let isValid = true;
         const section = document.querySelector(`[data-section="${step}"]`);
-        const inputs = section.querySelectorAll(
-          "input[required], textarea[required]"
-        );
+        
+        if (step === 2) {
+          // Special validation for step 2 with new structured form
+          isValid = validateStep2();
+        } else {
+          const inputs = section.querySelectorAll(
+            "input[required], textarea[required]"
+          );
 
-        inputs.forEach(input => {
-          if (!validateInput(input)) {
-            isValid = false;
-          }
-        });
+          inputs.forEach(input => {
+            if (!validateInput(input)) {
+              isValid = false;
+            }
+          });
+        }
+
+        return isValid;
+      }
+
+      // Special validation for step 2
+      function validateStep2() {
+        let isValid = true;
+
+        // Validate project title
+        const projektTitel = document.getElementById("projektTitel");
+        if (!validateInput(projektTitel)) isValid = false;
+
+        // Validate project purpose
+        const projektFormaal = document.getElementById("projektFormaal");
+        if (!validateInput(projektFormaal)) isValid = false;
+
+        // Validate benefits checkboxes (at least 2 must be selected)
+        const checkedBenefits = document.querySelectorAll('.benefit-checkbox:checked');
+        const benefitsError = document.getElementById("benefitsError");
+        if (checkedBenefits.length < 2) {
+          isValid = false;
+          benefitsError.textContent = "Vælg mindst 2 punkter der beskriver hvordan projektet kommer alle børn til gode";
+          benefitsError.style.display = "block";
+        } else {
+          benefitsError.style.display = "none";
+        }
+
+        // Validate concrete use
+        const konkretBrug = document.getElementById("konkretBrug");
+        if (!validateInput(konkretBrug)) isValid = false;
+
+        // Validate how it works
+        const hvordan = document.getElementById("hvordan");
+        if (!validateInput(hvordan)) isValid = false;
+
+        // Optional fields don't need validation but should be checked for length
+        const langsigtet = document.getElementById("langsigtet");
+        if (langsigtet.value.length > 200) {
+          langsigtet.classList.add("is-invalid");
+          langsigtet.parentNode.querySelector(".invalid-feedback").textContent = "Må ikke overstige 200 tegn";
+          isValid = false;
+        }
+
+        const hvorforNu = document.getElementById("hvorforNu");
+        if (hvorforNu.value.length > 200) {
+          hvorforNu.classList.add("is-invalid");
+          hvorforNu.parentNode.querySelector(".invalid-feedback").textContent = "Må ikke overstige 200 tegn";
+          isValid = false;
+        }
 
         return isValid;
       }
@@ -521,14 +795,33 @@
             message = "Beløbet kan ikke overstige 5.000 kr.";
           }
         }
-        // Textarea validation (description)
+        // Textarea validation with specific requirements
         else if (input.tagName === "TEXTAREA" && value) {
-          if (value.length < 50) {
+          const maxLength = parseInt(input.maxLength) || 1000;
+          
+          if (input.id === "projektFormaal" && value.length < 20) {
             isValid = false;
-            message = "Beskrivelsen skal være mindst 50 tegn lang";
-          } else if (value.length > 1000) {
+            message = "Beskriv formålet mere detaljeret (mindst 20 tegn)";
+          } else if (input.id === "konkretBrug" && value.length < 30) {
             isValid = false;
-            message = "Beskrivelsen må ikke overstige 1000 tegn";
+            message = "Beskriv den konkrete brug mere detaljeret (mindst 30 tegn)";
+          } else if (input.id === "hvordan" && value.length < 20) {
+            isValid = false;
+            message = "Beskriv hvordan det vil fungere mere detaljeret (mindst 20 tegn)";
+          } else if (value.length > maxLength) {
+            isValid = false;
+            message = `Må ikke overstige ${maxLength} tegn`;
+          }
+        }
+        // Text input validation
+        else if (input.type === "text" && value) {
+          const maxLength = parseInt(input.maxLength) || 100;
+          if (value.length > maxLength) {
+            isValid = false;
+            message = `Må ikke overstige ${maxLength} tegn`;
+          } else if (input.id === "projektTitel" && value.length < 5) {
+            isValid = false;
+            message = "Titlen skal være mindst 5 tegn lang";
           }
         }
 
@@ -587,27 +880,11 @@
           });
       }
 
-      // Character counter for description
-      function setupCharacterCounter() {
-        const textarea = document.getElementById("beskrivelse");
-        const counter = document.getElementById("charCount");
 
-        textarea.addEventListener("input", () => {
-          const length = textarea.value.length;
-          counter.textContent = length;
-
-          // Update counter styling
-          counter.parentNode.classList.remove("warning", "danger");
-          if (length > 900) {
-            counter.parentNode.classList.add("danger");
-          } else if (length > 750) {
-            counter.parentNode.classList.add("warning");
-          }
-        });
-      }
 
       // Update review section
       function updateReviewSection() {
+        // Basic info
         document.getElementById("reviewNavn").textContent =
           document.getElementById("navn").value;
         document.getElementById("reviewEmail").textContent =
@@ -616,8 +893,49 @@
           new Intl.NumberFormat("da-DK").format(
             document.getElementById("belob").value
           );
-        document.getElementById("reviewBeskrivelse").textContent =
-          document.getElementById("beskrivelse").value;
+        
+        // Project details
+        document.getElementById("reviewTitel").textContent =
+          document.getElementById("projektTitel").value;
+        document.getElementById("reviewFormaal").textContent =
+          document.getElementById("projektFormaal").value;
+        
+        // Benefits
+        const checkedBenefits = document.querySelectorAll('.benefit-checkbox:checked');
+        const benefitsList = document.getElementById("reviewBenefits");
+        benefitsList.innerHTML = "";
+        checkedBenefits.forEach(checkbox => {
+          const li = document.createElement("li");
+          li.textContent = checkbox.value;
+          benefitsList.appendChild(li);
+        });
+        
+        // Concrete use
+        document.getElementById("reviewKonkret").textContent =
+          document.getElementById("konkretBrug").value;
+        
+        // How it works
+        document.getElementById("reviewHvordan").textContent =
+          document.getElementById("hvordan").value;
+        
+        // Optional fields
+        const langsigtet = document.getElementById("langsigtet").value.trim();
+        const langsigtetSection = document.getElementById("reviewLangsigtetSection");
+        if (langsigtet) {
+          document.getElementById("reviewLangsigtet").textContent = langsigtet;
+          langsigtetSection.style.display = "block";
+        } else {
+          langsigtetSection.style.display = "none";
+        }
+        
+        const hvorforNu = document.getElementById("hvorforNu").value.trim();
+        const hvorforNuSection = document.getElementById("reviewHvorforNuSection");
+        if (hvorforNu) {
+          document.getElementById("reviewHvorforNu").textContent = hvorforNu;
+          hvorforNuSection.style.display = "block";
+        } else {
+          hvorforNuSection.style.display = "none";
+        }
       }
 
       // Form submission handler
@@ -656,11 +974,41 @@
           const messageBox = document.getElementById("formResponseMessage");
           messageBox.classList.add("d-none");
 
+          // Prepare structured description
+          const projektTitel = document.getElementById("projektTitel").value.trim();
+          const projektFormaal = document.getElementById("projektFormaal").value.trim();
+          const konkretBrug = document.getElementById("konkretBrug").value.trim();
+          const hvordan = document.getElementById("hvordan").value.trim();
+          const langsigtet = document.getElementById("langsigtet").value.trim();
+          const hvorforNu = document.getElementById("hvorforNu").value.trim();
+          
+          // Get selected benefits
+          const checkedBenefits = document.querySelectorAll('.benefit-checkbox:checked');
+          const benefits = Array.from(checkedBenefits).map(cb => cb.value);
+          
+          // Build complete description
+          let fullDescription = `📋 ${projektTitel}\n\n`;
+          fullDescription += `🎯 Projektets formål:\n${projektFormaal}\n\n`;
+          fullDescription += `✅ Hvordan kommer det alle børn til gode:\n`;
+          benefits.forEach(benefit => {
+            fullDescription += `• ${benefit}\n`;
+          });
+          fullDescription += `\n💰 Konkret brug af midlerne:\n${konkretBrug}\n\n`;
+          fullDescription += `⚙️ Sådan vil det fungere:\n${hvordan}`;
+          
+          if (langsigtet) {
+            fullDescription += `\n\n📈 Langsigtede fordele:\n${langsigtet}`;
+          }
+          
+          if (hvorforNu) {
+            fullDescription += `\n\n⏰ Hvorfor det er vigtigt nu:\n${hvorforNu}`;
+          }
+
           const formData = {
             navn: document.getElementById("navn").value.trim(),
             email: document.getElementById("email").value.trim(),
             belob: parseFloat(document.getElementById("belob").value),
-            beskrivelse: document.getElementById("beskrivelse").value.trim(),
+            beskrivelse: fullDescription,
           };
 
           try {
@@ -684,7 +1032,8 @@
 
             // Reset form and go back to step 1
             document.getElementById("ansoegningForm").reset();
-            document.getElementById("charCount").textContent = "0";
+            // Clear benefit checkboxes
+            document.querySelectorAll('.benefit-checkbox').forEach(cb => cb.checked = false);
             goToStep(1);
 
             // Scroll to top
@@ -786,6 +1135,145 @@
           .replace(/>/g, "&gt;")
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#039;");
+      }
+    </script>
+
+    <!-- Example Application Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="background-color: #495057; color: #fff;">
+          <div class="modal-header" style="border-bottom: 1px solid #6c757d;">
+            <h5 class="modal-title" id="exampleModalLabel">
+              <i class="fas fa-lightbulb me-2"></i>Eksempel på god ansøgning
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Luk" style="color: #fff;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-info-circle me-2"></i>Grundlæggende oplysninger
+                </h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Ansøger:</strong> Susanne Møller (SFO-leder)</p>
+                    <p><strong>E-mail:</strong> susanne.moller@hashojskolen.dk</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Beløb:</strong> 1.200 DKK</p>
+                    <p><strong>Projekt:</strong> Hygge-spilindsats til regnvejrsdage</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-bullseye me-2"></i>Projektets formål
+                </h6>
+                <p style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem;">
+                  Vi ønsker at skabe en samling af brætspil, puslespil og kortspil som alle børn på Hashøjskolen kan bruge når vejret ikke tillader udendørs leg. Især på regnvejrsdage og i vintermånederne mangler vi aktiviteter hvor alle børn kan deltage sammen.
+                </p>
+              </div>
+            </div>
+
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-check-circle me-2"></i>Hvordan kommer det alle børn til gode
+                </h6>
+                <ul style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem;">
+                  <li>✅ <strong>Inkluderende aktiviteter</strong> - alle kan deltage uanset fysiske evner eller sprogfærdigheder</li>
+                  <li>✅ <strong>Tværgående fællesskab</strong> - ældre børn kan hjælpe yngre med spilleregler og skabe nye venskaber</li>
+                  <li>✅ <strong>Lige adgang</strong> - børn der ikke har mange spil hjemme får samme muligheder for hygge og leg</li>
+                  <li>✅ <strong>Læring og udvikling</strong> - spillene træner tålmodighed, strategi og samarbejde på en sjov måde</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-coins me-2"></i>Konkret brug af midlerne
+                </h6>
+                <div style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem; white-space: pre-line;">• <strong>Brætspil (8 forskellige):</strong> 600 kr.
+  - Ludo, Yatzy, UNO, Alias Junior
+  - Memory spil i forskellige sværhedsgrader
+  - Gæt hvem? og lignende enkle spil
+
+• <strong>Puslespil (6 stk):</strong> 300 kr.
+  - 100-500 brikker i forskellige motiver
+  - Både for yngre og ældre børn
+
+• <strong>Kort- og terningespil:</strong> 200 kr.
+  - Almindelige spillekort, terninger
+  - Enkle kortspil som Sorteper, Fisk
+
+• <strong>Opbevaring:</strong> 100 kr.
+  - Hylder og kasser så spillene holdes i orden</div>
+              </div>
+            </div>
+
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-cogs me-2"></i>Sådan vil det fungere
+                </h6>
+                <p style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem;">
+                  Spillene placeres i SFO-lokalet og klasseværelserne, så børnene kan låne dem når vejret ikke tillader udendørs aktiviteter. De ældre børn kan hjælpe de yngre med at lære spillene, hvilket skaber naturlige mentorrelationer.
+                </p>
+              </div>
+            </div>
+
+            <div class="card mb-3" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-chart-line me-2"></i>Langsigtede fordele
+                </h6>
+                <ul style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;">
+                  <li>Mindre konflikter i regnvejrspauserne når børnene har noget meningsfuldt at lave</li>
+                  <li>Styrket sammenhold når børn fra forskellige klasser spiller sammen</li>
+                  <li>Bedre koncentrationsevne og sociale færdigheder gennem spil</li>
+                  <li>Tryggere miljø for børn der finder udendørs leg udfordrende</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card" style="background-color: #6c757d; border: none;">
+              <div class="card-body">
+                <h6 class="card-title text-warning">
+                  <i class="fas fa-clock me-2"></i>Hvorfor det er vigtigt nu
+                </h6>
+                <p style="background-color: #495057; padding: 0.75rem; border-radius: 0.25rem; margin-bottom: 0;">
+                  Mange familier har økonomiske udfordringer og har måske ikke råd til mange spil hjemme. Ved at have et fælles udvalg på skolen sikrer vi, at alle børn oplever glæden ved spil og får styrket deres sociale kompetencer.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid #6c757d;">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+              <i class="fas fa-times me-2"></i>Luk
+            </button>
+            <button type="button" class="btn btn-success" data-dismiss="modal" onclick="scrollToForm()">
+              <i class="fas fa-edit me-2"></i>Start min ansøgning
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Function to scroll to form after closing modal
+      function scrollToForm() {
+        setTimeout(() => {
+          document.querySelector('#ansoegningForm').scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 300);
       }
     </script>
 
