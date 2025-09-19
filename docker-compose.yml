@@ -58,7 +58,7 @@ services:
     restart: unless-stopped
     environment:
       - TUNNEL_TOKEN=${INTERNAL_TOKEN}
-    command: tunnel --no-autoupdate run
+    command: tunnel --no-autoupdate --protocol http2 run
     networks:
       - vennekredsen_net
       - cloudflare
