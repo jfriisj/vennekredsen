@@ -8,6 +8,10 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <link href="style.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   </head>
@@ -18,93 +22,92 @@
       id="header"
     >
       <div class="container">
-        <h1 class="hero-title mb-4">
-          Admin Login - Vennekredsen for Hashøjskolen
-        </h1>
+        <h1 class="hero-title mb-4">Admin Login</h1>
+        <p class="hero-subtitle lead mb-4">Log ind for at administrere ansøgninger</p>
+        
+        <!-- Navigation Links -->
         <div class="hero-actions">
-          <a
-            href="index.html"
-            class="btn btn-primary btn-lg me-3"
-            role="button"
-            aria-label="Hjem"
-          >
+          <a href="index.html" class="btn btn-primary btn-lg me-3" role="button">
             <i class="fas fa-home me-2"></i>Hjem
           </a>
-          <a
-            href="ansogning.html"
-            class="btn btn-primary btn-lg me-3"
-            role="button"
-            aria-label="Ansøg om støtte fra Vennekredsen"
-          >
-            <i class="fas fa-file-alt me-2"></i>Ansøg om støtte
+          <a href="about.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-info-circle me-2"></i>Om Os
           </a>
-          <a
-            href="tilmelding.html"
-            class="btn btn-primary btn-lg me-3"
-            role="button"
-            aria-label="Tilmeld dig til arrangementer"
-          >
+          <a href="tilmelding.html" class="btn btn-primary btn-lg me-3" role="button">
             <i class="fas fa-calendar-plus me-2"></i>Tilmeld til Events
           </a>
-          <a
-            href="about.html"
-            class="btn btn-primary btn-lg me-3"
-            role="button"
-            aria-label="Læs om Vennekredsen"
-          >
-            <i class="fas fa-info-circle me-2"></i>Om Os
+          <a href="ansogning.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-file-alt me-2"></i>Ansøg om Støtte
+          </a>
+          <a href="admin-panel.html" class="btn btn-primary btn-lg me-3" role="button">
+            <i class="fas fa-cog me-2"></i>Admin Panel
+          </a>
+          <a href="admin-login.html" class="btn btn-secondary btn-lg" role="button">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
           </a>
         </div>
       </div>
     </header>
 
-    <main class="container my-5">
+    <main class="container mt-5 pt-5">
       <div class="row">
         <div class="col-md-6 offset-md-3">
           <section id="vennekredsen" class="mb-5">
-            <h2 class="text-center mb-4">Admin Login</h2>
+            <article class="card">
+              <div class="card-body">
+                <h2 class="text-center mb-4">Admin Login</h2>
 
-            <div id="loginMessage" class="alert d-none" role="alert"></div>
+                <div id="loginMessage" class="alert d-none" role="alert"></div>
 
-            <form id="loginForm">
-              <div class="form-group">
-                <label for="username">Brugernavn:</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  name="username"
-                  required
-                />
+                <form id="loginForm">
+                  <div class="form-group">
+                    <label for="username">
+                      <i class="fas fa-user me-2"></i>Brugernavn:
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="username"
+                      name="username"
+                      required
+                      placeholder="Indtast brugernavn"
+                      autocomplete="username"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="password">
+                      <i class="fas fa-key me-2"></i>Adgangskode:
+                    </label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      name="password"
+                      required
+                      placeholder="Indtast adgangskode"
+                      autocomplete="current-password"
+                    />
+                  </div>
+
+                  <div class="text-center mt-4">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-lg"
+                      id="loginBtn"
+                    >
+                      <span
+                        id="loginSpinner"
+                        class="spinner-border spinner-border-sm d-none me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      <i class="fas fa-sign-in-alt me-2"></i>Log ind
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <div class="form-group">
-                <label for="password">Adgangskode:</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                  required
-                />
-              </div>
-
-              <div class="text-center mt-4">
-                <button
-                  type="submit"
-                  class="btn btn-primary btn-lg"
-                  id="loginBtn"
-                >
-                  <span
-                    id="loginSpinner"
-                    class="spinner-border spinner-border-sm d-none"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  Log ind
-                </button>
-              </div>
-            </form>
+            </article>
           </section>
         </div>
       </div>
