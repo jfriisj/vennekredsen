@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     image: ghcr.io/jfriisj/vennekredsen/frontend:latest
     ports:
-      - "85:80"
+      - "${FRONTEND_EXTERNAL_PORT:-85}:80"
     networks:
       - vennekredsen_net
       - cloudflare
@@ -23,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_this_password}
       - JWT_SECRET=${JWT_SECRET:-change_this_jwt_secret}
     ports:
-      - "5000:5000"  # Expose API port like in local setup
+      - "${API_EXTERNAL_PORT:-5000}:5000"  # Configurable host port
     networks:
       - vennekredsen_net
       - cloudflare
@@ -40,14 +40,14 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-vennekredsen_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_this_password}
     ports:
-      - "5432:5432"
+      - "${DB_EXTERNAL_PORT:-5432}:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./api/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - vennekredsen_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vennekredsen_user} -d ${POSTGRES_DB:-vennekredsen_prod}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vennekredsen_user} -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
