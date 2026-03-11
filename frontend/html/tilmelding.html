@@ -119,7 +119,9 @@
                     <i class="fas fa-sun fa-2x me-3 text-warning"></i>
                     <div>
                       <strong>Sommerfest</strong><br />
-                      <span class="text-muted">18. september 2026 kl. 18:00</span>
+                      <span class="text-muted" id="event-sommerfest-date"
+                        >18. september 2026 kl. 18:00</span
+                      >
                     </div>
                   </div>
 
@@ -130,7 +132,7 @@
                     <i class="fas fa-snowflake fa-2x me-3 text-info"></i>
                     <div>
                       <strong>Julefest</strong><br />
-                      <span class="text-muted"
+                      <span class="text-muted" id="event-julefest-date"
                         >27. november 2026 kl. 17:30</span
                       >
                     </div>
@@ -143,7 +145,9 @@
                     <i class="fas fa-mask fa-2x me-3 text-success"></i>
                     <div>
                       <strong>Fastelavn</strong><br />
-                      <span class="text-muted">5. februar 2027 kl. 17:30</span>
+                      <span class="text-muted" id="event-fastelavn-date"
+                        >5. februar 2027 kl. 17:30</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -208,6 +212,56 @@
         &copy; 2025 Vennekredsen for Hashøjskolen. Alle rettigheder forbeholdes.
       </p>
     </footer>
+
+    <script>
+      function formatEventDate(isoDateTime) {
+        const parsed = new Date(isoDateTime);
+        if (Number.isNaN(parsed.getTime())) {
+          return null;
+        }
+
+        const day = parsed.getDate();
+        const month = parsed.toLocaleString("da-DK", { month: "long" });
+        const year = parsed.getFullYear();
+        const hours = String(parsed.getHours()).padStart(2, "0");
+        const minutes = String(parsed.getMinutes()).padStart(2, "0");
+
+        return `${day}. ${month} ${year} kl. ${hours}:${minutes}`;
+      }
+
+      async function loadEventDates() {
+        const eventDateElements = {
+          sommerfest: document.getElementById("event-sommerfest-date"),
+          julefest: document.getElementById("event-julefest-date"),
+          fastelavn: document.getElementById("event-fastelavn-date"),
+        };
+
+        try {
+          const response = await fetch("/api/events");
+          if (!response.ok) {
+            return;
+          }
+
+          const result = await response.json();
+          const events = result.events || {};
+
+          Object.entries(eventDateElements).forEach(([eventKey, element]) => {
+            if (!element || !events[eventKey]) {
+              return;
+            }
+
+            const formattedDate = formatEventDate(events[eventKey]);
+            if (formattedDate) {
+              element.textContent = formattedDate;
+            }
+          });
+        } catch (error) {
+          console.warn("Unable to load dynamic event dates", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadEventDates);
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

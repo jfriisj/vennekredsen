@@ -47,7 +47,7 @@ services:
     networks:
       - vennekredsen_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vennekredsen_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vennekredsen_user} -d ${POSTGRES_DB:-vennekredsen_prod}"]
       interval: 10s
       timeout: 5s
       retries: 5

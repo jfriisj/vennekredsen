@@ -42,7 +42,7 @@
       <div class="container">
         <h1 class="hero-title mb-4">Admin Panel</h1>
         <p class="hero-subtitle lead mb-4">Administrer ansøgninger og brugere</p>
-        
+
         <!-- Navigation Links -->
         <div class="hero-actions">
           <a href="index.html" class="btn btn-primary btn-lg me-3" role="button">
@@ -100,6 +100,17 @@
                   role="tab"
                 >
                   <i class="fas fa-users me-2"></i>Admin Brugere
+                </a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a
+                  class="nav-link"
+                  id="events-tab"
+                  data-toggle="tab"
+                  href="#events"
+                  role="tab"
+                >
+                  <i class="fas fa-calendar-alt me-2"></i>Arrangementer
                 </a>
               </li>
             </ul>
@@ -311,6 +322,66 @@
                 </div>
               </div>
             </div>
+
+            <!-- Events Tab -->
+            <div class="tab-pane fade" id="events" role="tabpanel">
+              <div class="card">
+                <div class="card-header">
+                  <h3>
+                    <i class="fas fa-calendar-check me-2"></i>Datoer for
+                    Arrangementer
+                  </h3>
+                </div>
+                <div class="card-body">
+                  <p class="text-muted">
+                    Opdater de tre datoer som vises på tilmeldingssiden.
+                  </p>
+
+                  <div id="loadingEvents" class="text-center mb-4">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Indlæser arrangementsdatoer...</span>
+                    </div>
+                    <p>Henter arrangementsdatoer...</p>
+                  </div>
+
+                  <form id="eventDatesForm" class="d-none">
+                    <div class="form-group">
+                      <label for="sommerfestDateInput">Sommerfest</label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="sommerfestDateInput"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="julefestDateInput">Julefest</label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="julefestDateInput"
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="fastelavnDateInput">Fastelavn</label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="fastelavnDateInput"
+                        required
+                      />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                      <i class="fas fa-save me-2"></i>Gem arrangementsdatoer
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Debug section -->
@@ -350,15 +421,16 @@
       document.addEventListener("DOMContentLoaded", function () {
         const token = localStorage.getItem("adminToken");
         if (!token) {
-          window.location.href = "admin-admin-login.html";
+          window.location.href = "admin-login.html";
           return;
         }
 
-        logDebug("Admin token exists, loading applications");
+        logDebug("Admin token exists, loading admin data");
 
-        // Load applications and users
+        // Load applications, users and event dates
         loadApplications();
         loadUsers();
+        loadEventSettings();
 
         // Set up event listeners
         document.getElementById("logoutBtn").addEventListener("click", logout);
@@ -376,6 +448,9 @@
         document
           .getElementById("changePasswordForm")
           .addEventListener("submit", changePassword);
+        document
+          .getElementById("eventDatesForm")
+          .addEventListener("submit", updateEventDates);
 
         // Tab switching
         document
@@ -383,10 +458,55 @@
           .addEventListener("click", function () {
             loadUsers();
           });
+        document
+          .getElementById("events-tab")
+          .addEventListener("click", function () {
+            loadEventSettings();
+          });
       });
 
       // Application data store
       let allApplications = [];
+
+      const EVENT_INPUT_IDS = {
+        sommerfest: "sommerfestDateInput",
+        julefest: "julefestDateInput",
+        fastelavn: "fastelavnDateInput",
+      };
+
+      function toDateTimeLocalValue(isoDateTime) {
+        if (!isoDateTime) {
+          return "";
+        }
+
+        const parsed = new Date(isoDateTime);
+        if (Number.isNaN(parsed.getTime())) {
+          return "";
+        }
+
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        const hours = String(parsed.getHours()).padStart(2, "0");
+        const minutes = String(parsed.getMinutes()).padStart(2, "0");
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+
+      function toApiDateTimeValue(dateTimeLocal) {
+        if (!dateTimeLocal) {
+          return null;
+        }
+
+        return dateTimeLocal.length === 16 ? `${dateTimeLocal}:00` : dateTimeLocal;
+      }
+
+      function populateEventDateInputs(events) {
+        Object.entries(EVENT_INPUT_IDS).forEach(([eventKey, inputId]) => {
+          const input = document.getElementById(inputId);
+          input.value = toDateTimeLocalValue(events[eventKey]);
+        });
+      }
 
       // Fetch applications from API
       async function loadApplications() {
@@ -755,6 +875,100 @@
         setTimeout(() => {
           messageBox.classList.add("d-none");
         }, 5000);
+      }
+
+      // Load annual event dates
+      async function loadEventSettings() {
+        try {
+          document.getElementById("loadingEvents").style.display = "block";
+          document.getElementById("eventDatesForm").classList.add("d-none");
+
+          const token = localStorage.getItem("adminToken");
+          const response = await fetch("/api/admin/events", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              localStorage.removeItem("adminToken");
+              window.location.href = "admin-login.html";
+              return;
+            }
+            throw new Error(`HTTP error: ${response.status}`);
+          }
+
+          const result = await response.json();
+          populateEventDateInputs(result.events || {});
+          document.getElementById("eventDatesForm").classList.remove("d-none");
+        } catch (error) {
+          showMessage(
+            "Fejl ved indlæsning af arrangementsdatoer: " + error.message,
+            "error"
+          );
+          logDebug(`Error loading event dates: ${error.message}`);
+        } finally {
+          document.getElementById("loadingEvents").style.display = "none";
+        }
+      }
+
+      // Update annual event dates
+      async function updateEventDates(event) {
+        event.preventDefault();
+
+        const payload = {
+          sommerfest: toApiDateTimeValue(
+            document.getElementById("sommerfestDateInput").value
+          ),
+          julefest: toApiDateTimeValue(
+            document.getElementById("julefestDateInput").value
+          ),
+          fastelavn: toApiDateTimeValue(
+            document.getElementById("fastelavnDateInput").value
+          ),
+        };
+
+        if (Object.values(payload).some(value => !value)) {
+          showMessage("Udfyld alle tre arrangementsdatoer", "error");
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem("adminToken");
+          const response = await fetch("/api/admin/events", {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              localStorage.removeItem("adminToken");
+              window.location.href = "admin-login.html";
+              return;
+            }
+
+            const errorData = await response.json();
+            throw new Error(
+              errorData.message || `HTTP error: ${response.status}`
+            );
+          }
+
+          const result = await response.json();
+          populateEventDateInputs(result.events || {});
+          showMessage("Arrangementsdatoer er opdateret!", "success");
+          logDebug("Event dates updated successfully");
+        } catch (error) {
+          showMessage(
+            "Fejl ved opdatering af arrangementsdatoer: " + error.message,
+            "error"
+          );
+          logDebug(`Error updating event dates: ${error.message}`);
+        }
       }
 
       // Load admin users
