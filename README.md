@@ -120,14 +120,14 @@ INTERNAL_TOKEN=<cloudflare-tunnel-token>
 
 ## Produktion
 
-`docker-compose.yml` bruger GHCR-images (`ghcr.io/jfriisj/vennekredsen/...`).
+`docker-compose.yml` peger pa GHCR-image-tags (`ghcr.io/jfriisj/vennekredsen/...`) og kan samtidig bygges lokalt med `--build`.
 
 ```bash
-# Kræves af docker-compose.yml (external network)
-docker network create cloudflare || true
-
 # Start produktion med lokale miljovariabler
-docker-compose --env-file .env.local up -d
+docker compose --env-file .env.local -f docker-compose.yml up -d
+
+# Tving lokal rebuild af API/frontend (fx efter Dockerfile-ændringer)
+docker compose --env-file .env.local -f docker-compose.yml up -d --build
 ```
 
 ## API Overblik
@@ -189,8 +189,6 @@ Workflows i `.github/workflows/`:
 
 - Hvis DB-password i `.env.dev.local` er ændret, men data-volumen er gammel:
   - Kør SQL i databasen: `ALTER ROLE dev_user WITH PASSWORD '<ny_password>';`
-- Hvis produktion fejler med manglende `cloudflare` netværk:
-  - Kør: `docker network create cloudflare`
 
 ## Contributing
 
