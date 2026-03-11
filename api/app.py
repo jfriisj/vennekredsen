@@ -11,19 +11,29 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 CORS(app)  # Allow API requests from the website
 
-# Get database connection details from environment variables
-db_user = os.environ.get("POSTGRES_USER", "postgres")
-db_password = os.environ.get("POSTGRES_PASSWORD", "password")
-db_name = os.environ.get("POSTGRES_DB", "postgres")
-db_host = os.environ.get("DB_HOST", "db")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
-)
+# Allow full DB URI override for tests and non-standard deployments.
+database_uri_override = os.environ.get("SQLALCHEMY_DATABASE_URI")
+if database_uri_override:
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_uri_override
+else:
+    # Get database connection details from environment variables
+    db_user = os.environ.get("POSTGRES_USER", "postgres")
+    db_password = os.environ.get("POSTGRES_PASSWORD", "password")
+    db_name = os.environ.get("POSTGRES_DB", "postgres")
+    db_host = os.environ.get("DB_HOST", "db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+    )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET", "secret_key")
 
 db = SQLAlchemy(app)
+
+DEFAULT_EVENT_DATES = {
+    "sommerfest": datetime(2026, 9, 18, 18, 0),
+    "julefest": datetime(2026, 11, 27, 17, 30),
+    "fastelavn": datetime(2027, 2, 5, 17, 30),
+}
 
 
 # Define models
@@ -52,6 +62,17 @@ class Admin(db.Model):  # type: ignore
     def check_password(self, password: str) -> bool:
         """Check if provided password matches stored hash"""
         return self.password_hash == hashlib.sha256(password.encode()).hexdigest()
+
+
+class EventDate(db.Model):  # type: ignore
+    __tablename__ = "event_dates"
+    event_key = db.Column(db.String(50), primary_key=True)
+    event_datetime = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
 
 
 # Middleware for JWT authentication
@@ -83,6 +104,37 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorated
+
+
+def _format_event_dates_payload():
+    saved_dates = {
+        event.event_key: event.event_datetime
+        for event in EventDate.query.filter(
+            EventDate.event_key.in_(list(DEFAULT_EVENT_DATES.keys()))
+        ).all()
+    }
+
+    return {
+        event_key: saved_dates.get(event_key, default_date).isoformat(
+            timespec="seconds"
+        )
+        for event_key, default_date in DEFAULT_EVENT_DATES.items()
+    }
+
+
+def _parse_event_datetime(raw_value):
+    if not isinstance(raw_value, str) or not raw_value.strip():
+        return None
+
+    try:
+        parsed_datetime = datetime.fromisoformat(raw_value)
+    except ValueError:
+        return None
+
+    if parsed_datetime.tzinfo is not None:
+        parsed_datetime = parsed_datetime.astimezone().replace(tzinfo=None)
+
+    return parsed_datetime.replace(second=0, microsecond=0)
 
 
 # Routes
@@ -322,6 +374,67 @@ def admin_change_password(current_user):
     except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved ændring af adgangskode"}), 500
+
+
+# Public - Get annual event dates
+@app.route("/api/events", methods=["GET"])
+def get_event_dates():
+    return jsonify({"events": _format_event_dates_payload()}), 200
+
+
+# Admin - Get event dates
+@app.route("/api/admin/events", methods=["GET"])
+@token_required
+def admin_get_event_dates(current_user):
+    return jsonify({"events": _format_event_dates_payload()}), 200
+
+
+# Admin - Update event dates
+@app.route("/api/admin/events", methods=["PUT"])
+@token_required
+def admin_update_event_dates(current_user):
+    data = request.json
+    if not isinstance(data, dict):
+        return jsonify({"message": "Invalid payload"}), 400
+
+    updates = {}
+    for event_key in DEFAULT_EVENT_DATES:
+        raw_value = data.get(event_key)
+        if raw_value is None:
+            continue
+
+        parsed_datetime = _parse_event_datetime(raw_value)
+        if parsed_datetime is None:
+            return jsonify({"message": f"Invalid datetime for '{event_key}'"}), 400
+
+        updates[event_key] = parsed_datetime
+
+    if not updates:
+        return jsonify({"message": "No event dates provided"}), 400
+
+    try:
+        for event_key, event_datetime in updates.items():
+            event_date = EventDate.query.filter_by(event_key=event_key).first()
+            if event_date is None:
+                db.session.add(
+                    EventDate(event_key=event_key, event_datetime=event_datetime)
+                )
+            else:
+                event_date.event_datetime = event_datetime
+
+        db.session.commit()
+        return (
+            jsonify(
+                {
+                    "message": "Event dates updated",
+                    "events": _format_event_dates_payload(),
+                }
+            ),
+            200,
+        )
+    except Exception:
+        db.session.rollback()
+        return jsonify({"message": "Failed to update event dates"}), 500
 
 
 # Public - Get approved projects (no personal info)

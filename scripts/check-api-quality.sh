@@ -34,9 +34,11 @@ python -m bandit -r . -ll || {
 }
 
 echo "🔒 Running Safety (dependency security)..."
-# Note: The 'check' command shows deprecation warnings but still works
-# The new 'scan' command requires authentication which is not suitable for CI/CD
-python -m safety check --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086 || {
+# Scan only project dependency files, not the full local environment.
+python -m safety check \
+    -r requirements.txt \
+    -r requirements-dev.txt \
+    --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086 || {
     echo "❌ Vulnerable dependencies found."
     exit 1
 }

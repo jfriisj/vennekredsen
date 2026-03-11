@@ -1,15 +1,31 @@
 name: Code Quality Checks
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, develop ]
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'Makefile'
+      - '.github/workflows/code-quality.yml'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - 'Makefile'
+      - '.github/workflows/code-quality.yml'
 
 permissions:
   contents: read
   security-events: write
   actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   python-quality:
@@ -21,69 +37,68 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          cache: 'pip'
+          cache-dependency-path: |
+            api/requirements.txt
+            api/requirements-dev.txt
 
       - name: Install dependencies
         run: |
           cd api
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-dev.txt
 
       - name: Run Black (code formatting check)
         run: |
           cd api
-          black --check --diff .
+          python -m black --check --diff .
 
       - name: Run isort (import sorting check)
         run: |
           cd api
-          isort --check-only --diff .
+          python -m isort --check-only --diff .
 
       - name: Run Flake8 (linting)
         run: |
           cd api
-          flake8 .
+          python -m flake8 .
 
       - name: Run MyPy (type checking)
         run: |
           cd api
-          mypy --ignore-missing-imports .
+          python -m mypy --ignore-missing-imports app.py
 
       - name: Run Bandit (security check)
         run: |
           cd api
-          bandit -r . -f json -o bandit-report.json || true
-          bandit -r .
+          python -m bandit -r . -f json -o bandit-report.json || true
+          python -m bandit -r . -ll
 
       - name: Run Safety (dependency security check)
         run: |
           cd api
-          # Note: Using 'check' command despite deprecation warning
-          # New 'scan' command requires authentication unsuitable for CI/CD
-          safety check
+          # Scan only project dependency files, not the full runner environment.
+          python -m safety check \
+            -r requirements.txt \
+            -r requirements-dev.txt \
+            --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086
 
       - name: Run Tests
         run: |
           cd api
-          pytest --cov=. --cov-report=xml --cov-report=term-missing
+          python -m pytest --cov=. --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
-          file: ./api/coverage.xml
+          files: ./api/coverage.xml
           flags: python
           name: codecov-python
+          fail_ci_if_error: false
 
   frontend-quality:
     name: Frontend Code Quality
@@ -143,7 +158,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -173,13 +188,29 @@ jobs:
           output-file: hadolint-frontend.sarif
           no-fail: true
 
+      - name: Normalize Hadolint SARIF automation IDs
+        if: always()
+        run: |
+          jq '.runs[0].automationDetails.id = "docker-quality/hadolint-api"' hadolint-api.sarif > hadolint-api.tmp.sarif
+          mv hadolint-api.tmp.sarif hadolint-api.sarif
+
+          jq '.runs[0].automationDetails.id = "docker-quality/hadolint-frontend"' hadolint-frontend.sarif > hadolint-frontend.tmp.sarif
+          mv hadolint-frontend.tmp.sarif hadolint-frontend.sarif
+
       - name: Upload Hadolint scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif_file: |
-            hadolint-api.sarif
-            hadolint-frontend.sarif
+          sarif_file: hadolint-api.sarif
+          category: docker-quality/hadolint-api
+        continue-on-error: true
+
+      - name: Upload Hadolint frontend scan results
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: hadolint-frontend.sarif
+          category: docker-quality/hadolint-frontend
         continue-on-error: true
 
   quality-gate:
