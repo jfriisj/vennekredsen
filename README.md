@@ -1,258 +1,218 @@
 # Vennekredsen for Hashøjskolen
 
-Moderne hjemmeside til vennekredsen for Hashøjskolen - et intuitivt system til at administrere og håndtere ansøgninger om støtte med fokus på brugeroplevelse og sikkerhed.
+Moderne hjemmeside til Vennekredsen for Hashøjskolen.
+Projektet indeholder en offentlig hjemmeside, en ansøgningsformular i flere trin og et admin-flow til behandling af ansøgninger.
 
-## ✨ Features
+## Features
 
-- 🎨 **Modern UI/UX**: Responziv design med glassmorphism effekter og micro-interaktioner
-- 📝 **Smart Ansøgningsformular**: Wizard-baseret form med trinvis vejledning og validering
-- 👥 **Admin Panel**: Komplet brugerstyring med rolle-baseret adgang
-- 🔐 **Sikkerhed**: JWT-baseret autentificering og sikkerhedsscanning
-- 📱 **Mobil-venlig**: Fuldt responziv design til alle enheder
-- 🚀 **CI/CD Pipeline**: Automatiserede kvalitetstjek og deployment
+- Moderne frontend i HTML/CSS/JavaScript med responsivt design
+- Wizard-baseret ansøgningsformular med trinvis validering
+- Admin-login med JWT og beskyttede admin-endpoints
+- Administration af ansøgninger, admin-brugere og årlige event-datoer
+- Offentlig visning af godkendte projekter uden persondata
+- Docker-baseret udvikling, test og deployment
 
-## 🚀 Quick Start
+## Arkitektur
 
-### Development Setup
+- Frontend: statiske sider i `frontend/html/`, serveret af Nginx
+- Backend: Flask API i `api/app.py` med SQLAlchemy
+- Database: PostgreSQL 15 med schema-init fra `api/init.sql`
+- Lokal drift: `docker-compose.local.yml` (build fra lokale Dockerfiles)
+- Produktion: `docker-compose.yml` (prebuildede images fra GHCR)
+
+## Quick Start (Udvikling)
+
+Forudsat at du har Docker og `docker-compose` installeret.
+
 ```bash
 # Clone repository
 git clone https://github.com/jfriisj/vennekredsen.git
 cd vennekredsen
 
-# Start development environment (builds from local Dockerfiles)
+# Start lokal udvikling
 ./dev.sh start
 
-# Create admin user
+# Opret første admin-bruger
 ./dev.sh create-admin
-
-# View application
-# Frontend: http://localhost:85 (same as production)
-# API: http://localhost:5000
-# Admin: http://localhost:85/admin-login.html
 ```
 
-### Production Deployment
-```bash
-# Build and start all services
-docker-compose up -d
-```
+Bemærk: Hvis `.env.dev.local` mangler, opretter `dev.sh` den automatisk ud fra `.env.dev`.
 
-## 🏗️ Architecture
+Adresser lokalt:
 
-- **Frontend**: Modern HTML5/CSS3/JavaScript med Bootstrap 4, FontAwesome og Google Fonts
-- **Backend**: Python Flask REST API med comprehensive admin functionality
-- **Database**: PostgreSQL med automatiserede migrationer og backup
-- **Container**: Docker-baseret deployment med multi-stage builds
-- **CI/CD**: GitHub Actions med omfattende kvalitetskontrol
-- **Security**: JWT authentication, input validation, vulnerability scanning
+- Frontend: `http://localhost:85`
+- API: `http://localhost:5000`
+- Admin login: `http://localhost:85/admin-login.html`
+- Admin panel: `http://localhost:85/admin-panel.html`
 
-## 📁 Project Structure
-
-```
-├── api/                         # Python Flask API
-│   ├── app.py                  # Main application med admin endpoints
-│   ├── requirements.txt        # Python dependencies
-│   ├── tests/                  # API tests med coverage
-│   ├── init.sql               # Database schema
-│   └── Dockerfile             # Optimeret API container
-├── frontend/                   # Frontend application
-│   ├── html/                  # Moderne responsive HTML sider
-│   │   ├── index.html         # Hovedside med hero sektion
-│   │   ├── ansogning.html     # Smart wizard form
-│   │   ├── admin-panel.html   # Admin dashboard
-│   │   ├── style.css          # Modern CSS med custom properties
-│   │   └── ...                # Øvrige sider
-│   ├── nginx.conf             # Nginx konfiguration
-│   └── Dockerfile             # Frontend container
-├── scripts/                    # Development og quality scripts
-│   └── check-api-quality.sh   # Comprehensive quality checks
-├── .github/workflows/          # CI/CD pipelines
-│   └── code-quality.yml       # Automated quality gates
-└── docker-compose.yml          # Local development setup
-```
-
-## 🔧 Development
-
-### Code Quality
-Vi opretholder høje kodestandards med automatiserede tjek:
+## Dev-kommandoer
 
 ```bash
-# Run all quality checks locally
+./dev.sh start        # Start services
+./dev.sh stop         # Stop services
+./dev.sh restart      # Restart services
+./dev.sh logs         # Logs fra alle services
+./dev.sh logs-api     # Kun API logs
+./dev.sh logs-db      # Kun database logs
+./dev.sh shell-api    # Shell i API container
+./dev.sh shell-db     # psql shell i database container
+./dev.sh test         # Kør API tests i container
+./dev.sh build        # Rebuild services
+./dev.sh clean        # Stop + fjern volumes + rebuild
+./dev.sh tools        # Start inkl. pgAdmin på http://localhost:5050
+./dev.sh status       # Vis container-status
+```
+
+## Code Quality
+
+Korte kommandoer via `Makefile`:
+
+```bash
+make check-quality
+make check-api
+make check-frontend
+make fix-format
+```
+
+Direkte scripts:
+
+```bash
+./scripts/check-all-quality.sh
 ./scripts/check-api-quality.sh
-
-# Eller individuelt:
-cd api/
-
-# Python kode kvalitet
-python -m black .              # Code formatting
-python -m isort .              # Import organization  
-python -m flake8 .             # Linting
-python -m mypy app.py          # Type checking
-python -m bandit -r .          # Security scanning
-python -m safety check         # Dependency security
-
-# Frontend kvalitet
-cd ../frontend/html/
-npx eslint *.js               # JavaScript linting
-npx prettier --check .        # Code formatting check
-npx stylelint *.css           # CSS linting
+./scripts/check-frontend-quality.sh
+./scripts/fix-api-format.sh
+./scripts/fix-frontend-format.sh
 ```
 
-### Environment Variables
-```bash
-# Required for production
-POSTGRES_DB=vennekredsen
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
-JWT_SECRET=your_jwt_secret
-INTERNAL_TOKEN=your_internal_token
-```
+API-quality checks inkluderer Black, isort, Flake8, Bandit og Safety.
+Frontend-quality checks inkluderer ESLint, Prettier, html-validate og Stylelint.
 
-### Development Workflow
-```bash
-# Start development environment
-./dev.sh start                # Start all services with local builds
-
-# Development tasks
-./dev.sh create-admin         # Create admin user
-./dev.sh logs                 # View all logs  
-./dev.sh shell-api           # Access API container
-./dev.sh shell-db            # Access database
-./dev.sh test                # Run tests
-
-# Maintenance
-./dev.sh build               # Rebuild services
-./dev.sh clean               # Clean and reset environment
-./dev.sh tools               # Start with pgAdmin
-```
-
-### Admin Setup
-```bash
-# Create first admin user (run once)
-./dev.sh create-admin
-
-# Or manually in container:
-docker-compose exec api python create_admin.py
-```
-
-## 🛡️ Security
-
-### Authentication & Authorization
-- 🔐 **JWT-based admin authentication** med secure token handling
-- 👥 **Role-based access control** for admin funktioner
-- 🔑 **Password hashing** med bcrypt for sikker lagring
-- 🚪 **Session management** med automatisk logout
-
-### Security Measures  
-- 🛡️ **Input validation** og sanitization på alle endpoints
-- 💉 **SQL injection protection** via SQLAlchemy ORM
-- 🔍 **Dependency vulnerability scanning** med Safety CLI
-- 🚨 **Security headers** og CORS konfiguration
-- 📊 **Security scanning** med Bandit static analysis
-
-### Quality Gates
-- ✅ **Bandit**: Security vulnerability scanning
-- ✅ **Safety**: Dependency security checking
-- ✅ **MyPy**: Static type checking
-- ✅ **Flake8**: Code linting og style checking
-- ✅ **ESLint**: JavaScript quality checking
-- ✅ **Hadolint**: Docker best practices
-- ✅ **Trivy**: Container vulnerability scanning
-
-## 🧪 Testing
+## Testing
 
 ```bash
-# Start test database
-docker-compose up -d db
+# Hurtigste vej
+./dev.sh test
 
-# Run API tests with coverage
-cd api/
+# Eller direkte i api/
+cd api
 python -m pytest -v --cov=. --cov-report=html --cov-report=xml
-
-# View coverage report
-open htmlcov/index.html
 ```
 
-### Test Coverage
-- **Current Coverage**: ~40% (targeting 80%+)
-- **API Endpoints**: Health check og application submission
-- **Database Models**: Ansoegninger og Admin tables
-- **Authentication**: JWT token generation og validation
+Coverage-rapport genereres i `api/htmlcov/index.html`.
 
-## 📊 CI/CD Pipeline
+## Miljøvariabler
 
-### GitHub Actions Workflow
-Vores automated pipeline sikrer kvalitet på hver commit:
+Udvikling:
 
-```yaml
-# Quality Gates (alle skal bestå):
-- Black (code formatting)
-- isort (import organization)  
-- Flake8 (linting)
-- MyPy (type checking)
-- Bandit (security scanning)
-- Safety (dependency security)
-- ESLint (JavaScript quality)
-- Prettier (frontend formatting)
-- HTML validation
-- Stylelint (CSS quality)
-- Trivy (container security)
-- Hadolint (Dockerfile best practices)
+- Template: `.env.dev`
+- Lokal override: `.env.dev.local`
+- `dev.sh` bruger `--env-file .env.dev.local`
+
+Produktion (`.env.local`):
+
+```bash
+POSTGRES_DB=vennekredsen_prod
+POSTGRES_USER=vennekredsen_user
+POSTGRES_PASSWORD=<stærkt-password>
+JWT_SECRET=<lang-random-secret>
+INTERNAL_TOKEN=<cloudflare-tunnel-token>
 ```
 
-### Deployment Process
-1. **Code Push** → Triggers automated quality checks
-2. **Quality Gates** → All checks must pass
-3. **Security Scans** → Vulnerability assessment
-4. **Build Images** → Docker containers
-5. **Deploy** → Production environment
+## Produktion
 
-## 🎨 Frontend Features
+`docker-compose.yml` bruger GHCR-images (`ghcr.io/jfriisj/vennekredsen/...`).
 
-### Modern Design System
-- 🎨 **CSS Custom Properties** for consistent theming
-- ✨ **Glassmorphism Effects** med backdrop-filter
-- 🌈 **Gradient Backgrounds** og modern color palette
-- 🔄 **Micro-interactions** og smooth animations
-- 📱 **Responsive Design** med mobile-first approach
+```bash
+# Kræves af docker-compose.yml (external network)
+docker network create cloudflare || true
 
-### User Experience
-- 🧙‍♂️ **Wizard Form**: Step-by-step ansøgningsprocess
-- ✅ **Real-time Validation**: Instant feedback til brugere
-- 📊 **Progress Indicators**: Tydelig fremgang gennem form
-- 🚀 **Loading States**: Professional loading animations
-- 📱 **Touch-friendly**: Optimeret til mobile enheder
+# Start produktion med lokale miljovariabler
+docker-compose --env-file .env.local up -d
+```
 
-## 🤝 Contributing
+## API Overblik
 
-### Development Workflow
-1. **Fork** repository
-2. **Create feature branch**: `git checkout -b feature/amazing-feature`
-3. **Make changes** med focus på kvalitet
-4. **Run quality checks**: `./scripts/check-api-quality.sh`
-5. **Commit changes**: `git commit -m 'Add amazing feature'`
-6. **Push branch**: `git push origin feature/amazing-feature`
-7. **Create Pull Request** med detailed beskrivelse
+Offentlige endpoints:
 
-### Code Standards
-- ✅ **Python**: Follow PEP 8, type hints, docstrings
-- ✅ **JavaScript**: ESLint rules, moderne ES6+ syntax
-- ✅ **CSS**: BEM methodology, mobile-first responsive
-- ✅ **HTML**: Semantic markup, accessibility compliance
-- ✅ **Git**: Conventional commits, descriptive messages
+- `POST /api/ansoegning` opretter en ny ansøgning
+- `GET /api/events` returnerer datoer for årlige events
+- `GET /api/approved-projects` returnerer godkendte projekter uden persondata
 
-All PRs must pass CI/CD quality gates before merging.
+Admin endpoints (kræver Bearer JWT):
 
-## 📄 License
+- `POST /api/admin/login`
+- `GET /api/admin/ansoegninger`
+- `PUT /api/admin/ansoegning/<id>/status`
+- `DELETE /api/admin/ansoegning/<id>`
+- `GET /api/admin/users`
+- `POST /api/admin/users`
+- `DELETE /api/admin/users/<user_id>`
+- `PUT /api/admin/change-password`
+- `GET /api/admin/events`
+- `PUT /api/admin/events`
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+## CI/CD
 
-## 📧 Support
+Workflows i `.github/workflows/`:
 
-For spørgsmål eller support, kontakt:
-- **Project Owner**: [jfriisj](https://github.com/jfriisj)
-- **Issues**: [GitHub Issues](https://github.com/jfriisj/vennekredsen/issues)
+- `code-quality.yml`: Python/frontend quality, tests, Trivy og Hadolint
+- `docker-build-push.yml`: build af frontend/API images og push til GHCR på `main`
 
----
+## Projektstruktur
 
-**Vennekredsen for Hashøjskolen** - Moderne, sikker og brugervenlig platform til støtteansøgninger 🎓
+```text
+.
+|- api/
+|  |- app.py
+|  |- create_admin.py
+|  |- init.sql
+|  |- requirements.txt
+|  |- requirements-dev.txt
+|  `- tests/
+|- frontend/
+|  |- html/
+|  |- nginx.conf
+|  `- package.json
+|- scripts/
+|  |- check-all-quality.sh
+|  |- check-api-quality.sh
+|  |- check-frontend-quality.sh
+|  |- fix-api-format.sh
+|  `- fix-frontend-format.sh
+|- dev.sh
+|- docker-compose.local.yml
+|- docker-compose.yml
+`- Makefile
+```
+
+## Troubleshooting
+
+- Hvis DB-password i `.env.dev.local` er ændret, men data-volumen er gammel:
+  - Kør SQL i databasen: `ALTER ROLE dev_user WITH PASSWORD '<ny_password>';`
+- Hvis produktion fejler med manglende `cloudflare` netværk:
+  - Kør: `docker network create cloudflare`
+
+## Contributing
+
+```bash
+# Opret branch
+git checkout -b feature/min-ændring
+
+# Kør checks
+make check-quality
+
+# Commit og push
+git commit -m "feat: beskrivelse"
+git push origin feature/min-ændring
+```
+
+Alle PRs skal bestå quality checks i CI.
+
+## License
+
+Projektet er licenseret under MIT License.
+
+## Support
+
+- Project Owner: [jfriisj](https://github.com/jfriisj)
+- Issues: [GitHub Issues](https://github.com/jfriisj/vennekredsen/issues)
