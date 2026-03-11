@@ -24,6 +24,9 @@ permissions:
   security-events: write
   actions: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   python-quality:
     name: Python Code Quality
@@ -153,7 +156,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -183,18 +186,29 @@ jobs:
           output-file: hadolint-frontend.sarif
           no-fail: true
 
+      - name: Normalize Hadolint SARIF automation IDs
+        if: always()
+        run: |
+          jq '.runs[0].automationDetails.id = "docker-quality/hadolint-api"' hadolint-api.sarif > hadolint-api.tmp.sarif
+          mv hadolint-api.tmp.sarif hadolint-api.sarif
+
+          jq '.runs[0].automationDetails.id = "docker-quality/hadolint-frontend"' hadolint-frontend.sarif > hadolint-frontend.tmp.sarif
+          mv hadolint-frontend.tmp.sarif hadolint-frontend.sarif
+
       - name: Upload Hadolint scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: hadolint-api.sarif
+          category: docker-quality/hadolint-api
         continue-on-error: true
 
       - name: Upload Hadolint frontend scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: hadolint-frontend.sarif
+          category: docker-quality/hadolint-frontend
         continue-on-error: true
 
   quality-gate:
