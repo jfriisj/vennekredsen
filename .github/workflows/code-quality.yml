@@ -81,9 +81,11 @@ jobs:
       - name: Run Safety (dependency security check)
         run: |
           cd api
-          # Note: Using 'check' command despite deprecation warning
-          # New 'scan' command requires authentication unsuitable for CI/CD
-          python -m safety check --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086
+          # Scan only project dependency files, not the full runner environment.
+          python -m safety check \
+            -r requirements.txt \
+            -r requirements-dev.txt \
+            --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086
 
       - name: Run Tests
         run: |
