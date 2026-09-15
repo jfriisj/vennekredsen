@@ -3,7 +3,7 @@
 import os
 
 os.environ["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-os.environ["JWT_SECRET"] = "test-secret"
+os.environ["JWT_SECRET"] = "test-secret-key-for-ci-only-32-bytes"
 
 import pytest
 

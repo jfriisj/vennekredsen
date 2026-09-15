@@ -415,7 +415,10 @@ def admin_delete_user(current_user, user_id):
             User.id != user_id,
         ).count()
         if remaining_active_admins == 0:
-            return jsonify({"message": "Kan ikke slette den sidste aktive admin bruger"}), 400
+            return (
+                jsonify({"message": "Kan ikke slette den sidste aktive admin bruger"}),
+                400,
+            )
 
     try:
         username = user_to_delete.username
