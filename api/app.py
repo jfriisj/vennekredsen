@@ -1,22 +1,24 @@
 import hashlib
+import hmac
 import os
 from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerifyMismatchError
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-CORS(app)  # Allow API requests from the website
+CORS(app)
 
 # Allow full DB URI override for tests and non-standard deployments.
 database_uri_override = os.environ.get("SQLALCHEMY_DATABASE_URI")
 if database_uri_override:
     app.config["SQLALCHEMY_DATABASE_URI"] = database_uri_override
 else:
-    # Get database connection details from environment variables
     db_user = os.environ.get("POSTGRES_USER", "postgres")
     db_password = os.environ.get("POSTGRES_PASSWORD", "password")
     db_name = os.environ.get("POSTGRES_DB", "postgres")
@@ -28,6 +30,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET", "secret_key")
 
 db = SQLAlchemy(app)
+password_hasher = PasswordHasher()
+
+VALID_ROLES = {"member", "admin"}
 
 DEFAULT_EVENT_DATES = {
     "sommerfest": datetime(2026, 9, 18, 18, 0),
@@ -36,7 +41,6 @@ DEFAULT_EVENT_DATES = {
 }
 
 
-# Define models
 class Ansoegning(db.Model):  # type: ignore
     __tablename__ = "ansoegninger"
     id = db.Column(db.Integer, primary_key=True)
@@ -45,23 +49,57 @@ class Ansoegning(db.Model):  # type: ignore
     belob = db.Column(db.Float, nullable=False)
     beskrivelse = db.Column(db.Text, nullable=False)
     oprettet = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default="pending")  # pending, approved, rejected
+    status = db.Column(db.String(20), default="pending")
 
 
-class Admin(db.Model):  # type: ignore
+class User(db.Model):  # type: ignore
+    """Authenticated Vennekredsen user.
+
+    The physical table remains named ``admins`` for this MVP so existing
+    self-hosted installations can be upgraded without a destructive rename.
+    """
+
     __tablename__ = "admins"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default="member")
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
     def set_password(self, password: str) -> None:
-        """Set password hash using SHA256"""
-        self.password_hash = hashlib.sha256(password.encode()).hexdigest()
+        """Store a password using Argon2id."""
+        self.password_hash = password_hasher.hash(password)
 
     def check_password(self, password: str) -> bool:
-        """Check if provided password matches stored hash"""
-        return self.password_hash == hashlib.sha256(password.encode()).hexdigest()
+        """Verify password and transparently upgrade a legacy SHA-256 hash.
+
+        Legacy SHA-256 verification exists only as a one-time migration path.
+        Any successful legacy login immediately replaces the stored value with
+        an Argon2id hash.
+        """
+        if self.password_hash.startswith("$argon2"):
+            try:
+                valid = password_hasher.verify(self.password_hash, password)
+                if valid and password_hasher.check_needs_rehash(self.password_hash):
+                    self.set_password(password)
+                return valid
+            except (VerifyMismatchError, InvalidHashError):
+                return False
+
+        if len(self.password_hash) == 64:
+            legacy_hash = hashlib.sha256(
+                password.encode(), usedforsecurity=False
+            ).hexdigest()
+            if hmac.compare_digest(self.password_hash, legacy_hash):
+                self.set_password(password)
+                return True
+
+        return False
+
+
+# Backwards-compatible import name while callers are migrated to User.
+Admin = User
 
 
 class EventDate(db.Model):  # type: ignore
@@ -75,32 +113,43 @@ class EventDate(db.Model):  # type: ignore
     )
 
 
-# Middleware for JWT authentication
+def _get_bearer_token():
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        return auth_header[7:]
+    return None
+
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-
-        if "Authorization" in request.headers:
-            auth_header = request.headers["Authorization"]
-            if auth_header.startswith("Bearer "):
-                token = auth_header[7:]  # Remove 'Bearer ' prefix
-
+        token = _get_bearer_token()
         if not token:
             return jsonify({"message": "Authentication token is missing!"}), 401
 
         try:
             data = jwt.decode(token, app.config["JWT_SECRET_KEY"], algorithms=["HS256"])
-            current_user = Admin.query.filter_by(username=data["username"]).first()
-
+            current_user = User.query.filter_by(id=data.get("user_id")).first()
             if current_user is None:
                 return jsonify({"message": "User not found!"}), 401
-
+            if not current_user.is_active:
+                return jsonify({"message": "User is inactive!"}), 401
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token is expired!"}), 401
         except jwt.InvalidTokenError:
             return jsonify({"message": "Invalid token!"}), 401
 
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+
+def admin_required(f):
+    @wraps(f)
+    @token_required
+    def decorated(current_user, *args, **kwargs):
+        if current_user.role != "admin":
+            return jsonify({"message": "Admin access required!"}), 403
         return f(current_user, *args, **kwargs)
 
     return decorated
@@ -137,10 +186,30 @@ def _parse_event_datetime(raw_value):
     return parsed_datetime.replace(second=0, microsecond=0)
 
 
-# Routes
+def _issue_token(user):
+    return jwt.encode(
+        {
+            "user_id": user.id,
+            "role": user.role,
+            "exp": datetime.utcnow() + timedelta(hours=24),
+        },
+        app.config["JWT_SECRET_KEY"],
+        algorithm="HS256",
+    )
 
 
-# Application submission
+def _authenticate_credentials(username, password):
+    user = User.query.filter_by(username=username).first()
+    if not user or not user.is_active or not user.check_password(password):
+        return None
+
+    # Persist an automatic Argon2 rehash after successful legacy login or when
+    # Argon2 parameters are upgraded.
+    if db.session.is_modified(user):
+        db.session.commit()
+    return user
+
+
 @app.route("/api/ansoegning", methods=["POST"])
 def modtag_ansoegning():
     data = request.json
@@ -155,37 +224,68 @@ def modtag_ansoegning():
     return jsonify({"message": "Ansøgning modtaget!"}), 201
 
 
-# Admin login
-@app.route("/api/admin/login", methods=["POST"])
-def admin_login():
-    data = request.json
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json or {}
     username = data.get("username")
     password = data.get("password")
-
     if not username or not password:
         return jsonify({"message": "Missing username or password"}), 400
 
-    admin = Admin.query.filter_by(username=username).first()
-
-    if not admin or not admin.check_password(password):
+    user = _authenticate_credentials(username, password)
+    if user is None:
         return jsonify({"message": "Invalid credentials"}), 401
 
-    # Generate token with expiration (24 hours)
-    token = jwt.encode(
-        {"username": admin.username, "exp": datetime.utcnow() + timedelta(hours=24)},
-        app.config["JWT_SECRET_KEY"],
-        algorithm="HS256",
+    return (
+        jsonify(
+            {
+                "token": _issue_token(user),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "role": user.role,
+                },
+            }
+        ),
+        200,
     )
 
-    return jsonify({"token": token}), 200
+
+# Backwards-compatible admin login used by the current admin frontend.
+@app.route("/api/admin/login", methods=["POST"])
+def admin_login():
+    data = request.json or {}
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password:
+        return jsonify({"message": "Missing username or password"}), 400
+
+    user = _authenticate_credentials(username, password)
+    if user is None or user.role != "admin":
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    return jsonify({"token": _issue_token(user)}), 200
 
 
-# Admin - Get all applications (includes personal info for admin only)
-@app.route("/api/admin/ansoegninger", methods=["GET"])
+@app.route("/api/me", methods=["GET"])
 @token_required
+def current_user(current_user):
+    return (
+        jsonify(
+            {
+                "id": current_user.id,
+                "username": current_user.username,
+                "email": current_user.email,
+                "role": current_user.role,
+            }
+        ),
+        200,
+    )
+
+
+@app.route("/api/admin/ansoegninger", methods=["GET"])
+@admin_required
 def admin_hent_ansoegninger(current_user):
-    # IMPORTANT: This endpoint includes personal information (navn, email)
-    # and is protected by JWT authentication - only for admin use
     ansogninger = Ansoegning.query.all()
     return jsonify(
         [
@@ -207,50 +307,35 @@ def admin_hent_ansoegninger(current_user):
     )
 
 
-# Admin - Update application status
 @app.route("/api/admin/ansoegning/<int:id>/status", methods=["PUT"])
-@token_required
+@admin_required
 def admin_update_status(current_user, id):
     data = request.json
     status = data.get("status")
-
     if not status or status not in ["pending", "approved", "rejected"]:
         return jsonify({"message": "Invalid status value"}), 400
 
     ansogning = Ansoegning.query.get(id)
-
     if not ansogning:
         return jsonify({"message": "Application not found"}), 404
 
     ansogning.status = status
     db.session.commit()
-
     return jsonify({"message": f"Application {id} status updated to {status}"}), 200
 
 
-# Admin - Delete rejected application
 @app.route("/api/admin/ansoegning/<int:id>", methods=["DELETE"])
-@token_required
+@admin_required
 def admin_delete_application(current_user, id):
     ansogning = Ansoegning.query.get(id)
-
     if not ansogning:
         return jsonify({"message": "Application not found"}), 404
-
-    # Only allow deletion of rejected applications
     if ansogning.status != "rejected":
         return jsonify({"message": "Only rejected applications can be deleted"}), 400
 
-    # Store application info for response before deletion
-    application_info = {
-        "id": ansogning.id,
-        "navn": ansogning.navn,
-        "status": ansogning.status,
-    }
-
+    application_info = {"id": ansogning.id, "navn": ansogning.navn}
     db.session.delete(ansogning)
     db.session.commit()
-
     return (
         jsonify(
             {
@@ -261,114 +346,102 @@ def admin_delete_application(current_user, id):
     )
 
 
-# Admin - Get all admin users
 @app.route("/api/admin/users", methods=["GET"])
-@token_required
+@admin_required
 def admin_get_users(current_user):
-    users = Admin.query.all()
+    users = User.query.order_by(User.username).all()
     return jsonify(
         [
             {
                 "id": user.id,
                 "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "is_active": user.is_active,
             }
             for user in users
         ]
     )
 
 
-# Admin - Create new admin user
 @app.route("/api/admin/users", methods=["POST"])
-@token_required
+@admin_required
 def admin_create_user(current_user):
-    data = request.json
+    data = request.json or {}
     username = data.get("username", "").strip()
     email = data.get("email", "").strip()
     password = data.get("password", "")
+    role = data.get("role", "admin")
 
-    # Validation
     if not username or len(username) < 3:
         return jsonify({"message": "Brugernavn skal være mindst 3 tegn langt"}), 400
-
     if not email or "@" not in email:
         return jsonify({"message": "Gyldig email er påkrævet"}), 400
-
-    if not password or len(password) < 6:
-        return jsonify({"message": "Adgangskode skal være mindst 6 tegn lang"}), 400
-
-    # Check if username already exists
-    existing_admin = Admin.query.filter_by(username=username).first()
-    if existing_admin:
+    if not password or len(password) < 8:
+        return jsonify({"message": "Adgangskode skal være mindst 8 tegn lang"}), 400
+    if role not in VALID_ROLES:
+        return jsonify({"message": "Ugyldig brugerrolle"}), 400
+    if User.query.filter_by(username=username).first():
         return jsonify({"message": "Brugernavn er allerede i brug"}), 409
-
-    # Check if email already exists
-    existing_email = Admin.query.filter_by(email=email).first()
-    if existing_email:
+    if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email er allerede i brug"}), 409
 
-    # Create new admin
-    new_admin = Admin(username=username, email=email)
-    new_admin.set_password(password)
+    new_user = User(username=username, email=email, role=role, is_active=True)
+    new_user.set_password(password)
 
     try:
-        db.session.add(new_admin)
+        db.session.add(new_user)
         db.session.commit()
-        return jsonify({"message": f"Admin bruger '{username}' er oprettet"}), 201
+        return jsonify({"message": f"Bruger '{username}' er oprettet"}), 201
     except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved oprettelse af bruger"}), 500
 
 
-# Admin - Delete admin user
 @app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
-@token_required
+@admin_required
 def admin_delete_user(current_user, user_id):
-    # Check if there are multiple admin users
-    total_admins = Admin.query.count()
-    if total_admins <= 1:
-        return jsonify({"message": "Kan ikke slette den sidste admin bruger"}), 400
-
-    # Prevent self-deletion
     if current_user.id == user_id:
         return jsonify({"message": "Du kan ikke slette din egen bruger"}), 400
 
-    # Find and delete user
-    user_to_delete = Admin.query.get(user_id)
+    user_to_delete = User.query.get(user_id)
     if not user_to_delete:
         return jsonify({"message": "Bruger ikke fundet"}), 404
+
+    if user_to_delete.role == "admin":
+        remaining_active_admins = User.query.filter(
+            User.role == "admin",
+            User.is_active.is_(True),
+            User.id != user_id,
+        ).count()
+        if remaining_active_admins == 0:
+            return jsonify({"message": "Kan ikke slette den sidste aktive admin bruger"}), 400
 
     try:
         username = user_to_delete.username
         db.session.delete(user_to_delete)
         db.session.commit()
-        return jsonify({"message": f"Admin bruger '{username}' er slettet"}), 200
+        return jsonify({"message": f"Bruger '{username}' er slettet"}), 200
     except Exception:
         db.session.rollback()
         return jsonify({"message": "Fejl ved sletning af bruger"}), 500
 
 
-# Admin - Change password
 @app.route("/api/admin/change-password", methods=["PUT"])
-@token_required
+@admin_required
 def admin_change_password(current_user):
-    data = request.json
+    data = request.json or {}
     current_password = data.get("currentPassword", "")
     new_password = data.get("newPassword", "")
-
-    # Validation
     if not current_password:
         return jsonify({"message": "Nuværende adgangskode er påkrævet"}), 400
-
-    if not new_password or len(new_password) < 6:
-        return jsonify({"message": "Ny adgangskode skal være mindst 6 tegn lang"}), 400
-
-    # Verify current password
+    if not new_password or len(new_password) < 8:
+        return jsonify({"message": "Ny adgangskode skal være mindst 8 tegn lang"}), 400
     if not current_user.check_password(current_password):
         return jsonify({"message": "Nuværende adgangskode er forkert"}), 401
 
-    # Update password
     try:
-        current_user.password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        current_user.set_password(new_password)
         db.session.commit()
         return jsonify({"message": "Adgangskode er ændret"}), 200
     except Exception:
@@ -376,22 +449,19 @@ def admin_change_password(current_user):
         return jsonify({"message": "Fejl ved ændring af adgangskode"}), 500
 
 
-# Public - Get annual event dates
 @app.route("/api/events", methods=["GET"])
 def get_event_dates():
     return jsonify({"events": _format_event_dates_payload()}), 200
 
 
-# Admin - Get event dates
 @app.route("/api/admin/events", methods=["GET"])
-@token_required
+@admin_required
 def admin_get_event_dates(current_user):
     return jsonify({"events": _format_event_dates_payload()}), 200
 
 
-# Admin - Update event dates
 @app.route("/api/admin/events", methods=["PUT"])
-@token_required
+@admin_required
 def admin_update_event_dates(current_user):
     data = request.json
     if not isinstance(data, dict):
@@ -402,11 +472,9 @@ def admin_update_event_dates(current_user):
         raw_value = data.get(event_key)
         if raw_value is None:
             continue
-
         parsed_datetime = _parse_event_datetime(raw_value)
         if parsed_datetime is None:
             return jsonify({"message": f"Invalid datetime for '{event_key}'"}), 400
-
         updates[event_key] = parsed_datetime
 
     if not updates:
@@ -437,7 +505,6 @@ def admin_update_event_dates(current_user):
         return jsonify({"message": "Failed to update event dates"}), 500
 
 
-# Public - Get approved projects (no personal info)
 @app.route("/api/approved-projects", methods=["GET"])
 def get_approved_projects():
     approved = Ansoegning.query.filter_by(status="approved").all()
@@ -459,7 +526,6 @@ def get_approved_projects():
 
 
 if __name__ == "__main__":
-    # Initialize database tables (no admin creation - handled in init.sql)
     with app.app_context():
         db.create_all()
     app.run(host="0.0.0.0", port=5000)  # nosec B104: Intended for Docker development
