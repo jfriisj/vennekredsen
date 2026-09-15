@@ -4,3 +4,4 @@ psycopg2-binary
 flask_sqlalchemy
 pyjwt
 gunicorn
+argon2-cffi
