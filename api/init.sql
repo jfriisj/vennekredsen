@@ -12,7 +12,10 @@ CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(120) UNIQUE NOT NULL,
-    password_hash VARCHAR(128) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'member',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT admins_role_check CHECK (role IN ('member', 'admin'))
 );
 
 CREATE TABLE event_dates (
@@ -21,10 +24,8 @@ CREATE TABLE event_dates (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert admin user with pre-hashed password
--- Password 'Rosa2009' hashed with SHA-256
-INSERT INTO admins (username, email, password_hash) 
-VALUES ('admin', 'admin@vennekredsen.local', '9a0db62a511cc3a0c3251992d4c373f17ba4b61279d6a9c52290390072d7f891');
+-- No default administrator is inserted here.
+-- Create the first admin interactively with: ./dev.sh create-admin
 
 INSERT INTO event_dates (event_key, event_datetime)
 VALUES
