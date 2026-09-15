@@ -62,7 +62,7 @@ async function loadNextEvent () {
       nextEvent.date >= now
         ? 'Vi glæder os til at samle børnene til endnu et arrangement.'
         : 'Senest registrerede arrangement.'
-  } catch (error) {
+  } catch {
     eventTitle.textContent = 'Kommende arrangement'
     eventDate.textContent = 'Kunne ikke hente datoen lige nu'
     eventStatus.textContent = 'Prøv igen senere eller se arrangementsiden.'
@@ -115,7 +115,7 @@ async function loadProjects () {
       .sort((a, b) => String(b.godkendt_dato || '').localeCompare(String(a.godkendt_dato || '')))
       .slice(0, 3)
       .forEach(project => projectsContainer.append(createProjectCard(project)))
-  } catch (error) {
+  } catch {
     const emptyState = document.createElement('p')
     emptyState.className = 'empty-state'
     emptyState.textContent = 'De støttede projekter kunne ikke hentes lige nu.'
