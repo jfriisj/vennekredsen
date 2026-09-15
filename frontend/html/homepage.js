@@ -67,8 +67,7 @@ async function loadNextEvent() {
     } catch {
         eventTitle.textContent = "Kommende arrangement";
         eventDate.textContent = "Kunne ikke hente datoen lige nu";
-        eventStatus.textContent =
-            "Prøv igen senere eller se arrangementsiden.";
+        eventStatus.textContent = "Prøv igen senere eller se arrangementsiden.";
     }
 }
 
@@ -86,11 +85,14 @@ function createProjectCard(project) {
     heading.textContent = project.beskrivelse || "Støttet projekt";
 
     const meta = document.createElement("p");
-    meta.textContent = project.godkendt_dato
-        ? `Godkendt ${new Intl.DateTimeFormat("da-DK", {
-              dateStyle: "medium",
-          }).format(new Date(project.godkendt_dato))}`
-        : "Godkendt af Vennekredsen";
+    if (project.godkendt_dato) {
+        const approvedDate = new Intl.DateTimeFormat("da-DK", {
+            dateStyle: "medium",
+        }).format(new Date(project.godkendt_dato));
+        meta.textContent = `Godkendt ${approvedDate}`;
+    } else {
+        meta.textContent = "Godkendt af Vennekredsen";
+    }
 
     article.append(amount, heading, meta);
     return article;
