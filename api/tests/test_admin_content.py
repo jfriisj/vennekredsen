@@ -21,6 +21,73 @@ def test_public_site_settings_have_defaults_without_database_row(client):
     assert settings["announcement_visible"] is False
 
 
+def test_member_resources_are_role_aware(client, member_headers, admin_headers):
+    member_response = client.get("/api/member/resources", headers=member_headers)
+    assert member_response.status_code == 200
+    member_ids = [item["id"] for item in member_response.get_json()["resources"]]
+    assert member_ids == [
+        "purchase-calculator",
+        "inventory",
+        "applications",
+        "events",
+    ]
+
+    admin_response = client.get("/api/member/resources", headers=admin_headers)
+    assert admin_response.status_code == 200
+    admin_ids = [item["id"] for item in admin_response.get_json()["resources"]]
+    assert admin_ids == [
+        "purchase-calculator",
+        "inventory",
+        "applications",
+        "events",
+        "users",
+        "website",
+    ]
+
+
+def test_member_can_manage_applications(client, member_headers):
+    with app.app_context():
+        application = Ansoegning(
+            navn="Medlemsansøgning",
+            email="member-application@example.com",
+            belob=1200,
+            beskrivelse="Et fælles projekt",
+            status="pending",
+        )
+        db.session.add(application)
+        db.session.commit()
+        application_id = application.id
+
+    list_response = client.get("/api/member/applications", headers=member_headers)
+    assert list_response.status_code == 200
+    assert any(item["id"] == application_id for item in list_response.get_json())
+
+    update_response = client.put(
+        f"/api/member/applications/{application_id}/status",
+        headers=member_headers,
+        json={"status": "approved"},
+    )
+    assert update_response.status_code == 200
+
+    with app.app_context():
+        assert db.session.get(Ansoegning, application_id).status == "approved"
+
+
+def test_member_can_manage_events(client, member_headers):
+    read_response = client.get("/api/member/events", headers=member_headers)
+    assert read_response.status_code == 200
+
+    update_response = client.put(
+        "/api/member/events",
+        headers=member_headers,
+        json={"sommerfest": "2026-09-20T18:30"},
+    )
+    assert update_response.status_code == 200
+    assert update_response.get_json()["events"]["sommerfest"].startswith(
+        "2026-09-20T18:30"
+    )
+
+
 def test_member_cannot_read_or_update_admin_site_settings(client, member_headers):
     read_response = client.get("/api/admin/site-settings", headers=member_headers)
     assert read_response.status_code == 403
@@ -31,6 +98,11 @@ def test_member_cannot_read_or_update_admin_site_settings(client, member_headers
         json=VALID_SETTINGS,
     )
     assert update_response.status_code == 403
+
+
+def test_member_cannot_manage_users(client, member_headers):
+    response = client.get("/api/admin/users", headers=member_headers)
+    assert response.status_code == 403
 
 
 def test_admin_can_update_site_settings_and_public_endpoint_reflects_them(
