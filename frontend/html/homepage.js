@@ -11,6 +11,11 @@ const eventDate = document.querySelector("[data-next-event-date]");
 const eventStatus = document.querySelector("[data-next-event-status]");
 const projectsContainer = document.querySelector("[data-projects]");
 const currentYear = document.querySelector("[data-current-year]");
+const heroHeading = document.querySelector("[data-site-hero-heading]");
+const heroSubheading = document.querySelector("[data-site-hero-subheading]");
+const introText = document.querySelector("[data-site-intro]");
+const announcement = document.querySelector("[data-site-announcement]");
+const announcementText = document.querySelector("[data-site-announcement-text]");
 
 if (navToggle && navLinks) {
     navToggle.addEventListener("click", () => {
@@ -28,6 +33,38 @@ function formatDate(value) {
         dateStyle: "long",
         timeStyle: "short",
     }).format(value);
+}
+
+async function loadSiteSettings() {
+    try {
+        const response = await fetch("/api/site-settings");
+        if (!response.ok) throw new Error("Indhold kunne ikke hentes");
+
+        const payload = await response.json();
+        const settings = payload.settings || {};
+
+        if (heroHeading && settings.hero_heading) {
+            heroHeading.textContent = settings.hero_heading;
+        }
+        if (heroSubheading && settings.hero_subheading) {
+            heroSubheading.textContent = settings.hero_subheading;
+        }
+        if (introText && settings.intro_text) {
+            introText.textContent = settings.intro_text;
+        }
+
+        if (announcement && announcementText) {
+            const visible = Boolean(
+                settings.announcement_visible && settings.announcement_text
+            );
+            announcement.hidden = !visible;
+            announcementText.textContent = visible
+                ? settings.announcement_text
+                : "";
+        }
+    } catch {
+        if (announcement) announcement.hidden = true;
+    }
 }
 
 async function loadNextEvent() {
@@ -137,5 +174,6 @@ async function loadProjects() {
     }
 }
 
+loadSiteSettings();
 loadNextEvent();
 loadProjects();
