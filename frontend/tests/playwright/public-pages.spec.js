@@ -436,81 +436,9 @@ test("application page completes support application flow", async ({
     expect(browserErrors).toEqual([]);
 });
 
-test("admin login page preserves authentication flow", async ({
-    page,
-}, testInfo) => {
-    const browserErrors = captureBrowserErrors(page);
-
-    await mockAdminLoginApi(page);
+test("legacy admin login redirects to member login", async ({ page }) => {
     await page.goto("/admin-login.html");
-
-    await expect(
-        page.getByRole("heading", {
-            level: 1,
-            name: "Admin Login",
-        })
-    ).toBeVisible();
-
-    await expect(
-        page.getByRole("heading", {
-            level: 2,
-            name: "Log ind",
-        })
-    ).toBeVisible();
-
-    await verifyNavigation(page, testInfo);
-    await expectNoHorizontalOverflow(page);
-
-    await expect(page).toHaveScreenshot("admin-login.png", {
-        fullPage: true,
-    });
-
-    // Rejected login
-    await page.locator("#username").fill("wrong-user");
-    await page.locator("#password").fill("wrong-password");
-    await page.locator("#loginBtn").click();
-
-    const loginMessage = page.locator("#loginMessage");
-
-    await expect(loginMessage).toBeVisible();
-    await expect(loginMessage).toHaveText(
-        "Forkert brugernavn eller adgangskode"
-    );
-
-    await expect(
-        page.evaluate(() => localStorage.getItem("adminToken"))
-    ).resolves.toBeNull();
-
-    expect(browserErrors).toEqual([
-        expect.stringContaining("401 (Unauthorized)"),
-    ]);
-    browserErrors.length = 0;
-
-    // Successful login
-    await page.locator("#username").fill("playwright-admin");
-    await page.locator("#password").fill("correct-password");
-
-    await Promise.all([
-        page.waitForURL("**/admin-panel.html"),
-        page.locator("#loginBtn").click(),
-    ]);
-
-    await expect(
-        page.evaluate(() => localStorage.getItem("adminToken"))
-    ).resolves.toBe("playwright-admin-token");
-
-    await expect(
-        page.getByRole("heading", {
-            level: 1,
-            name: "Admin panel",
-        })
-    ).toBeVisible();
-
-    // Existing token must redirect away from the login page.
-    await page.goto("/admin-login.html");
-    await page.waitForURL("**/admin-panel.html");
-
-    expect(browserErrors).toEqual([]);
+    await expect(page).toHaveURL(/member-login\.html$/);
 });
 
 test("404 page renders correctly", async ({ page }, testInfo) => {

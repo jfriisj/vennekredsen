@@ -10,3 +10,17 @@ dist
 .gitattributes
 .gitignore
 api/init.sql
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Playwright generated files
+frontend/playwright-report/
+frontend/test-results/
+
+# Frontend dependencies
+frontend/node_modules/
