@@ -39,7 +39,6 @@
 .primary-action,
 .secondary-action,
 .danger-action,
-#saveCountsButton,
 .stock-stepper button,
 .card-actions button,
 .file-action {
@@ -53,7 +52,6 @@
 }
 
 .primary-action,
-#saveCountsButton,
 .stock-stepper button {
   background: #166534;
   color: #fff;
@@ -68,11 +66,6 @@
 .danger-action {
   background: #fee2e2;
   color: #991b1b;
-}
-
-#saveCountsButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .file-action {
@@ -190,11 +183,6 @@
   text-align: center;
 }
 
-.stock-stepper input[data-dirty="true"] {
-  border-color: #166534;
-  background: #f0fdf4;
-}
-
 .card-actions {
   display: flex;
   justify-content: flex-end;
@@ -216,7 +204,8 @@
   background: rgba(15, 23, 42, 0.55);
 }
 
-.item-dialog form {
+.item-dialog form,
+.archive-dialog-content {
   display: grid;
   gap: 1rem;
   padding: 1.25rem;
@@ -231,6 +220,50 @@
   min-height: 1.25rem;
   margin: 0;
   color: #b91c1c;
+}
+
+.archive-dialog {
+  width: min(720px, calc(100% - 2rem));
+  max-height: min(80vh, 720px);
+}
+
+.archive-list {
+  display: grid;
+  gap: 0.55rem;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+.archive-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.archive-row:last-child {
+  border-bottom: 0;
+}
+
+.archive-row > div {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+#archiveCount {
+  display: inline-flex;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.3rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #cbd5e1;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 800px) {
@@ -257,8 +290,7 @@
     flex-direction: column;
   }
 
-  .inventory-actions > *,
-  #saveCountsButton {
+  .inventory-actions > * {
     width: 100%;
     justify-content: center;
   }
@@ -270,5 +302,14 @@
   .stock-stepper button,
   .stock-stepper input {
     min-height: 3.5rem;
+  }
+
+  .archive-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .archive-row .secondary-action {
+    width: 100%;
   }
 }
