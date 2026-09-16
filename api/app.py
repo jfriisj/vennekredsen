@@ -307,7 +307,6 @@ def member_resources(current_user):
     )
 
 
-
 @app.route("/api/admin/ansoegninger", methods=["GET"])
 @admin_required
 def admin_hent_ansoegninger(current_user):
