@@ -1,0 +1,17 @@
+.archive-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 520px) {
+  .archive-row-actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .archive-row-actions > * {
+    width: 100%;
+  }
+}
