@@ -26,4 +26,12 @@ module.exports = [
       "no-multiple-empty-lines": ["error", { max: 2 }],
     },
   },
+  {
+    files: ["html/inventory.js"],
+    languageOptions: {
+      globals: {
+        XLSX: "readonly",
+      },
+    },
+  },
 ];
