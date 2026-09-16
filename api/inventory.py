@@ -127,7 +127,9 @@ def register_inventory(app, db, token_required):
             stock_quantity=quantity,
             note=note,
             active=True,
-            last_counted_at=datetime.utcnow() if quantity > 0 else None,
+            last_counted_at=(
+                datetime.utcnow() if "stock_quantity" in data else None
+            ),
         )
         db.session.add(item)
         db.session.commit()
