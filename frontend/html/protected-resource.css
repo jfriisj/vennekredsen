@@ -1,0 +1,163 @@
+/* Shared visual language for authenticated resources. */
+.protected-resource main .page-shell {
+  padding-block: 2rem 4rem;
+}
+
+.protected-resource .resource-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.protected-resource .resource-back-link,
+.protected-resource .button,
+.protected-resource .primary-action,
+.protected-resource .secondary-action,
+.protected-resource .danger-action,
+.protected-resource .file-action,
+.protected-resource .export-actions button,
+.protected-resource .stock-stepper button,
+.protected-resource .card-actions button {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.protected-resource .resource-back-link,
+.protected-resource .secondary-action,
+.protected-resource .file-action,
+.protected-resource .card-actions button,
+.protected-resource .button.secondary {
+  border-color: var(--home-border);
+  background: var(--home-surface-muted);
+  color: var(--home-text);
+}
+
+.protected-resource .resource-back-link:hover,
+.protected-resource .resource-back-link:focus-visible,
+.protected-resource .secondary-action:hover,
+.protected-resource .secondary-action:focus-visible,
+.protected-resource .file-action:hover,
+.protected-resource .file-action:focus-within,
+.protected-resource .card-actions button:hover,
+.protected-resource .card-actions button:focus-visible,
+.protected-resource .button.secondary:hover,
+.protected-resource .button.secondary:focus-visible {
+  border-color: var(--home-primary);
+  background: #e6eef7;
+  color: var(--home-primary-dark);
+}
+
+.protected-resource .primary-action,
+.protected-resource .export-actions button,
+.protected-resource .stock-stepper button,
+.protected-resource .button:not(.secondary):not(.danger) {
+  background: var(--home-primary);
+  color: #fff;
+}
+
+.protected-resource .primary-action:hover,
+.protected-resource .primary-action:focus-visible,
+.protected-resource .export-actions button:hover:not(:disabled),
+.protected-resource .export-actions button:focus-visible:not(:disabled),
+.protected-resource .stock-stepper button:hover,
+.protected-resource .stock-stepper button:focus-visible,
+.protected-resource .button:not(.secondary):not(.danger):hover,
+.protected-resource .button:not(.secondary):not(.danger):focus-visible {
+  background: var(--home-primary-dark);
+  color: #fff;
+}
+
+.protected-resource .danger-action,
+.protected-resource .button.danger {
+  border-color: #fecaca;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.protected-resource .calculator-panel,
+.protected-resource .calculator-results,
+.protected-resource .stat-card,
+.protected-resource .inventory-toolbar,
+.protected-resource .inventory-card,
+.protected-resource .item-dialog,
+.protected-resource .admin-card,
+.protected-resource .form-card {
+  border: 1px solid var(--home-border);
+  border-radius: var(--home-radius);
+  background: var(--home-surface);
+  box-shadow: 0 8px 30px rgba(23, 32, 51, 0.06);
+}
+
+.protected-resource input,
+.protected-resource select,
+.protected-resource textarea,
+.protected-resource .file-field input[type="file"],
+.protected-resource .stock-stepper input {
+  border-color: var(--home-border);
+  border-radius: 0.75rem;
+  background: var(--home-surface);
+  color: var(--home-text);
+}
+
+.protected-resource input:focus,
+.protected-resource select:focus,
+.protected-resource textarea:focus,
+.protected-resource .file-field input[type="file"]:focus,
+.protected-resource .stock-stepper input:focus {
+  border-color: var(--home-primary);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(47, 95, 143, 0.15);
+}
+
+.protected-resource .calculator-status,
+.protected-resource .inventory-meta,
+.protected-resource .inventory-counted,
+.protected-resource .stat-card span,
+.protected-resource .panel-heading p,
+.protected-resource .form-help {
+  color: var(--home-text-muted);
+}
+
+.protected-resource .results-heading,
+.protected-resource .calculator-results th,
+.protected-resource .calculator-results td,
+.protected-resource .archive-row {
+  border-color: var(--home-border);
+}
+
+.protected-resource .calculator-results th {
+  background: var(--home-surface-muted);
+}
+
+.protected-resource .category-row th {
+  background: #e6eef7;
+  color: var(--home-primary-dark);
+}
+
+.protected-resource button:disabled,
+.protected-resource input:disabled,
+.protected-resource select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 760px) {
+  .protected-resource main .page-shell {
+    width: min(calc(100% - 1.5rem), var(--home-max-width));
+    padding-block: 1.5rem 3rem;
+  }
+
+  .protected-resource .resource-toolbar,
+  .protected-resource .resource-toolbar .resource-back-link {
+    width: 100%;
+  }
+}
