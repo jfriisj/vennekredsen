@@ -1,3 +1,14 @@
+/* global
+    archiveList,
+    archivedItems,
+    authenticatedFetch,
+    inventoryItems,
+    populateCategories,
+    renderArchive,
+    renderInventory,
+    setStatus
+*/
+
 async function deleteArchivedItemPermanently(item) {
     const confirmed = window.confirm(
         `Slet ${item.name} permanent? Handlingen kan ikke fortrydes.`
@@ -57,10 +68,7 @@ function decorateArchiveRows() {
         deleteButton.type = "button";
         deleteButton.className = "danger-action permanent-delete-action";
         deleteButton.textContent = "Slet permanent";
-        deleteButton.setAttribute(
-            "aria-label",
-            `Slet ${item.name} permanent`
-        );
+        deleteButton.setAttribute("aria-label", `Slet ${item.name} permanent`);
         deleteButton.addEventListener("click", () =>
             deleteArchivedItemPermanently(item)
         );
