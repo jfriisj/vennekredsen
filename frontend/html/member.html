@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Vennekredsens interne medlemsområde." />
+    <title>Medlemsområde - Vennekredsen for Hashøjskolen</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link href="homepage.css" rel="stylesheet" />
+    <link href="public-pages.css" rel="stylesheet" />
+    <script src="homepage.js" defer></script>
+  </head>
+
+  <body class="homepage public-page">
+    <a class="skip-link" href="#main-content">Gå til indhold</a>
+
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Primær navigation">
+        <a class="brand" href="index.html" aria-label="Vennekredsen - Forside">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <span>Vennekredsen</span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          data-nav-toggle
+        >
+          Menu
+        </button>
+
+        <div class="nav-links" id="primary-navigation" data-nav-links>
+          <a href="index.html">Forside</a>
+          <a href="member.html" aria-current="page">Medlemsområde</a>
+          <button type="button" class="nav-login" id="logoutButton">
+            Log ud
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <section class="public-hero" aria-labelledby="page-title">
+      <div class="public-hero-inner">
+        <p class="eyebrow">Interne ressourcer</p>
+        <h1 id="page-title">Medlemsområde</h1>
+        <p id="memberWelcome">Henter brugeroplysninger...</p>
+      </div>
+    </section>
+
+    <main id="main-content">
+      <div class="page-shell">
+        <section class="section" aria-labelledby="resources-heading">
+          <div class="section-heading">
+            <p class="eyebrow">Værktøjer</p>
+            <h2 id="resources-heading">Ressourcer</h2>
+            <p>
+              Her finder du de interne værktøjer, som er tilgængelige for
+              Vennekredsens medlemmer.
+            </p>
+          </div>
+
+          <div id="resourceList" class="support-grid" aria-live="polite">
+            <p>Henter ressourcer...</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const token = localStorage.getItem("authToken");
+
+      function redirectToLogin() {
+        localStorage.removeItem("authToken");
+        window.location.href = "member-login.html";
+      }
+
+      async function authenticatedFetch(url) {
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401) {
+          redirectToLogin();
+          throw new Error("Unauthorized");
+        }
+
+        return response;
+      }
+
+      async function initializeMemberArea() {
+        if (!token) {
+          redirectToLogin();
+          return;
+        }
+
+        try {
+          const userResponse = await authenticatedFetch("/api/me");
+          if (!userResponse.ok) {
+            throw new Error("Kunne ikke hente bruger");
+          }
+
+          const user = await userResponse.json();
+          document.getElementById("memberWelcome").textContent =
+            `Logget ind som ${user.username}.`;
+
+          const resourceResponse = await authenticatedFetch(
+            "/api/member/resources"
+          );
+
+          if (!resourceResponse.ok) {
+            throw new Error("Kunne ikke hente ressourcer");
+          }
+
+          const payload = await resourceResponse.json();
+          const resourceList = document.getElementById("resourceList");
+          resourceList.replaceChildren();
+
+          for (const resource of payload.resources) {
+            const card = document.createElement("article");
+            card.className = "card-panel support-card";
+
+            const title = document.createElement("h3");
+            title.textContent = resource.title;
+
+            const description = document.createElement("p");
+            description.textContent = resource.description;
+
+            const status = document.createElement("p");
+            status.textContent = resource.available
+              ? "Tilgængelig"
+              : "Kommer snart";
+
+            card.append(title, description, status);
+            resourceList.append(card);
+          }
+        } catch (error) {
+          if (error.message !== "Unauthorized") {
+            console.error("Member area error:", error);
+          }
+        }
+      }
+
+      document.getElementById("logoutButton").addEventListener("click", () => {
+        localStorage.removeItem("authToken");
+        window.location.href = "member-login.html";
+      });
+
+      initializeMemberArea();
+    </script>
+  </body>
+</html>

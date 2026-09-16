@@ -11,15 +11,13 @@
     "quality:check": "npm run lint && npm run format:check && npm run validate:html"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
-    "eslint": "^8.50.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^16.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "html-validate": "^8.5.0",
-    "prettier": "^3.0.3",
-    "stylelint": "^15.10.3",
-    "stylelint-config-standard": "^34.0.0"
+    "eslint": "^10.10.0",
+    "globals": "^17.12.0",
+    "html-validate": "^11.16.0",
+    "prettier": "^3.9.7",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0"
   }
 }

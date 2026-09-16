@@ -283,6 +283,30 @@ def current_user(current_user):
     )
 
 
+@app.route("/api/member/resources", methods=["GET"])
+@token_required
+def member_resources(current_user):
+    return (
+        jsonify(
+            {
+                "resources": [
+                    {
+                        "id": "purchase-calculator",
+                        "title": "Indkøbsberegner",
+                        "description": (
+                            "Beregn indkøb til arrangementer. "
+                            "Funktionen tilføjes i næste MVP."
+                        ),
+                        "href": None,
+                        "available": False,
+                    }
+                ]
+            }
+        ),
+        200,
+    )
+
+
 @app.route("/api/admin/ansoegninger", methods=["GET"])
 @admin_required
 def admin_hent_ansoegninger(current_user):

@@ -74,6 +74,24 @@ def test_member_cannot_access_admin_endpoint(client, member_headers):
     assert response.status_code == 403
 
 
+def test_member_resources_require_authentication(client):
+    response = client.get("/api/member/resources")
+    assert response.status_code == 401
+
+
+def test_member_can_access_member_resources(client, member_headers):
+    response = client.get("/api/member/resources", headers=member_headers)
+    assert response.status_code == 200
+
+    payload = response.get_json()
+    assert payload["resources"][0]["title"] == "Indkøbsberegner"
+
+
+def test_admin_can_access_member_resources(client, admin_headers):
+    response = client.get("/api/member/resources", headers=admin_headers)
+    assert response.status_code == 200
+
+
 def test_admin_can_access_admin_endpoint(client, admin_headers):
     response = client.get("/api/admin/users", headers=admin_headers)
     assert response.status_code == 200
