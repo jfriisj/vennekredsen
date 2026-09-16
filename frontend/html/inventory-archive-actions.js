@@ -2,7 +2,7 @@
     archiveList,
     archivedItems,
     authenticatedFetch,
-    inventoryItems,
+    inventoryItems:writable,
     populateCategories,
     renderArchive,
     renderInventory,
