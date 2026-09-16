@@ -84,7 +84,10 @@ def test_member_can_access_member_resources(client, member_headers):
     assert response.status_code == 200
 
     payload = response.get_json()
-    assert payload["resources"][0]["title"] == "Indkøbsberegner"
+    resource = payload["resources"][0]
+    assert resource["title"] == "Indkøbsberegner"
+    assert resource["href"] == "purchase-calculator.html"
+    assert resource["available"] is True
 
 
 def test_admin_can_access_member_resources(client, admin_headers):

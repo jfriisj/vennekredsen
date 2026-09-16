@@ -120,7 +120,7 @@ test("member can log in, view resources and log out", async ({ page }, testInfo)
     })
   ).toBeVisible();
 
-  await expect(page.getByText("Tilgængelig")).toBeVisible();
+  await expect(page.getByText("Tilgængelig", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Åbn Indkøbsberegner" })
   ).toHaveAttribute("href", "purchase-calculator.html");

@@ -130,7 +130,7 @@ test("missing indkob sheet shows a clear error", async ({ page }) => {
   await uploadMarker(page, "missing-sheet", "forkert.xlsx");
 
   await expect(page.locator("#statusMessage")).toHaveText(
-    'Filen mangler det forventede ark "indkob".'
+    "Filen mangler det forventede ark indkob."
   );
   await expect(page.locator("#statusMessage")).toHaveAttribute("data-state", "error");
   await expect(page.locator("#downloadCurrent")).toBeDisabled();
