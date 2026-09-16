@@ -1,5 +1,3 @@
-@import url("protected-resource.css");
-
 .inventory-shell {
   display: grid;
   gap: 1.5rem;
