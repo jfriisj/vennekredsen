@@ -1,0 +1,60 @@
+.member-shell {
+  padding-block: 2rem 4rem;
+}
+
+.resource-grid {
+  align-items: stretch;
+}
+
+.resource-card {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.resource-card .resource-link {
+  margin-top: auto;
+}
+
+.resource-view {
+  padding-block: 1rem 3rem;
+}
+
+.resource-view[hidden],
+#resourceDashboard[hidden] {
+  display: none;
+}
+
+.resource-view-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.resource-view-header .panel-heading {
+  margin: 0;
+}
+
+.resource-view-header .eyebrow {
+  margin-top: 0;
+}
+
+.member-area .admin-card,
+.member-area .form-card {
+  box-shadow: none;
+}
+
+.member-area .button {
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .resource-view-header {
+    flex-direction: column;
+  }
+
+  .resource-view-header .button {
+    width: 100%;
+  }
+}
