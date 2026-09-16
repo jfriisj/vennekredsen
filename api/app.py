@@ -294,11 +294,10 @@ def member_resources(current_user):
                         "id": "purchase-calculator",
                         "title": "Indkøbsberegner",
                         "description": (
-                            "Beregn indkøb til arrangementer. "
-                            "Funktionen tilføjes i næste MVP."
+                            "Upload og organiser indkøbslister til arrangementer."
                         ),
-                        "href": None,
-                        "available": False,
+                        "href": "purchase-calculator.html",
+                        "available": True,
                     }
                 ]
             }
