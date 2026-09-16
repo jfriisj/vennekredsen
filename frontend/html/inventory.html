@@ -82,11 +82,7 @@
             </button>
             <label class="file-action">
               <span>Importér varer</span>
-              <input
-                id="importFile"
-                type="file"
-                accept=".ods,.xlsx,.xls"
-              />
+              <input id="importFile" type="file" accept=".ods,.xlsx,.xls" />
             </label>
           </div>
 
@@ -102,9 +98,18 @@
             </label>
 
             <label>
+              Vis
+              <select id="catalogFilter">
+                <option value="active">Aktive varer</option>
+                <option value="archived">Arkiverede varer</option>
+                <option value="all">Alle varer</option>
+              </select>
+            </label>
+
+            <label>
               Lagerstatus
               <select id="stockFilter">
-                <option value="all">Alle varer</option>
+                <option value="all">Alle beholdninger</option>
                 <option value="in_stock">På lager</option>
                 <option value="zero">0 på lager</option>
               </select>
@@ -123,11 +128,8 @@
           <div class="inventory-list-heading">
             <div>
               <p class="eyebrow">Optælling</p>
-              <h2 id="count-heading">Aktive varer</h2>
+              <h2 id="count-heading">Varer</h2>
             </div>
-            <button type="button" id="saveCountsButton" disabled>
-              Gem optælling
-            </button>
           </div>
 
           <div id="inventoryList" class="inventory-list" aria-live="polite">
@@ -191,7 +193,12 @@
 
         <div class="dialog-actions">
           <button type="submit" class="primary-action">Gem vare</button>
-          <button type="button" class="danger-action" id="archiveItemButton" hidden>
+          <button
+            type="button"
+            class="danger-action"
+            id="archiveItemButton"
+            hidden
+          >
             Arkivér vare
           </button>
         </div>
