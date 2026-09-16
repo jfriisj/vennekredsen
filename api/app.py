@@ -12,6 +12,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from inventory import register_inventory
+from site_settings import register_site_settings
 
 app = Flask(__name__)
 CORS(app)
@@ -158,6 +159,7 @@ def admin_required(f):
 
 
 InventoryItem = register_inventory(app, db, token_required)
+SiteSettings = register_site_settings(app, db, admin_required)
 
 
 def _format_event_dates_payload():
@@ -213,6 +215,13 @@ def _authenticate_credentials(username, password):
     if db.session.is_modified(user):
         db.session.commit()
     return user
+
+
+def _active_admin_count(exclude_user_id=None):
+    query = User.query.filter(User.role == "admin", User.is_active.is_(True))
+    if exclude_user_id is not None:
+        query = query.filter(User.id != exclude_user_id)
+    return query.count()
 
 
 @app.route("/api/ansoegning", methods=["POST"])
@@ -435,6 +444,65 @@ def admin_create_user(current_user):
         return jsonify({"message": "Fejl ved oprettelse af bruger"}), 500
 
 
+@app.route("/api/admin/users/<int:user_id>", methods=["PATCH"])
+@admin_required
+def admin_update_user(current_user, user_id):
+    user = db.session.get(User, user_id)
+    if user is None:
+        return jsonify({"message": "Bruger ikke fundet"}), 404
+
+    data = request.get_json(silent=True) or {}
+    requested_role = data.get("role", user.role)
+    requested_active = data.get("is_active", user.is_active)
+
+    if requested_role not in VALID_ROLES:
+        return jsonify({"message": "Ugyldig brugerrolle"}), 400
+    if not isinstance(requested_active, bool):
+        return jsonify({"message": "is_active skal være true eller false"}), 400
+
+    if user.id == current_user.id and (
+        requested_role != "admin" or requested_active is False
+    ):
+        return (
+            jsonify(
+                {
+                    "message": (
+                        "Du kan ikke deaktivere eller fjerne admin-rollen fra "
+                        "din egen bruger"
+                    )
+                }
+            ),
+            400,
+        )
+
+    removes_active_admin = (
+        user.role == "admin"
+        and user.is_active
+        and (requested_role != "admin" or requested_active is False)
+    )
+    if removes_active_admin and _active_admin_count(exclude_user_id=user.id) == 0:
+        return jsonify({"message": "Systemet skal have mindst én aktiv admin"}), 400
+
+    user.role = requested_role
+    user.is_active = requested_active
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                    "is_active": user.is_active,
+                }
+            }
+        ),
+        200,
+    )
+
+
 @app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
 @admin_required
 def admin_delete_user(current_user, user_id):
@@ -445,13 +513,8 @@ def admin_delete_user(current_user, user_id):
     if not user_to_delete:
         return jsonify({"message": "Bruger ikke fundet"}), 404
 
-    if user_to_delete.role == "admin":
-        remaining_active_admins = User.query.filter(
-            User.role == "admin",
-            User.is_active.is_(True),
-            User.id != user_id,
-        ).count()
-        if remaining_active_admins == 0:
+    if user_to_delete.role == "admin" and user_to_delete.is_active:
+        if _active_admin_count(exclude_user_id=user_id) == 0:
             return (
                 jsonify({"message": "Kan ikke slette den sidste aktive admin bruger"}),
                 400,
