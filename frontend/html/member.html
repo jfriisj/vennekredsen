@@ -15,6 +15,7 @@
 
     <link href="homepage.css" rel="stylesheet" />
     <link href="public-pages.css" rel="stylesheet" />
+    <link href="purchase-calculator.css" rel="stylesheet" />
     <script src="homepage.js" defer></script>
   </head>
 
@@ -142,6 +143,15 @@
               : "Kommer snart";
 
             card.append(title, description, status);
+
+            if (resource.available && resource.href) {
+              const link = document.createElement("a");
+              link.className = "resource-link";
+              link.href = resource.href;
+              link.textContent = `Åbn ${resource.title}`;
+              card.appendChild(link);
+            }
+
             resourceList.append(card);
           }
         } catch (error) {
