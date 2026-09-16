@@ -247,7 +247,7 @@ test("member can count stock, filter and add an item", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Servietter" })).toBeVisible();
 });
 
-test("member can archive and restore an item", async ({ page }) => {
+test("member can archive and restore an item from the archive modal", async ({ page }) => {
   const state = await prepareInventory(page);
   await page.goto("/inventory.html");
 
@@ -255,14 +255,17 @@ test("member can archive and restore an item", async ({ page }) => {
   await page.getByRole("button", { name: "Arkivér vare" }).click();
   expect(state.items[0].active).toBe(false);
   await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeHidden();
+  await expect(page.locator("#archiveCount")).toHaveText("1");
 
-  await page.locator("#catalogFilter").selectOption("archived");
-  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeVisible();
-  await page.getByRole("button", { name: "Gendan" }).click();
+  await page.getByRole("button", { name: /Arkiv/ }).click();
+  const archiveDialog = page.locator("#archiveDialog");
+  await expect(archiveDialog).toBeVisible();
+  await expect(archiveDialog.getByText("Pepsi Max", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Gendan Pepsi Max" }).click();
+
   expect(state.items[0].active).toBe(true);
-  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeHidden();
-
-  await page.locator("#catalogFilter").selectOption("active");
+  await expect(archiveDialog.getByText("Pepsi Max", { exact: true })).toBeHidden();
+  await expect(page.locator("#archiveCount")).toHaveText("0");
   await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeVisible();
 });
 
