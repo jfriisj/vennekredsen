@@ -24,6 +24,21 @@ CREATE TABLE event_dates (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE inventory_items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(160) NOT NULL,
+    normalized_name VARCHAR(160) UNIQUE NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    unit VARCHAR(50) NOT NULL,
+    default_store VARCHAR(120) NOT NULL DEFAULT '',
+    stock_quantity DOUBLE PRECISION NOT NULL DEFAULT 0,
+    note TEXT NOT NULL DEFAULT '',
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    last_counted_at TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- No default administrator is inserted here.
 -- Create the first admin interactively with: ./dev.sh create-admin
 
