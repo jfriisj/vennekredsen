@@ -8,7 +8,60 @@ const defaultSettings = {
   announcement_visible: false,
 };
 
-async function mockAdminApis(page) {
+function resourcesFor(role) {
+  const shared = [
+    {
+      id: "purchase-calculator",
+      title: "Indkøbsberegner",
+      description: "Indkøb",
+      href: "purchase-calculator.html",
+      available: true,
+    },
+    {
+      id: "inventory",
+      title: "Lager",
+      description: "Lager",
+      href: "inventory.html",
+      available: true,
+    },
+    {
+      id: "applications",
+      title: "Ansøgninger",
+      description: "Ansøgninger",
+      href: "member.html#applications",
+      available: true,
+    },
+    {
+      id: "events",
+      title: "Arrangementer",
+      description: "Arrangementer",
+      href: "member.html#events",
+      available: true,
+    },
+  ];
+
+  if (role === "admin") {
+    shared.push(
+      {
+        id: "users",
+        title: "Brugere",
+        description: "Brugere",
+        href: "member.html#users",
+        available: true,
+      },
+      {
+        id: "website",
+        title: "Hjemmeside",
+        description: "Hjemmeside",
+        href: "member.html#website",
+        available: true,
+      }
+    );
+  }
+  return shared;
+}
+
+async function mockMemberAreaApis(page, role = "member") {
   let settings = { ...defaultSettings };
   let users = [
     {
@@ -27,9 +80,64 @@ async function mockAdminApis(page) {
     },
   ];
 
-  await page.route("**/api/admin/ansoegninger", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: "[]" })
+  await page.route("**/api/me", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: role === "admin" ? 1 : 2,
+        username: `playwright-${role}`,
+        email: `${role}@example.com`,
+        role,
+      }),
+    })
   );
+
+  await page.route("**/api/member/resources", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ resources: resourcesFor(role) }),
+    })
+  );
+
+  await page.route("**/api/member/applications", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify([
+        {
+          id: 1,
+          navn: "Test Ansøger",
+          email: "test@example.com",
+          belob: 1500,
+          beskrivelse: "Testprojekt",
+          status: "pending",
+        },
+      ]),
+    })
+  );
+
+  await page.route("**/api/member/applications/*/status", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ message: "Updated" }),
+    })
+  );
+
+  await page.route("**/api/member/events", async route => {
+    const events = {
+      sommerfest: "2026-09-18T18:00:00",
+      julefest: "2026-11-27T17:30:00",
+      fastelavn: "2027-02-05T17:30:00",
+    };
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ events }),
+    });
+  });
 
   await page.route("**/api/admin/users", async route => {
     if (route.request().method() === "POST") {
@@ -68,19 +176,6 @@ async function mockAdminApis(page) {
     });
   });
 
-  await page.route("**/api/admin/events", async route => {
-    const events = {
-      sommerfest: "2026-09-18T18:00:00",
-      julefest: "2026-11-27T17:30:00",
-      fastelavn: "2027-02-05T17:30:00",
-    };
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ events }),
-    });
-  });
-
   await page.route("**/api/admin/site-settings", async route => {
     if (route.request().method() === "PUT") {
       settings = route.request().postDataJSON();
@@ -98,19 +193,64 @@ async function mockAdminApis(page) {
   };
 }
 
-test("admin panel redirects when no admin token exists", async ({ page }) => {
-  await page.goto("/admin-panel.html");
-  await expect(page).toHaveURL(/admin-login\.html$/);
+async function openMemberArea(page, role = "member", hash = "") {
+  await mockMemberAreaApis(page, role);
+  await page.addInitScript(() => {
+    localStorage.setItem("authToken", "playwright-auth-token");
+  });
+  await page.goto(`/member.html${hash}`);
+}
+
+test("member area redirects when no auth token exists", async ({ page }) => {
+  await page.goto("/member.html");
+  await expect(page).toHaveURL(/member-login\.html$/);
 });
 
-test("admin can edit homepage settings", async ({ page }) => {
-  const state = await mockAdminApis(page);
-  await page.addInitScript(() => {
-    localStorage.setItem("adminToken", "playwright-admin-token");
-  });
+test("member sees four shared resources", async ({ page }) => {
+  await openMemberArea(page, "member");
 
-  await page.goto("/admin-panel.html");
-  await page.getByRole("button", { name: "Hjemmeside" }).click();
+  await expect(page.getByRole("heading", { name: "Indkøbsberegner" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Lager" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ansøgninger" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Arrangementer" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Brugere" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Hjemmeside" })).toHaveCount(0);
+});
+
+test("member can open applications and events from resources", async ({ page }) => {
+  await openMemberArea(page, "member");
+
+  await page.getByRole("link", { name: "Åbn Ansøgninger" }).click();
+  await expect(page.locator('[data-resource-view="applications"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Test Ansøger" })).toBeVisible();
+
+  await page.getByRole("button", { name: "← Ressourcer" }).click();
+  await page.getByRole("link", { name: "Åbn Arrangementer" }).click();
+  await expect(page.locator('[data-resource-view="events"]')).toBeVisible();
+  await expect(page.locator('[name="sommerfest"]')).toHaveValue("2026-09-18T18:00");
+});
+
+test("admin sees shared and admin-only resources", async ({ page }) => {
+  await openMemberArea(page, "admin");
+
+  for (const name of [
+    "Indkøbsberegner",
+    "Lager",
+    "Ansøgninger",
+    "Arrangementer",
+    "Brugere",
+    "Hjemmeside",
+  ]) {
+    await expect(page.getByRole("heading", { name })).toBeVisible();
+  }
+});
+
+test("admin can edit homepage settings from member resources", async ({ page }) => {
+  const state = await mockMemberAreaApis(page, "admin");
+  await page.addInitScript(() => {
+    localStorage.setItem("authToken", "playwright-admin-token");
+  });
+  await page.goto("/member.html#website");
 
   await page.locator('[name="hero_heading"]').fill("Ny overskrift");
   await page.locator('[name="hero_subheading"]').fill("Ny hero tekst");
@@ -129,14 +269,14 @@ test("admin can edit homepage settings", async ({ page }) => {
   });
 });
 
-test("admin can change a user role and active state", async ({ page }) => {
-  const state = await mockAdminApis(page);
+test("admin can change a user role and active state from member resources", async ({
+  page,
+}) => {
+  const state = await mockMemberAreaApis(page, "admin");
   await page.addInitScript(() => {
-    localStorage.setItem("adminToken", "playwright-admin-token");
+    localStorage.setItem("authToken", "playwright-admin-token");
   });
-
-  await page.goto("/admin-panel.html");
-  await page.getByRole("button", { name: "Brugere" }).click();
+  await page.goto("/member.html#users");
 
   const memberCard = page.locator(".user-card").filter({
     hasText: "playwright-member",
