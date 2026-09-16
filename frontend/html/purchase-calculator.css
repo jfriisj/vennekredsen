@@ -1,3 +1,5 @@
+@import url("protected-resource.css");
+
 .calculator-shell {
   display: grid;
   gap: 1.5rem;
