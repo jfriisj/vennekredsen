@@ -3,9 +3,9 @@ const mainContent = document.getElementById("main-content");
 const inventoryStatus = document.getElementById("inventoryStatus");
 const inventoryList = document.getElementById("inventoryList");
 const searchInput = document.getElementById("searchInput");
+const catalogFilter = document.getElementById("catalogFilter");
 const stockFilter = document.getElementById("stockFilter");
 const categoryFilter = document.getElementById("categoryFilter");
-const saveCountsButton = document.getElementById("saveCountsButton");
 const importFile = document.getElementById("importFile");
 const itemDialog = document.getElementById("itemDialog");
 const itemForm = document.getElementById("itemForm");
@@ -22,7 +22,6 @@ const archiveItemButton = document.getElementById("archiveItemButton");
 const formStatus = document.getElementById("formStatus");
 
 let inventoryItems = [];
-const pendingCounts = new Map();
 
 function redirectToLogin() {
     localStorage.removeItem("authToken");
@@ -72,14 +71,6 @@ function setStatus(message) {
     inventoryStatus.textContent = message;
 }
 
-function formatQuantity(value) {
-    const number = Number(value);
-    if (Number.isInteger(number)) {
-        return String(number);
-    }
-    return number.toLocaleString("da-DK", { maximumFractionDigits: 2 });
-}
-
 function formatCountedAt(value) {
     if (!value) {
         return "Ikke optalt endnu";
@@ -90,9 +81,9 @@ function formatCountedAt(value) {
 
 function populateCategories() {
     const previous = categoryFilter.value;
-    const categories = [...new Set(inventoryItems.map(item => item.category))].sort(
-        (a, b) => a.localeCompare(b, "da")
-    );
+    const categories = [
+        ...new Set(inventoryItems.map(item => item.category)),
+    ].sort((a, b) => a.localeCompare(b, "da"));
 
     categoryFilter.replaceChildren();
     const allOption = document.createElement("option");
@@ -114,30 +105,91 @@ function populateCategories() {
 
 function filteredItems() {
     const query = searchInput.value.trim().toLocaleLowerCase("da-DK");
+    const catalog = catalogFilter.value;
     const stock = stockFilter.value;
     const category = categoryFilter.value;
 
     return inventoryItems.filter(item => {
         const matchesSearch =
             !query || item.name.toLocaleLowerCase("da-DK").includes(query);
+        const matchesCatalog =
+            catalog === "all" ||
+            (catalog === "active" && item.active) ||
+            (catalog === "archived" && !item.active);
         const matchesCategory = !category || item.category === category;
-        const quantity = pendingCounts.has(item.id)
-            ? pendingCounts.get(item.id)
-            : item.stock_quantity;
         const matchesStock =
             stock === "all" ||
-            (stock === "in_stock" && quantity > 0) ||
-            (stock === "zero" && quantity === 0);
-        return matchesSearch && matchesCategory && matchesStock;
+            (stock === "in_stock" && item.stock_quantity > 0) ||
+            (stock === "zero" && item.stock_quantity === 0);
+        return matchesSearch && matchesCatalog && matchesCategory && matchesStock;
     });
 }
 
-function markCount(item, input, nextValue) {
+function replaceItem(updatedItem) {
+    inventoryItems = inventoryItems.map(item =>
+        item.id === updatedItem.id ? updatedItem : item
+    );
+}
+
+async function saveStock(item, input, nextValue, controls) {
     const value = Math.max(0, Number(nextValue) || 0);
+    const previousValue = item.stock_quantity;
     input.value = value;
-    input.dataset.dirty = "true";
-    pendingCounts.set(item.id, value);
-    saveCountsButton.disabled = false;
+    controls.forEach(control => {
+        control.disabled = true;
+    });
+    setStatus(`Gemmer ${item.name}...`);
+
+    try {
+        const response = await authenticatedFetch(
+            `/api/inventory/items/${item.id}/stock`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({ stock_quantity: value }),
+            }
+        );
+        const payload = await response.json();
+        if (!response.ok) {
+            throw new Error(payload.message || "Lagerantallet kunne ikke gemmes.");
+        }
+        replaceItem(payload.item);
+        input.value = payload.item.stock_quantity;
+        setStatus(`${item.name} er gemt med ${payload.item.stock_quantity} ${item.unit}.`);
+        renderInventory();
+    } catch (error) {
+        input.value = previousValue;
+        if (error.message !== "Unauthorized") {
+            setStatus(error.message);
+        }
+    } finally {
+        controls.forEach(control => {
+            control.disabled = false;
+        });
+    }
+}
+
+async function restoreItem(item) {
+    setStatus(`Gendanner ${item.name}...`);
+    try {
+        const response = await authenticatedFetch(
+            `/api/inventory/items/${item.id}/active`,
+            {
+                method: "PATCH",
+                body: JSON.stringify({ active: true }),
+            }
+        );
+        const payload = await response.json();
+        if (!response.ok) {
+            throw new Error(payload.message || "Varen kunne ikke gendannes.");
+        }
+        replaceItem(payload.item);
+        setStatus(`${item.name} er gendannet.`);
+        renderInventory();
+    } catch (error) {
+        if (error.message !== "Unauthorized") {
+            setStatus(error.message);
+        }
+    }
 }
 
 function createInventoryCard(item) {
@@ -158,66 +210,77 @@ function createInventoryCard(item) {
         .join(" · ");
     headingGroup.append(title, meta);
 
-    const editButton = document.createElement("button");
-    editButton.type = "button";
-    editButton.className = "secondary-action";
-    editButton.textContent = "Redigér";
-    editButton.addEventListener("click", () => openEditDialog(item));
-    header.append(headingGroup, editButton);
-
-    const stockControl = document.createElement("div");
-    stockControl.className = "stock-control";
-    const stockLabel = document.createElement("span");
-    stockLabel.textContent = `På lager (${item.unit})`;
-
-    const stepper = document.createElement("div");
-    stepper.className = "stock-stepper";
-
-    const minusButton = document.createElement("button");
-    minusButton.type = "button";
-    minusButton.setAttribute("aria-label", `Træk én fra ${item.name}`);
-    minusButton.textContent = "−";
-
-    const input = document.createElement("input");
-    input.type = "number";
-    input.min = "0";
-    input.step = "any";
-    input.inputMode = "decimal";
-    input.setAttribute("aria-label", `Lagerantal for ${item.name}`);
-    input.value = pendingCounts.has(item.id)
-        ? pendingCounts.get(item.id)
-        : item.stock_quantity;
-    if (pendingCounts.has(item.id)) {
-        input.dataset.dirty = "true";
+    const actionButton = document.createElement("button");
+    actionButton.type = "button";
+    actionButton.className = "secondary-action";
+    if (item.active) {
+        actionButton.textContent = "Redigér";
+        actionButton.addEventListener("click", () => openEditDialog(item));
+    } else {
+        actionButton.textContent = "Gendan";
+        actionButton.addEventListener("click", () => restoreItem(item));
     }
+    header.append(headingGroup, actionButton);
+    card.appendChild(header);
 
-    const plusButton = document.createElement("button");
-    plusButton.type = "button";
-    plusButton.setAttribute("aria-label", `Læg én til ${item.name}`);
-    plusButton.textContent = "+";
+    if (item.active) {
+        const stockControl = document.createElement("div");
+        stockControl.className = "stock-control";
+        const stockLabel = document.createElement("span");
+        stockLabel.textContent = `På lager (${item.unit})`;
 
-    minusButton.addEventListener("click", () => {
-        markCount(item, input, Number(input.value) - 1);
-    });
-    plusButton.addEventListener("click", () => {
-        markCount(item, input, Number(input.value) + 1);
-    });
-    input.addEventListener("input", () => markCount(item, input, input.value));
+        const stepper = document.createElement("div");
+        stepper.className = "stock-stepper";
 
-    stepper.append(minusButton, input, plusButton);
-    stockControl.append(stockLabel, stepper);
+        const minusButton = document.createElement("button");
+        minusButton.type = "button";
+        minusButton.setAttribute("aria-label", `Træk én fra ${item.name}`);
+        minusButton.textContent = "−";
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "0";
+        input.step = "any";
+        input.inputMode = "decimal";
+        input.setAttribute("aria-label", `Lagerantal for ${item.name}`);
+        input.value = item.stock_quantity;
+
+        const plusButton = document.createElement("button");
+        plusButton.type = "button";
+        plusButton.setAttribute("aria-label", `Læg én til ${item.name}`);
+        plusButton.textContent = "+";
+
+        const controls = [minusButton, input, plusButton];
+        minusButton.addEventListener("click", () => {
+            saveStock(item, input, Number(input.value) - 1, controls);
+        });
+        plusButton.addEventListener("click", () => {
+            saveStock(item, input, Number(input.value) + 1, controls);
+        });
+        input.addEventListener("change", () => {
+            saveStock(item, input, input.value, controls);
+        });
+
+        stepper.append(minusButton, input, plusButton);
+        stockControl.append(stockLabel, stepper);
+        card.appendChild(stockControl);
+    } else {
+        const archived = document.createElement("p");
+        archived.className = "inventory-counted";
+        archived.textContent = "Arkiveret vare";
+        card.appendChild(archived);
+    }
 
     const counted = document.createElement("p");
     counted.className = "inventory-counted";
     counted.textContent = formatCountedAt(item.last_counted_at);
+    card.appendChild(counted);
 
     if (item.note) {
         const note = document.createElement("p");
         note.className = "inventory-meta";
         note.textContent = item.note;
-        card.append(header, stockControl, counted, note);
-    } else {
-        card.append(header, stockControl, counted);
+        card.appendChild(note);
     }
 
     return card;
@@ -240,7 +303,9 @@ function renderInventory() {
 
 async function loadInventory() {
     try {
-        const response = await authenticatedFetch("/api/inventory/items");
+        const response = await authenticatedFetch(
+            "/api/inventory/items?include_inactive=true"
+        );
         if (!response.ok) {
             throw new Error("Kunne ikke hente lageret");
         }
@@ -248,7 +313,9 @@ async function loadInventory() {
         inventoryItems = payload.items;
         populateCategories();
         renderInventory();
-        setStatus(`${inventoryItems.length} aktive varer i kataloget.`);
+        const activeCount = inventoryItems.filter(item => item.active).length;
+        const archivedCount = inventoryItems.length - activeCount;
+        setStatus(`${activeCount} aktive varer · ${archivedCount} arkiverede.`);
     } catch (error) {
         if (error.message !== "Unauthorized") {
             setStatus(error.message);
@@ -305,7 +372,9 @@ async function saveItem(event) {
 
     try {
         const response = await authenticatedFetch(
-            editingId ? `/api/inventory/items/${editingId}` : "/api/inventory/items",
+            editingId
+                ? `/api/inventory/items/${editingId}`
+                : "/api/inventory/items",
             {
                 method: editingId ? "PUT" : "POST",
                 body: JSON.stringify(body),
@@ -313,7 +382,8 @@ async function saveItem(event) {
         );
         const payload = await response.json();
         if (!response.ok) {
-            formStatus.textContent = payload.message || "Varen kunne ikke gemmes.";
+            formStatus.textContent =
+                payload.message || "Varen kunne ikke gemmes.";
             return;
         }
         itemDialog.close();
@@ -338,47 +408,16 @@ async function archiveItem() {
         );
         if (!response.ok) {
             const payload = await response.json();
-            formStatus.textContent = payload.message || "Varen kunne ikke arkiveres.";
+            formStatus.textContent =
+                payload.message || "Varen kunne ikke arkiveres.";
             return;
         }
-        pendingCounts.delete(Number(editingId));
         itemDialog.close();
         await loadInventory();
+        setStatus("Varen er arkiveret og kan findes under Arkiverede varer.");
     } catch (error) {
         if (error.message !== "Unauthorized") {
             formStatus.textContent = "Varen kunne ikke arkiveres.";
-        }
-    }
-}
-
-async function saveCounts() {
-    if (pendingCounts.size === 0) {
-        return;
-    }
-
-    saveCountsButton.disabled = true;
-    setStatus("Gemmer optælling...");
-
-    try {
-        for (const [id, quantity] of pendingCounts.entries()) {
-            const response = await authenticatedFetch(
-                `/api/inventory/items/${id}/stock`,
-                {
-                    method: "PATCH",
-                    body: JSON.stringify({ stock_quantity: quantity }),
-                }
-            );
-            if (!response.ok) {
-                throw new Error("Optællingen kunne ikke gemmes.");
-            }
-        }
-        pendingCounts.clear();
-        await loadInventory();
-        setStatus("Optællingen er gemt.");
-    } catch (error) {
-        saveCountsButton.disabled = false;
-        if (error.message !== "Unauthorized") {
-            setStatus(error.message);
         }
     }
 }
@@ -395,8 +434,10 @@ function parseImportedRows(rows) {
         const first = row[0];
         const second = row[1];
         const third = row[2];
-        const secondMissing = second === null || second === "" || second === undefined;
-        const thirdMissing = third === null || third === "" || third === undefined;
+        const secondMissing =
+            second === null || second === "" || second === undefined;
+        const thirdMissing =
+            third === null || third === "" || third === undefined;
 
         if (first && secondMissing && thirdMissing) {
             currentCategory = String(first).trim();
@@ -422,7 +463,9 @@ async function importInventory(file) {
             throw new Error("Spreadsheet-biblioteket kunne ikke indlæses.");
         }
 
-        const workbook = XLSX.read(await file.arrayBuffer(), { cellDates: true });
+        const workbook = XLSX.read(await file.arrayBuffer(), {
+            cellDates: true,
+        });
         const sheet = workbook.Sheets.indkob;
         if (!sheet) {
             throw new Error("Filen mangler det forventede ark indkob.");
@@ -443,7 +486,6 @@ async function importInventory(file) {
             throw new Error(result.message || "Importen mislykkedes.");
         }
 
-        pendingCounts.clear();
         await loadInventory();
         setStatus(
             `Import færdig: ${result.created} oprettet, ${result.matched} eksisterede allerede, ${result.invalid} ugyldige.`
@@ -456,14 +498,16 @@ async function importInventory(file) {
     }
 }
 
-document.getElementById("addItemButton").addEventListener("click", openAddDialog);
+document
+    .getElementById("addItemButton")
+    .addEventListener("click", openAddDialog);
 document.getElementById("closeDialogButton").addEventListener("click", () => {
     itemDialog.close();
 });
 itemForm.addEventListener("submit", saveItem);
 archiveItemButton.addEventListener("click", archiveItem);
-saveCountsButton.addEventListener("click", saveCounts);
 searchInput.addEventListener("input", renderInventory);
+catalogFilter.addEventListener("change", renderInventory);
 stockFilter.addEventListener("change", renderInventory);
 categoryFilter.addEventListener("change", renderInventory);
 importFile.addEventListener("change", event => {
