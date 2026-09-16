@@ -52,8 +52,10 @@
         <div class="hero-inner">
           <div class="hero-copy">
             <p class="eyebrow">For børnene på Hashøjskolen</p>
-            <h1 id="hero-title">Vi gør gode idéer mulige.</h1>
-            <p class="hero-lead">
+            <h1 id="hero-title" data-site-hero-heading>
+              Vi gør gode idéer mulige.
+            </h1>
+            <p class="hero-lead" data-site-hero-subheading>
               Vennekredsen samler midler og frivillige kræfter, så børnene på
               Hashøjskolen får flere oplevelser, stærkere fællesskaber og bedre
               rammer i hverdagen.
@@ -69,6 +71,18 @@
       </section>
 
       <div class="page-shell">
+        <section
+          class="section"
+          data-site-announcement
+          aria-label="Information fra Vennekredsen"
+          hidden
+        >
+          <div class="card-panel">
+            <p class="eyebrow">Aktuel information</p>
+            <p data-site-announcement-text></p>
+          </div>
+        </section>
+
         <section
           class="section"
           id="next-event"
@@ -104,7 +118,7 @@
             >
               <p class="eyebrow">Derfor gør vi det</p>
               <h3 id="mission-heading">Fællesskab skal være for alle.</h3>
-              <p>
+              <p data-site-intro>
                 Vennekredsen arbejder for, at økonomi ikke bliver en barriere
                 for børnenes deltagelse i oplevelser og aktiviteter omkring
                 skolen.
