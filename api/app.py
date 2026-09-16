@@ -265,7 +265,7 @@ def login():
     )
 
 
-# Backwards-compatible admin login used by the current admin frontend.
+# Backwards-compatible admin login used by the legacy admin frontend.
 @app.route("/api/admin/login", methods=["POST"])
 def admin_login():
     data = request.json or {}
@@ -300,38 +300,64 @@ def current_user(current_user):
 @app.route("/api/member/resources", methods=["GET"])
 @token_required
 def member_resources(current_user):
-    return (
-        jsonify(
-            {
-                "resources": [
-                    {
-                        "id": "purchase-calculator",
-                        "title": "Indkøbsberegner",
-                        "description": (
-                            "Upload og organiser indkøbslister til arrangementer."
-                        ),
-                        "href": "purchase-calculator.html",
-                        "available": True,
-                    },
-                    {
-                        "id": "inventory",
-                        "title": "Lager",
-                        "description": (
-                            "Administrér varekatalog og optæl lager efter arrangementer."
-                        ),
-                        "href": "inventory.html",
-                        "available": True,
-                    },
-                ]
-            }
-        ),
-        200,
-    )
+    resources = [
+        {
+            "id": "purchase-calculator",
+            "title": "Indkøbsberegner",
+            "description": "Upload og organiser indkøbslister til arrangementer.",
+            "href": "purchase-calculator.html",
+            "available": True,
+        },
+        {
+            "id": "inventory",
+            "title": "Lager",
+            "description": "Administrér varekatalog og optæl lager efter arrangementer.",
+            "href": "inventory.html",
+            "available": True,
+        },
+        {
+            "id": "applications",
+            "title": "Ansøgninger",
+            "description": "Behandl ansøgninger og administrér støttede projekter.",
+            "href": "member.html#applications",
+            "available": True,
+        },
+        {
+            "id": "events",
+            "title": "Arrangementer",
+            "description": "Opdater datoer for Vennekredsens arrangementer.",
+            "href": "member.html#events",
+            "available": True,
+        },
+    ]
+
+    if current_user.role == "admin":
+        resources.extend(
+            [
+                {
+                    "id": "users",
+                    "title": "Brugere",
+                    "description": "Administrér brugere, roller og aktiv status.",
+                    "href": "member.html#users",
+                    "available": True,
+                },
+                {
+                    "id": "website",
+                    "title": "Hjemmeside",
+                    "description": "Redigér de centrale tekster på forsiden.",
+                    "href": "member.html#website",
+                    "available": True,
+                },
+            ]
+        )
+
+    return jsonify({"resources": resources}), 200
 
 
+@app.route("/api/member/applications", methods=["GET"])
 @app.route("/api/admin/ansoegninger", methods=["GET"])
-@admin_required
-def admin_hent_ansoegninger(current_user):
+@token_required
+def member_get_applications(current_user):
     ansogninger = Ansoegning.query.all()
     return jsonify(
         [
@@ -353,10 +379,11 @@ def admin_hent_ansoegninger(current_user):
     )
 
 
+@app.route("/api/member/applications/<int:id>/status", methods=["PUT"])
 @app.route("/api/admin/ansoegning/<int:id>/status", methods=["PUT"])
-@admin_required
-def admin_update_status(current_user, id):
-    data = request.json
+@token_required
+def member_update_application_status(current_user, id):
+    data = request.json or {}
     status = data.get("status")
     if not status or status not in ["pending", "approved", "rejected"]:
         return jsonify({"message": "Invalid status value"}), 400
@@ -370,9 +397,10 @@ def admin_update_status(current_user, id):
     return jsonify({"message": f"Application {id} status updated to {status}"}), 200
 
 
+@app.route("/api/member/applications/<int:id>", methods=["DELETE"])
 @app.route("/api/admin/ansoegning/<int:id>", methods=["DELETE"])
-@admin_required
-def admin_delete_application(current_user, id):
+@token_required
+def member_delete_application(current_user, id):
     ansogning = Ansoegning.query.get(id)
     if not ansogning:
         return jsonify({"message": "Application not found"}), 404
@@ -557,15 +585,17 @@ def get_event_dates():
     return jsonify({"events": _format_event_dates_payload()}), 200
 
 
+@app.route("/api/member/events", methods=["GET"])
 @app.route("/api/admin/events", methods=["GET"])
-@admin_required
-def admin_get_event_dates(current_user):
+@token_required
+def member_get_event_dates(current_user):
     return jsonify({"events": _format_event_dates_payload()}), 200
 
 
+@app.route("/api/member/events", methods=["PUT"])
 @app.route("/api/admin/events", methods=["PUT"])
-@admin_required
-def admin_update_event_dates(current_user):
+@token_required
+def member_update_event_dates(current_user):
     data = request.json
     if not isinstance(data, dict):
         return jsonify({"message": "Invalid payload"}), 400
