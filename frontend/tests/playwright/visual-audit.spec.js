@@ -153,8 +153,10 @@ async function mockMemberArea(page, role = "admin") {
       body: JSON.stringify({
         settings: {
           hero_heading: "Vi gør gode idéer mulige.",
-          hero_subheading: "Vennekredsen støtter aktiviteter og fællesskab omkring Hashøjskolen.",
-          intro_text: "Vi hjælper gode initiativer videre med støtte og praktisk opbakning.",
+          hero_subheading:
+            "Vennekredsen støtter aktiviteter og fællesskab omkring Hashøjskolen.",
+          intro_text:
+            "Vi hjælper gode initiativer videre med støtte og praktisk opbakning.",
           announcement_text: "Næste fælles arrangement er snart på vej.",
           announcement_visible: true,
         },
@@ -168,54 +170,48 @@ async function mockInventory(page) {
   await page.route("https://cdnjs.cloudflare.com/**", route =>
     route.fulfill({ status: 200, contentType: "text/javascript", body: "" })
   );
-  await page.route("**/api/inventory/items?include_inactive=false", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        items: [
-          {
-            id: 1,
-            name: "Pepsi Max",
-            category: "Drikkevarer",
-            unit: "kasser",
-            default_store: "Dagrofa",
-            stock_quantity: 3,
-            note: "",
-            active: true,
-            last_counted_at: "2026-09-16T18:00:00",
-          },
-          {
-            id: 2,
-            name: "Popcorn",
-            category: "Snacks",
-            unit: "poser",
-            default_store: "Biltema",
-            stock_quantity: 0,
-            note: "",
-            active: true,
-            last_counted_at: null,
-          },
-          {
-            id: 3,
-            name: "Servietter",
-            category: "Borddækning",
-            unit: "pakker",
-            default_store: "Dagrofa",
-            stock_quantity: 4,
-            note: "Hvide",
-            active: true,
-            last_counted_at: "2026-09-15T16:00:00",
-          },
-        ],
-      }),
-    })
-  );
+
+  const items = [
+    {
+      id: 1,
+      name: "Pepsi Max",
+      category: "Drikkevarer",
+      unit: "kasser",
+      default_store: "Dagrofa",
+      stock_quantity: 3,
+      note: "",
+      active: true,
+      last_counted_at: "2026-09-16T18:00:00",
+    },
+    {
+      id: 2,
+      name: "Popcorn",
+      category: "Snacks",
+      unit: "poser",
+      default_store: "Biltema",
+      stock_quantity: 0,
+      note: "",
+      active: true,
+      last_counted_at: null,
+    },
+    {
+      id: 3,
+      name: "Servietter",
+      category: "Borddækning",
+      unit: "pakker",
+      default_store: "Dagrofa",
+      stock_quantity: 4,
+      note: "Hvide",
+      active: true,
+      last_counted_at: "2026-09-15T16:00:00",
+    },
+  ];
+
   await page.route("**/api/inventory/items?include_inactive=true", route =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ items: [] }),
+      body: JSON.stringify({ items }),
     })
   );
 }
@@ -237,7 +233,9 @@ test.describe("protected resource visual audit", () => {
   test("member dashboard", async ({ page }, testInfo) => {
     await mockMemberArea(page, "member");
     await page.goto("/member.html");
-    await expect(page.getByRole("heading", { level: 1, name: "Medlemsområde" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Medlemsområde" })
+    ).toBeVisible();
     await saveScreenshot(page, testInfo, "member-dashboard");
   });
 
@@ -252,7 +250,9 @@ test.describe("protected resource visual audit", () => {
     test(`member resource view ${view}`, async ({ page }, testInfo) => {
       await mockMemberArea(page, "admin");
       await page.goto(`/member.html#${view}`);
-      await expect(page.locator(`[data-resource-view="${view}"]`)).toBeVisible();
+      await expect(
+        page.locator(`[data-resource-view="${view}"]`)
+      ).toBeVisible();
       await saveScreenshot(page, testInfo, `resource-${view}`);
     });
   }
@@ -260,7 +260,9 @@ test.describe("protected resource visual audit", () => {
   test("inventory", async ({ page }, testInfo) => {
     await mockInventory(page);
     await page.goto("/inventory.html");
-    await expect(page.getByRole("heading", { level: 1, name: "Lager" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Lager" })
+    ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeVisible();
     await saveScreenshot(page, testInfo, "inventory");
   });
@@ -268,7 +270,9 @@ test.describe("protected resource visual audit", () => {
   test("purchase calculator", async ({ page }, testInfo) => {
     await mockCalculator(page);
     await page.goto("/purchase-calculator.html");
-    await expect(page.getByRole("heading", { level: 1, name: "Indkøbsberegner" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Indkøbsberegner" })
+    ).toBeVisible();
     await saveScreenshot(page, testInfo, "purchase-calculator");
   });
 });
