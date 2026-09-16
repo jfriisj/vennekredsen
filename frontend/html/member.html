@@ -15,11 +15,13 @@
 
     <link href="homepage.css" rel="stylesheet" />
     <link href="public-pages.css" rel="stylesheet" />
-    <link href="purchase-calculator.css" rel="stylesheet" />
+    <link href="admin-panel.css" rel="stylesheet" />
+    <link href="member-area.css" rel="stylesheet" />
     <script src="homepage.js" defer></script>
+    <script src="member-area.js" defer></script>
   </head>
 
-  <body class="homepage public-page">
+  <body class="homepage public-page member-area">
     <a class="skip-link" href="#main-content">Gå til indhold</a>
 
     <header class="site-header">
@@ -42,9 +44,7 @@
         <div class="nav-links" id="primary-navigation" data-nav-links>
           <a href="index.html">Forside</a>
           <a href="member.html" aria-current="page">Medlemsområde</a>
-          <button type="button" class="nav-login" id="logoutButton">
-            Log ud
-          </button>
+          <button type="button" class="nav-login" id="logoutButton">Log ud</button>
         </div>
       </nav>
     </header>
@@ -58,115 +58,115 @@
     </section>
 
     <main id="main-content">
-      <div class="page-shell">
-        <section class="section" aria-labelledby="resources-heading">
+      <div class="page-shell member-shell">
+        <div id="memberMessage" class="admin-message" role="status" hidden></div>
+
+        <section id="resourceDashboard" class="section" aria-labelledby="resources-heading">
           <div class="section-heading">
             <p class="eyebrow">Værktøjer</p>
             <h2 id="resources-heading">Ressourcer</h2>
-            <p>
-              Her finder du de interne værktøjer, som er tilgængelige for
-              Vennekredsens medlemmer.
-            </p>
+            <p>Alle interne funktioner er samlet her. Hvilke ressourcer du ser, afhænger af din rolle.</p>
           </div>
-
-          <div id="resourceList" class="support-grid" aria-live="polite">
+          <div id="resourceList" class="support-grid resource-grid" aria-live="polite">
             <p>Henter ressourcer...</p>
           </div>
         </section>
+
+        <section class="resource-view" data-resource-view="applications" hidden>
+          <div class="resource-view-header">
+            <button class="button secondary" type="button" data-back-resources>← Ressourcer</button>
+            <div class="panel-heading">
+              <p class="eyebrow">Ressource</p>
+              <h2>Ansøgninger</h2>
+              <p>Behandl ansøgninger og styr hvilke projekter der bliver offentlige.</p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <input id="application-search" type="search" placeholder="Søg efter navn, email eller beskrivelse" aria-label="Søg i ansøgninger" />
+            <select id="application-status-filter" aria-label="Filtrér efter status">
+              <option value="all">Alle statuser</option>
+              <option value="pending">Afventer</option>
+              <option value="approved">Godkendt</option>
+              <option value="rejected">Afvist</option>
+            </select>
+          </div>
+          <div id="applications-list" class="card-list" aria-live="polite"></div>
+        </section>
+
+        <section class="resource-view" data-resource-view="events" hidden>
+          <div class="resource-view-header">
+            <button class="button secondary" type="button" data-back-resources>← Ressourcer</button>
+            <div class="panel-heading">
+              <p class="eyebrow">Ressource</p>
+              <h2>Arrangementer</h2>
+              <p>Opdater datoerne der bruges på de offentlige sider.</p>
+            </div>
+          </div>
+          <form id="event-form" class="form-card">
+            <div class="form-grid">
+              <div class="form-field"><label for="sommerfest">Sommerfest</label><input id="sommerfest" name="sommerfest" type="datetime-local" required /></div>
+              <div class="form-field"><label for="julefest">Julefest</label><input id="julefest" name="julefest" type="datetime-local" required /></div>
+              <div class="form-field"><label for="fastelavn">Fastelavn</label><input id="fastelavn" name="fastelavn" type="datetime-local" required /></div>
+            </div>
+            <div class="form-actions"><button class="button" type="submit">Gem arrangementsdatoer</button></div>
+          </form>
+        </section>
+
+        <section class="resource-view" data-resource-view="users" hidden>
+          <div class="resource-view-header">
+            <button class="button secondary" type="button" data-back-resources>← Ressourcer</button>
+            <div class="panel-heading">
+              <p class="eyebrow">Administration</p>
+              <h2>Brugere</h2>
+              <p>Opret brugere og administrér roller og aktiv status.</p>
+            </div>
+          </div>
+          <div class="two-column">
+            <div id="users-list" class="card-list" aria-live="polite"></div>
+            <div>
+              <form id="create-user-form" class="form-card">
+                <h3>Opret bruger</h3>
+                <div class="form-grid">
+                  <div class="form-field full"><label for="create-username">Brugernavn</label><input id="create-username" name="username" type="text" minlength="3" required /></div>
+                  <div class="form-field full"><label for="create-email">Email</label><input id="create-email" name="email" type="email" required /></div>
+                  <div class="form-field full"><label for="create-role">Rolle</label><select id="create-role" name="role" required><option value="member">Medlem</option><option value="admin">Administrator</option></select></div>
+                  <div class="form-field full"><label for="create-password">Adgangskode</label><input id="create-password" name="password" type="password" minlength="8" autocomplete="new-password" required /></div>
+                  <div class="form-field full"><label for="create-confirm-password">Bekræft adgangskode</label><input id="create-confirm-password" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required /></div>
+                </div>
+                <div class="form-actions"><button class="button" type="submit">Opret bruger</button></div>
+              </form>
+              <form id="change-password-form" class="form-card">
+                <h3>Skift egen adgangskode</h3>
+                <div class="form-field"><label for="current-password">Nuværende adgangskode</label><input id="current-password" name="currentPassword" type="password" autocomplete="current-password" required /></div>
+                <div class="form-field"><label for="new-password">Ny adgangskode</label><input id="new-password" name="newPassword" type="password" minlength="8" autocomplete="new-password" required /></div>
+                <div class="form-field"><label for="confirm-new-password">Bekræft ny adgangskode</label><input id="confirm-new-password" name="confirmNewPassword" type="password" minlength="8" autocomplete="new-password" required /></div>
+                <div class="form-actions"><button class="button secondary" type="submit">Skift adgangskode</button></div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="resource-view" data-resource-view="website" hidden>
+          <div class="resource-view-header">
+            <button class="button secondary" type="button" data-back-resources>← Ressourcer</button>
+            <div class="panel-heading">
+              <p class="eyebrow">Administration</p>
+              <h2>Hjemmeside</h2>
+              <p>Redigér de centrale tekster på forsiden. Indholdet behandles som almindelig tekst.</p>
+            </div>
+          </div>
+          <form id="site-settings-form" class="form-card">
+            <div class="form-grid">
+              <div class="form-field full"><label for="hero-heading">Hero-overskrift</label><input id="hero-heading" name="hero_heading" type="text" maxlength="120" required /><span class="form-help">Maks. 120 tegn</span></div>
+              <div class="form-field full"><label for="hero-subheading">Hero-undertekst</label><textarea id="hero-subheading" name="hero_subheading" maxlength="500" required></textarea><span class="form-help">Maks. 500 tegn</span></div>
+              <div class="form-field full"><label for="intro-text">Kort mission/introduktion</label><textarea id="intro-text" name="intro_text" maxlength="1000" required></textarea><span class="form-help">Maks. 1000 tegn</span></div>
+              <div class="form-field full"><label for="announcement-text">Informationsbesked</label><textarea id="announcement-text" name="announcement_text" maxlength="500"></textarea><span class="form-help">Teksten gemmes også når beskeden er skjult.</span></div>
+              <div class="form-field full"><label class="toggle-row"><input id="announcement-visible" name="announcement_visible" type="checkbox" /><span>Vis informationsbesked på forsiden</span></label></div>
+            </div>
+            <div class="form-actions"><button class="button" type="submit">Gem hjemmesideindhold</button></div>
+          </form>
+        </section>
       </div>
     </main>
-
-    <script>
-      const token = localStorage.getItem("authToken");
-
-      function redirectToLogin() {
-        localStorage.removeItem("authToken");
-        window.location.href = "member-login.html";
-      }
-
-      async function authenticatedFetch(url) {
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 401) {
-          redirectToLogin();
-          throw new Error("Unauthorized");
-        }
-
-        return response;
-      }
-
-      async function initializeMemberArea() {
-        if (!token) {
-          redirectToLogin();
-          return;
-        }
-
-        try {
-          const userResponse = await authenticatedFetch("/api/me");
-          if (!userResponse.ok) {
-            throw new Error("Kunne ikke hente bruger");
-          }
-
-          const user = await userResponse.json();
-          document.getElementById("memberWelcome").textContent =
-            `Logget ind som ${user.username}.`;
-
-          const resourceResponse = await authenticatedFetch(
-            "/api/member/resources"
-          );
-
-          if (!resourceResponse.ok) {
-            throw new Error("Kunne ikke hente ressourcer");
-          }
-
-          const payload = await resourceResponse.json();
-          const resourceList = document.getElementById("resourceList");
-          resourceList.replaceChildren();
-
-          for (const resource of payload.resources) {
-            const card = document.createElement("article");
-            card.className = "card-panel support-card";
-
-            const title = document.createElement("h3");
-            title.textContent = resource.title;
-
-            const description = document.createElement("p");
-            description.textContent = resource.description;
-
-            const status = document.createElement("p");
-            status.textContent = resource.available
-              ? "Tilgængelig"
-              : "Kommer snart";
-
-            card.append(title, description, status);
-
-            if (resource.available && resource.href) {
-              const link = document.createElement("a");
-              link.className = "resource-link";
-              link.href = resource.href;
-              link.textContent = `Åbn ${resource.title}`;
-              card.appendChild(link);
-            }
-
-            resourceList.append(card);
-          }
-        } catch (error) {
-          if (error.message !== "Unauthorized") {
-            console.error("Member area error:", error);
-          }
-        }
-      }
-
-      document.getElementById("logoutButton").addEventListener("click", () => {
-        localStorage.removeItem("authToken");
-        window.location.href = "member-login.html";
-      });
-
-      initializeMemberArea();
-    </script>
   </body>
 </html>
