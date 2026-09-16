@@ -186,6 +186,22 @@ def register_inventory(app, db, token_required):
         db.session.commit()
         return jsonify({"item": item.to_dict()}), 200
 
+    @app.route("/api/inventory/items/<int:item_id>/active", methods=["PATCH"])
+    @token_required
+    def inventory_set_active(current_user, item_id):
+        item, error = item_or_404(item_id)
+        if error:
+            return error
+
+        data = request.json or {}
+        active = data.get("active")
+        if not isinstance(active, bool):
+            return jsonify({"message": "active skal være true eller false"}), 400
+
+        item.active = active
+        db.session.commit()
+        return jsonify({"item": item.to_dict()}), 200
+
     @app.route("/api/inventory/items/<int:item_id>", methods=["DELETE"])
     @token_required
     def inventory_archive_item(current_user, item_id):
