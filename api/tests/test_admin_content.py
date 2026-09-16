@@ -2,7 +2,6 @@
 
 from app import Ansoegning, User, app, db
 
-
 VALID_SETTINGS = {
     "hero_heading": "Sammen gør vi mere",
     "hero_subheading": "Vi skaber oplevelser og muligheder for børnene.",

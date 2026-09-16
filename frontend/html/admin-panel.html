@@ -57,7 +57,9 @@
       >
         <div class="panel-heading">
           <h2 id="applications-heading">Ansøgninger</h2>
-          <p>Behandl ansøgninger og styr hvilke projekter der bliver offentlige.</p>
+          <p>
+            Behandl ansøgninger og styr hvilke projekter der bliver offentlige.
+          </p>
         </div>
         <div class="toolbar">
           <input
@@ -66,7 +68,10 @@
             placeholder="Søg efter navn, email eller beskrivelse"
             aria-label="Søg i ansøgninger"
           />
-          <select id="application-status-filter" aria-label="Filtrér efter status">
+          <select
+            id="application-status-filter"
+            aria-label="Filtrér efter status"
+          >
             <option value="all">Alle statuser</option>
             <option value="pending">Afventer</option>
             <option value="approved">Godkendt</option>
@@ -99,7 +104,13 @@
               <div class="form-grid">
                 <div class="form-field full">
                   <label for="create-username">Brugernavn</label>
-                  <input id="create-username" name="username" minlength="3" required />
+                  <input
+                    id="create-username"
+                    name="username"
+                    type="text"
+                    minlength="3"
+                    required
+                  />
                 </div>
                 <div class="form-field full">
                   <label for="create-email">Email</label>
@@ -124,7 +135,9 @@
                   />
                 </div>
                 <div class="form-field full">
-                  <label for="create-confirm-password">Bekræft adgangskode</label>
+                  <label for="create-confirm-password"
+                    >Bekræft adgangskode</label
+                  >
                   <input
                     id="create-confirm-password"
                     name="confirmPassword"
@@ -198,15 +211,30 @@
           <div class="form-grid">
             <div class="form-field">
               <label for="sommerfest">Sommerfest</label>
-              <input id="sommerfest" name="sommerfest" type="datetime-local" required />
+              <input
+                id="sommerfest"
+                name="sommerfest"
+                type="datetime-local"
+                required
+              />
             </div>
             <div class="form-field">
               <label for="julefest">Julefest</label>
-              <input id="julefest" name="julefest" type="datetime-local" required />
+              <input
+                id="julefest"
+                name="julefest"
+                type="datetime-local"
+                required
+              />
             </div>
             <div class="form-field">
               <label for="fastelavn">Fastelavn</label>
-              <input id="fastelavn" name="fastelavn" type="datetime-local" required />
+              <input
+                id="fastelavn"
+                name="fastelavn"
+                type="datetime-local"
+                required
+              />
             </div>
           </div>
           <div class="form-actions">
@@ -235,6 +263,7 @@
               <input
                 id="hero-heading"
                 name="hero_heading"
+                type="text"
                 maxlength="120"
                 required
               />
@@ -272,7 +301,7 @@
               </span>
             </div>
             <div class="form-field full">
-              <label class="toggle-row" for="announcement-visible">
+              <label class="toggle-row">
                 <input
                   id="announcement-visible"
                   name="announcement_visible"

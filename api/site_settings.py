@@ -2,7 +2,6 @@ from datetime import datetime
 
 from flask import jsonify, request
 
-
 DEFAULT_SITE_SETTINGS = {
     "hero_heading": "Vi gør gode idéer mulige.",
     "hero_subheading": (

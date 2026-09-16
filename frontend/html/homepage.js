@@ -15,7 +15,9 @@ const heroHeading = document.querySelector("[data-site-hero-heading]");
 const heroSubheading = document.querySelector("[data-site-hero-subheading]");
 const introText = document.querySelector("[data-site-intro]");
 const announcement = document.querySelector("[data-site-announcement]");
-const announcementText = document.querySelector("[data-site-announcement-text]");
+const announcementText = document.querySelector(
+    "[data-site-announcement-text]"
+);
 
 if (navToggle && navLinks) {
     navToggle.addEventListener("click", () => {

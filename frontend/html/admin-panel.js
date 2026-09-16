@@ -70,7 +70,10 @@ function renderApplications() {
 
     const visible = applications.filter(application => {
         const statusMatch = status === "all" || application.status === status;
-        const haystack = `${application.navn} ${application.email} ${application.beskrivelse}`.toLocaleLowerCase("da");
+        const haystack =
+            `${application.navn} ${application.email} ${application.beskrivelse}`.toLocaleLowerCase(
+                "da"
+            );
         return statusMatch && (!query || haystack.includes(query));
     });
 
@@ -115,10 +118,13 @@ function renderApplications() {
         });
         select.addEventListener("change", async () => {
             try {
-                await apiRequest(`/api/admin/ansoegning/${application.id}/status`, {
-                    method: "PUT",
-                    body: JSON.stringify({ status: select.value }),
-                });
+                await apiRequest(
+                    `/api/admin/ansoegning/${application.id}/status`,
+                    {
+                        method: "PUT",
+                        body: JSON.stringify({ status: select.value }),
+                    }
+                );
                 application.status = select.value;
                 renderApplications();
                 showMessage("Ansøgningsstatus er opdateret.");
@@ -135,12 +141,22 @@ function renderApplications() {
             deleteButton.className = "button danger secondary";
             deleteButton.textContent = "Slet afvist";
             deleteButton.addEventListener("click", async () => {
-                if (!window.confirm(`Slet den afviste ansøgning fra ${application.navn}?`)) return;
+                if (
+                    !window.confirm(
+                        `Slet den afviste ansøgning fra ${application.navn}?`
+                    )
+                )
+                    return;
                 try {
-                    await apiRequest(`/api/admin/ansoegning/${application.id}`, {
-                        method: "DELETE",
-                    });
-                    applications = applications.filter(item => item.id !== application.id);
+                    await apiRequest(
+                        `/api/admin/ansoegning/${application.id}`,
+                        {
+                            method: "DELETE",
+                        }
+                    );
+                    applications = applications.filter(
+                        item => item.id !== application.id
+                    );
                     renderApplications();
                     showMessage("Den afviste ansøgning er slettet.");
                 } catch (error) {
@@ -206,13 +222,16 @@ function renderUsers() {
         save.addEventListener("click", async () => {
             save.disabled = true;
             try {
-                const payload = await apiRequest(`/api/admin/users/${user.id}`, {
-                    method: "PATCH",
-                    body: JSON.stringify({
-                        role: role.value,
-                        is_active: active.checked,
-                    }),
-                });
+                const payload = await apiRequest(
+                    `/api/admin/users/${user.id}`,
+                    {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            role: role.value,
+                            is_active: active.checked,
+                        }),
+                    }
+                );
                 Object.assign(user, payload.user);
                 renderUsers();
                 showMessage(`Brugeren ${user.username} er opdateret.`);
@@ -274,7 +293,10 @@ async function createUser(event) {
 async function changePassword(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    if (form.elements.newPassword.value !== form.elements.confirmNewPassword.value) {
+    if (
+        form.elements.newPassword.value !==
+        form.elements.confirmNewPassword.value
+    ) {
         showMessage("De nye adgangskoder er ikke ens.", "error");
         return;
     }
@@ -331,7 +353,9 @@ function fillSiteSettings(settings) {
     form.elements.hero_subheading.value = settings.hero_subheading || "";
     form.elements.intro_text.value = settings.intro_text || "";
     form.elements.announcement_text.value = settings.announcement_text || "";
-    form.elements.announcement_visible.checked = Boolean(settings.announcement_visible);
+    form.elements.announcement_visible.checked = Boolean(
+        settings.announcement_visible
+    );
 }
 
 async function loadSiteSettings() {
@@ -350,7 +374,8 @@ async function saveSiteSettings(event) {
                 hero_subheading: form.elements.hero_subheading.value,
                 intro_text: form.elements.intro_text.value,
                 announcement_text: form.elements.announcement_text.value,
-                announcement_visible: form.elements.announcement_visible.checked,
+                announcement_visible:
+                    form.elements.announcement_visible.checked,
             }),
         });
         fillSiteSettings(payload.settings);
@@ -367,18 +392,37 @@ function logout() {
 
 async function initialize() {
     document.querySelectorAll("[data-admin-tab]").forEach(button => {
-        button.addEventListener("click", () => setActiveTab(button.dataset.adminTab));
+        button.addEventListener("click", () =>
+            setActiveTab(button.dataset.adminTab)
+        );
     });
     document.getElementById("logout-button").addEventListener("click", logout);
-    document.getElementById("application-status-filter").addEventListener("change", renderApplications);
-    document.getElementById("application-search").addEventListener("input", renderApplications);
-    document.getElementById("create-user-form").addEventListener("submit", createUser);
-    document.getElementById("change-password-form").addEventListener("submit", changePassword);
-    document.getElementById("event-form").addEventListener("submit", saveEvents);
-    document.getElementById("site-settings-form").addEventListener("submit", saveSiteSettings);
+    document
+        .getElementById("application-status-filter")
+        .addEventListener("change", renderApplications);
+    document
+        .getElementById("application-search")
+        .addEventListener("input", renderApplications);
+    document
+        .getElementById("create-user-form")
+        .addEventListener("submit", createUser);
+    document
+        .getElementById("change-password-form")
+        .addEventListener("submit", changePassword);
+    document
+        .getElementById("event-form")
+        .addEventListener("submit", saveEvents);
+    document
+        .getElementById("site-settings-form")
+        .addEventListener("submit", saveSiteSettings);
 
     try {
-        await Promise.all([loadApplications(), loadUsers(), loadEvents(), loadSiteSettings()]);
+        await Promise.all([
+            loadApplications(),
+            loadUsers(),
+            loadEvents(),
+            loadSiteSettings(),
+        ]);
     } catch (error) {
         showMessage(error.message, "error");
     }
