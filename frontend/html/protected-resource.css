@@ -68,7 +68,7 @@ body.homepage.public-page main .page-shell {
 .primary-action,
 .export-actions button,
 .stock-stepper button,
-.button:not(.secondary):not(.danger) {
+.button:not(.secondary, .danger) {
   background: var(--home-primary);
   color: #fff;
 }
@@ -79,8 +79,8 @@ body.homepage.public-page main .page-shell {
 .export-actions button:focus-visible:not(:disabled),
 .stock-stepper button:hover,
 .stock-stepper button:focus-visible,
-.button:not(.secondary):not(.danger):hover,
-.button:not(.secondary):not(.danger):focus-visible {
+.button:not(.secondary, .danger):hover,
+.button:not(.secondary, .danger):focus-visible {
   background: var(--home-primary-dark);
   color: #fff;
 }
