@@ -25,7 +25,9 @@ async function deleteArchivedItemPermanently(item) {
         );
         const payload = await response.json();
         if (!response.ok) {
-            throw new Error(payload.message || "Varen kunne ikke slettes permanent.");
+            throw new Error(
+                payload.message || "Varen kunne ikke slettes permanent."
+            );
         }
 
         inventoryItems = inventoryItems.filter(entry => entry.id !== item.id);
