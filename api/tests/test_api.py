@@ -255,7 +255,9 @@ def test_inventory_rejects_duplicate_normalized_names(client, member_headers):
         "unit": "kasser",
     }
     assert (
-        client.post("/api/inventory/items", headers=member_headers, json=first).status_code
+        client.post(
+            "/api/inventory/items", headers=member_headers, json=first
+        ).status_code
         == 201
     )
 

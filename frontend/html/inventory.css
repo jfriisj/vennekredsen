@@ -253,7 +253,7 @@
   min-width: 0;
 }
 
-#archiveCount {
+#archive-count {
   display: inline-flex;
   min-width: 1.5rem;
   min-height: 1.5rem;

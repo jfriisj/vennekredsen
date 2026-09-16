@@ -127,9 +127,7 @@ def register_inventory(app, db, token_required):
             stock_quantity=quantity,
             note=note,
             active=True,
-            last_counted_at=(
-                datetime.utcnow() if "stock_quantity" in data else None
-            ),
+            last_counted_at=(datetime.utcnow() if "stock_quantity" in data else None),
         )
         db.session.add(item)
         db.session.commit()
@@ -162,9 +160,7 @@ def register_inventory(app, db, token_required):
         item.normalized_name = normalized_name
         item.category = category
         item.unit = unit
-        item.default_store = str(
-            data.get("default_store", item.default_store)
-        ).strip()
+        item.default_store = str(data.get("default_store", item.default_store)).strip()
         item.note = str(data.get("note", item.note)).strip()
         db.session.commit()
         return jsonify({"item": item.to_dict()}), 200
@@ -225,10 +221,7 @@ def register_inventory(app, db, token_required):
         matched = 0
         invalid = 0
 
-        existing = {
-            item.normalized_name: item
-            for item in InventoryItem.query.all()
-        }
+        existing = {item.normalized_name: item for item in InventoryItem.query.all()}
 
         for raw_item in incoming_items:
             if not isinstance(raw_item, dict):
@@ -248,8 +241,7 @@ def register_inventory(app, db, token_required):
             item = InventoryItem(
                 name=name,
                 normalized_name=normalized_name,
-                category=str(raw_item.get("category", "")).strip()
-                or "Ukategoriseret",
+                category=str(raw_item.get("category", "")).strip() or "Ukategoriseret",
                 unit=str(raw_item.get("unit", "")).strip() or "stk",
                 default_store=str(raw_item.get("default_store", "")).strip(),
                 stock_quantity=0,
