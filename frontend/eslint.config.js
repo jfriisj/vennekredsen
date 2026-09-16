@@ -13,7 +13,6 @@ module.exports = [
         ...globals.jquery,
         $: "readonly",
         jQuery: "readonly",
-        XLSX: "readonly",
       },
     },
     rules: {
