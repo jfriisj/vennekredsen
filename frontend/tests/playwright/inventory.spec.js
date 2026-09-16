@@ -95,10 +95,15 @@ async function prepareInventory(page, role = "member") {
     }
 
     if (url.pathname === "/api/inventory/items" && method === "GET") {
+      const includeInactive = url.searchParams.get("include_inactive") === "true";
       await route.fulfill({
         status: 200,
         contentType: "application/json",
-        body: JSON.stringify({ items: state.items.filter(item => item.active) }),
+        body: JSON.stringify({
+          items: includeInactive
+            ? state.items
+            : state.items.filter(item => item.active),
+        }),
       });
       return;
     }
@@ -145,6 +150,21 @@ async function prepareInventory(page, role = "member") {
       const item = state.items.find(entry => entry.id === id);
       item.stock_quantity = request.postDataJSON().stock_quantity;
       item.last_counted_at = "2026-09-16T18:00:00";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ item }),
+      });
+      return;
+    }
+
+    const activeMatch = url.pathname.match(
+      /^\/api\/inventory\/items\/(\d+)\/active$/
+    );
+    if (activeMatch && method === "PATCH") {
+      const id = Number(activeMatch[1]);
+      const item = state.items.find(entry => entry.id === id);
+      item.active = request.postDataJSON().active;
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -203,8 +223,9 @@ test("member can count stock, filter and add an item", async ({ page }) => {
 
   await page.getByRole("button", { name: "Læg én til Pepsi Max" }).click();
   await expect(page.getByLabel("Lagerantal for Pepsi Max")).toHaveValue("3");
-  await page.getByRole("button", { name: "Gem optælling" }).click();
-  await expect(page.locator("#inventoryStatus")).toHaveText("Optællingen er gemt.");
+  await expect(page.locator("#inventoryStatus")).toContainText(
+    "Pepsi Max er gemt med 3"
+  );
   expect(state.items[0].stock_quantity).toBe(3);
 
   await page.locator("#stockFilter").selectOption("zero");
@@ -224,6 +245,25 @@ test("member can count stock, filter and add an item", async ({ page }) => {
   await page.locator("#itemStock").fill("4");
   await page.getByRole("button", { name: "Gem vare" }).click();
   await expect(page.getByRole("heading", { name: "Servietter" })).toBeVisible();
+});
+
+test("member can archive and restore an item", async ({ page }) => {
+  const state = await prepareInventory(page);
+  await page.goto("/inventory.html");
+
+  await page.getByRole("button", { name: "Redigér" }).first().click();
+  await page.getByRole("button", { name: "Arkivér vare" }).click();
+  expect(state.items[0].active).toBe(false);
+  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeHidden();
+
+  await page.locator("#catalogFilter").selectOption("archived");
+  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeVisible();
+  await page.getByRole("button", { name: "Gendan" }).click();
+  expect(state.items[0].active).toBe(true);
+  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeHidden();
+
+  await page.locator("#catalogFilter").selectOption("active");
+  await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeVisible();
 });
 
 test("member can import items from an indkob sheet", async ({ page }) => {
