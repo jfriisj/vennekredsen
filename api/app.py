@@ -11,6 +11,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
+from inventory import register_inventory
+
 app = Flask(__name__)
 CORS(app)
 
@@ -153,6 +155,9 @@ def admin_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorated
+
+
+InventoryItem = register_inventory(app, db, token_required)
 
 
 def _format_event_dates_payload():
@@ -298,7 +303,16 @@ def member_resources(current_user):
                         ),
                         "href": "purchase-calculator.html",
                         "available": True,
-                    }
+                    },
+                    {
+                        "id": "inventory",
+                        "title": "Lager",
+                        "description": (
+                            "Administrér varekatalog og optæl lager efter arrangementer."
+                        ),
+                        "href": "inventory.html",
+                        "available": True,
+                    },
                 ]
             }
         ),

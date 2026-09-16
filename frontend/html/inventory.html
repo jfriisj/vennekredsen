@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Vennekredsens interne lager og varekatalog."
+    />
+    <title>Lager - Vennekredsen for Hashøjskolen</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link href="homepage.css" rel="stylesheet" />
+    <link href="public-pages.css" rel="stylesheet" />
+    <link href="inventory.css" rel="stylesheet" />
+    <script src="homepage.js" defer></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+      defer
+    ></script>
+    <script src="inventory.js" defer></script>
+  </head>
+
+  <body class="homepage public-page">
+    <a class="skip-link" href="#main-content">Gå til indhold</a>
+
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Primær navigation">
+        <a class="brand" href="index.html" aria-label="Vennekredsen - Forside">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <span>Vennekredsen</span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+          data-nav-toggle
+        >
+          Menu
+        </button>
+
+        <div class="nav-links" id="primary-navigation" data-nav-links>
+          <a href="index.html">Forside</a>
+          <a href="member.html">Medlemsområde</a>
+          <button type="button" class="nav-login" id="logoutButton">
+            Log ud
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <section class="public-hero" aria-labelledby="page-title">
+      <div class="public-hero-inner">
+        <p class="eyebrow">Intern ressource</p>
+        <h1 id="page-title">Lager</h1>
+        <p>
+          Vedligehold varekataloget og optæl det, der er tilbage efter en fest.
+        </p>
+      </div>
+    </section>
+
+    <main id="main-content" hidden>
+      <div class="page-shell inventory-shell">
+        <section class="inventory-toolbar" aria-labelledby="inventory-heading">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Varekatalog</p>
+            <h2 id="inventory-heading">Varer og beholdning</h2>
+            <p id="inventoryStatus" aria-live="polite">Henter lager...</p>
+          </div>
+
+          <div class="inventory-actions">
+            <button type="button" class="primary-action" id="addItemButton">
+              Tilføj vare
+            </button>
+            <label class="file-action">
+              <span>Importér varer</span>
+              <input id="importFile" type="file" accept=".ods,.xlsx,.xls" />
+            </label>
+            <button
+              type="button"
+              class="secondary-action"
+              id="openArchiveButton"
+            >
+              Arkiv <span id="archive-count" aria-hidden="true">0</span>
+            </button>
+          </div>
+
+          <div class="inventory-filters">
+            <label>
+              Søg
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Fx Pepsi Max"
+                autocomplete="off"
+              />
+            </label>
+
+            <label>
+              Lagerstatus
+              <select id="stockFilter">
+                <option value="all">Alle beholdninger</option>
+                <option value="in_stock">På lager</option>
+                <option value="zero">0 på lager</option>
+              </select>
+            </label>
+
+            <label>
+              Kategori
+              <select id="categoryFilter">
+                <option value="">Alle kategorier</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section aria-labelledby="count-heading">
+          <div class="inventory-list-heading">
+            <div>
+              <p class="eyebrow">Optælling</p>
+              <h2 id="count-heading">Aktive varer</h2>
+            </div>
+          </div>
+
+          <div id="inventoryList" class="inventory-list" aria-live="polite">
+            <p class="empty-state">Henter varer...</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <dialog id="itemDialog" class="item-dialog">
+      <form id="itemForm" method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Varekatalog</p>
+            <h2 id="itemDialogTitle">Tilføj vare</h2>
+          </div>
+          <button type="button" class="secondary-action" id="closeDialogButton">
+            Luk
+          </button>
+        </div>
+
+        <input id="itemId" type="hidden" />
+
+        <label>
+          Varenavn
+          <input id="itemName" type="text" maxlength="160" required />
+        </label>
+
+        <label>
+          Kategori
+          <input id="itemCategory" type="text" maxlength="100" required />
+        </label>
+
+        <label>
+          Enhed
+          <input
+            id="itemUnit"
+            type="text"
+            maxlength="50"
+            placeholder="fx stk, poser, kasser eller liter"
+            required
+          />
+        </label>
+
+        <label>
+          Standard indkøbssted
+          <input id="itemStore" type="text" maxlength="120" />
+        </label>
+
+        <label id="initialStockField">
+          Lagerantal
+          <input id="itemStock" type="number" min="0" step="any" value="0" />
+        </label>
+
+        <label>
+          Note
+          <textarea id="itemNote" rows="3"></textarea>
+        </label>
+
+        <p id="formStatus" class="form-status" aria-live="polite"></p>
+
+        <div class="dialog-actions">
+          <button type="submit" class="primary-action">Gem vare</button>
+          <button
+            type="button"
+            class="danger-action"
+            id="archiveItemButton"
+            hidden
+          >
+            Arkivér vare
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="archiveDialog" class="item-dialog archive-dialog">
+      <div class="archive-dialog-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Varekatalog</p>
+            <h2>Arkiverede varer</h2>
+          </div>
+          <button
+            type="button"
+            class="secondary-action"
+            id="closeArchiveButton"
+          >
+            Luk
+          </button>
+        </div>
+        <p class="inventory-meta">
+          Arkiverede varer bruges ikke i den aktive lageroptælling. Gendan en
+          vare for at gøre den aktiv igen.
+        </p>
+        <div id="archiveList" class="archive-list" aria-live="polite"></div>
+      </div>
+    </dialog>
+  </body>
+</html>

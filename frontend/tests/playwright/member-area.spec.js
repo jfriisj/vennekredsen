@@ -79,6 +79,13 @@ async function mockMemberApis(page, role = "member") {
             href: "purchase-calculator.html",
             available: true,
           },
+          {
+            id: "inventory",
+            title: "Lager",
+            description: "Administrér varekatalog og lageroptælling.",
+            href: "inventory.html",
+            available: true,
+          },
         ],
       }),
     });
@@ -119,11 +126,21 @@ test("member can log in, view resources and log out", async ({ page }, testInfo)
       name: "Indkøbsberegner",
     })
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      level: 3,
+      name: "Lager",
+    })
+  ).toBeVisible();
 
-  await expect(page.getByText("Tilgængelig", { exact: true })).toBeVisible();
+  await expect(page.getByText("Tilgængelig", { exact: true })).toHaveCount(2);
   await expect(
     page.getByRole("link", { name: "Åbn Indkøbsberegner" })
   ).toHaveAttribute("href", "purchase-calculator.html");
+  await expect(page.getByRole("link", { name: "Åbn Lager" })).toHaveAttribute(
+    "href",
+    "inventory.html"
+  );
 
   await expect(
     page.evaluate(() => localStorage.getItem("authToken"))
@@ -170,4 +187,5 @@ test("admin can use the member area", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Åbn Indkøbsberegner" })
   ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Åbn Lager" })).toBeVisible();
 });
