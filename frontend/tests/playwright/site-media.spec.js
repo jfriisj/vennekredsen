@@ -11,6 +11,7 @@ async function mockAdminArea(page) {
     hero_video_enabled: false,
     logo_available: false,
     hero_background_available: false,
+    site_background_available: false,
   };
 
   await page.route("**/api/me", route =>
@@ -130,7 +131,7 @@ async function mockHomepageDependencies(page, media) {
   );
 }
 
-test("admin can upload logo and hero image from website settings", async ({ page }) => {
+test("admin can upload logo, hero image and site background from website settings", async ({ page }) => {
   await openAdminWebsite(page);
 
   await expect(page.getByRole("heading", { name: "Billeder og video" })).toBeVisible();
@@ -149,6 +150,14 @@ test("admin can upload logo and hero image from website settings", async ({ page
     buffer: pixelPng,
   });
   await page.getByRole("button", { name: "Upload hero-billede" }).click();
+  await expect(page.getByText("Billedet er gemt.")).toBeVisible();
+
+  await page.locator("#site-background-file").setInputFiles({
+    name: "site.png",
+    mimeType: "image/png",
+    buffer: pixelPng,
+  });
+  await page.getByRole("button", { name: "Upload site-baggrund" }).click();
   await expect(page.getByText("Billedet er gemt.")).toBeVisible();
 });
 
@@ -189,6 +198,7 @@ test("homepage uses managed logo and configures direct hero video", async ({ pag
     hero_video_embed_url: "",
     logo_available: true,
     hero_background_available: true,
+    site_background_available: false,
   });
   await page.route("**/api/site-media/logo**", route =>
     route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
@@ -217,6 +227,7 @@ test("homepage renders Vimeo hero background", async ({ page }) => {
     hero_video_embed_url: embedUrl,
     logo_available: false,
     hero_background_available: true,
+    site_background_available: false,
   });
   await page.route("**/api/site-media/hero-background**", route =>
     route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
@@ -235,7 +246,7 @@ test("homepage renders Vimeo hero background", async ({ page }) => {
   await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
 });
 
-test("managed hero image becomes shared fixed background and public hero background", async ({ page }) => {
+test("site background and public hero use independent managed images", async ({ page }) => {
   await page.route("**/api/site-settings", route =>
     route.fulfill({
       status: 200,
@@ -247,6 +258,56 @@ test("managed hero image becomes shared fixed background and public hero backgro
           hero_video_enabled: false,
           logo_available: false,
           hero_background_available: true,
+          site_background_available: true,
+        },
+      }),
+    })
+  );
+  await page.route("**/api/site-media/hero-background**", route =>
+    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+  );
+  await page.route("**/api/site-media/site-background**", route =>
+    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+  );
+
+  await page.goto("/about.html");
+
+  const body = page.locator("body");
+  await expect(body).toHaveClass(/has-managed-site-background/);
+  await expect(body).toHaveClass(/has-managed-public-hero-background/);
+  await expect
+    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage))
+    .toContain("/api/site-media/site-background");
+  await expect
+    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage))
+    .not.toContain("/api/site-media/hero-background");
+  await expect
+    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundAttachment))
+    .toContain("fixed");
+
+  const publicHero = page.locator(".public-hero");
+  await expect
+    .poll(() => publicHero.evaluate(element => getComputedStyle(element).backgroundImage))
+    .toContain("/api/site-media/hero-background");
+  await expect
+    .poll(() => publicHero.evaluate(element => getComputedStyle(element).backgroundImage))
+    .not.toContain("/api/site-media/site-background");
+  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
+});
+
+test("public hero can use managed hero image without site background", async ({ page }) => {
+  await page.route("**/api/site-settings", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        settings: {},
+        media: {
+          hero_video_url: "",
+          hero_video_enabled: false,
+          logo_available: false,
+          hero_background_available: true,
+          site_background_available: false,
         },
       }),
     })
@@ -257,20 +318,13 @@ test("managed hero image becomes shared fixed background and public hero backgro
 
   await page.goto("/about.html");
 
-  const body = page.locator("body");
-  await expect(body).toHaveClass(/has-managed-site-background/);
-  await expect.poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage)).toContain(
-    "/api/site-media/hero-background"
-  );
-  await expect.poll(() => body.evaluate(element => getComputedStyle(element).backgroundAttachment)).toContain(
-    "fixed"
-  );
-
-  const publicHero = page.locator(".public-hero");
-  await expect.poll(() =>
-    publicHero.evaluate(element => getComputedStyle(element).backgroundImage)
-  ).toContain("/api/site-media/hero-background");
-  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
+  await expect(page.locator("body")).not.toHaveClass(/has-managed-site-background/);
+  await expect(page.locator("body")).toHaveClass(/has-managed-public-hero-background/);
+  await expect
+    .poll(() =>
+      page.locator(".public-hero").evaluate(element => getComputedStyle(element).backgroundImage)
+    )
+    .toContain("/api/site-media/hero-background");
 });
 
 test("homepage keeps V logo fallback when no managed logo exists", async ({ page }) => {
@@ -285,6 +339,7 @@ test("homepage keeps V logo fallback when no managed logo exists", async ({ page
         media: {
           logo_available: false,
           hero_background_available: false,
+          site_background_available: false,
         },
       }),
     })
@@ -303,5 +358,6 @@ test("homepage keeps V logo fallback when no managed logo exists", async ({ page
   await page.goto("/index.html");
   await expect(page.locator(".brand-mark")).toHaveText("V");
   await expect(page.locator("body")).not.toHaveClass(/has-managed-site-background/);
+  await expect(page.locator("body")).not.toHaveClass(/has-managed-public-hero-background/);
   expect(mediaRequests).toBe(0);
 });
