@@ -42,6 +42,10 @@ function applyManagedSiteBackground(mediaSettings = {}) {
         "has-managed-site-background",
         hasBackground
     );
+    document.body?.classList.toggle(
+        "has-managed-public-hero-background",
+        Boolean(mediaSettings.hero_background_available)
+    );
 }
 
 function loadSiteLogo(mediaSettings = {}) {
