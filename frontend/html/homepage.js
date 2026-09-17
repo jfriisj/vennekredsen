@@ -69,10 +69,12 @@ function prepareHeroMedia(mediaSettings = {}) {
     hero.classList.toggle("has-managed-background", hasBackground);
 
     const existingVideo = hero.querySelector(".hero-media-video");
+    const existingVimeo = hero.querySelector(".hero-media-vimeo");
     const existingOverlay = hero.querySelector(".hero-media-overlay");
 
     if (!hasManagedMedia) {
         if (existingVideo) existingVideo.remove();
+        if (existingVimeo) existingVimeo.remove();
         if (existingOverlay) existingOverlay.remove();
         return;
     }
@@ -86,6 +88,39 @@ function prepareHeroMedia(mediaSettings = {}) {
     }
 
     if (!shouldPlay) {
+        if (existingVideo) existingVideo.remove();
+        if (existingVimeo) existingVimeo.remove();
+        return;
+    }
+
+    const videoType =
+        mediaSettings.hero_video_type ||
+        (mediaSettings.hero_video_embed_url ? "vimeo" : "direct");
+
+    if (videoType === "vimeo") {
+        if (existingVideo) existingVideo.remove();
+        if (!mediaSettings.hero_video_embed_url) {
+            if (existingVimeo) existingVimeo.remove();
+            return;
+        }
+
+        const iframe = existingVimeo || document.createElement("iframe");
+        iframe.className = "hero-media-vimeo";
+        iframe.src = mediaSettings.hero_video_embed_url;
+        iframe.title = "Dekorativ hero-video";
+        iframe.tabIndex = -1;
+        iframe.loading = "eager";
+        iframe.allow = "autoplay; fullscreen; picture-in-picture";
+        iframe.referrerPolicy = "strict-origin-when-cross-origin";
+        iframe.setAttribute("aria-hidden", "true");
+        iframe.hidden = false;
+
+        if (!existingVimeo) hero.prepend(iframe);
+        return;
+    }
+
+    if (existingVimeo) existingVimeo.remove();
+    if (videoType !== "direct") {
         if (existingVideo) existingVideo.remove();
         return;
     }
