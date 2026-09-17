@@ -4,6 +4,8 @@ from datetime import datetime
 
 from flask import jsonify, request
 
+from purchase_calculator import register_purchase_calculator
+
 
 def _normalize_item_name(value):
     return " ".join(str(value or "").strip().casefold().split())
@@ -284,8 +286,6 @@ def register_inventory(app, db, token_required):
             ),
             200,
         )
-
-    from purchase_calculator import register_purchase_calculator
 
     register_purchase_calculator(app, db, token_required, InventoryItem)
     return InventoryItem
