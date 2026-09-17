@@ -19,12 +19,15 @@
     <link href="homepage.css" rel="stylesheet" />
     <link href="public-pages.css" rel="stylesheet" />
     <link href="inventory.css" rel="stylesheet" />
+    <link href="protected-resource.css" rel="stylesheet" />
+    <link href="inventory-archive-actions.css" rel="stylesheet" />
     <script src="homepage.js" defer></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
       defer
     ></script>
     <script src="inventory.js" defer></script>
+    <script src="inventory-archive-actions.js" defer></script>
   </head>
 
   <body class="homepage public-page">
@@ -220,7 +223,8 @@
         </div>
         <p class="inventory-meta">
           Arkiverede varer bruges ikke i den aktive lageroptælling. Gendan en
-          vare for at gøre den aktiv igen.
+          vare for at gøre den aktiv igen, eller slet den permanent hvis den
+          ikke længere skal findes i varekataloget.
         </p>
         <div id="archiveList" class="archive-list" aria-live="polite"></div>
       </div>

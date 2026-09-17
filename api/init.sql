@@ -39,6 +39,16 @@ CREATE TABLE inventory_items (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE site_settings (
+    id INTEGER PRIMARY KEY,
+    hero_heading VARCHAR(120) NOT NULL,
+    hero_subheading VARCHAR(500) NOT NULL,
+    intro_text VARCHAR(1000) NOT NULL,
+    announcement_text VARCHAR(500) NOT NULL DEFAULT '',
+    announcement_visible BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- No default administrator is inserted here.
 -- Create the first admin interactively with: ./dev.sh create-admin
 

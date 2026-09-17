@@ -1,0 +1,172 @@
+/* Shared visual language for authenticated resources. */
+body.homepage.public-page main .page-shell {
+  padding-block: 2rem 4rem;
+}
+
+.nav-links button.nav-login {
+  min-height: 2.75rem;
+  margin-left: 0.35rem;
+  padding: 0.65rem 0.8rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: var(--home-primary);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+}
+
+.nav-links button.nav-login:hover,
+.nav-links button.nav-login:focus-visible {
+  background: var(--home-primary-dark);
+  color: #fff;
+}
+
+.button,
+.primary-action,
+.secondary-action,
+.danger-action,
+.file-action,
+.export-actions button,
+.stock-stepper button,
+.card-actions button {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secondary-action,
+.file-action,
+.card-actions button,
+.button.secondary {
+  border-color: var(--home-border);
+  background: var(--home-surface-muted);
+  color: var(--home-text);
+}
+
+.secondary-action:hover,
+.secondary-action:focus-visible,
+.file-action:hover,
+.file-action:focus-within,
+.card-actions button:hover,
+.card-actions button:focus-visible,
+.button.secondary:hover,
+.button.secondary:focus-visible {
+  border-color: var(--home-primary);
+  background: #e6eef7;
+  color: var(--home-primary-dark);
+}
+
+.primary-action,
+.export-actions button,
+.stock-stepper button,
+.button:not(.secondary, .danger) {
+  background: var(--home-primary);
+  color: #fff;
+}
+
+.primary-action:hover,
+.primary-action:focus-visible,
+.export-actions button:hover:not(:disabled),
+.export-actions button:focus-visible:not(:disabled),
+.stock-stepper button:hover,
+.stock-stepper button:focus-visible,
+.button:not(.secondary, .danger):hover,
+.button:not(.secondary, .danger):focus-visible {
+  background: var(--home-primary-dark);
+  color: #fff;
+}
+
+.danger-action,
+.button.danger {
+  border-color: #fecaca;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.calculator-panel,
+.calculator-results,
+.stat-card,
+.inventory-toolbar,
+.inventory-card,
+.item-dialog,
+.admin-card,
+.form-card {
+  border: 1px solid var(--home-border);
+  border-radius: var(--home-radius);
+  background: var(--home-surface);
+  box-shadow: 0 8px 30px rgba(23, 32, 51, 0.06);
+}
+
+input,
+select,
+textarea,
+.file-field input[type="file"],
+.stock-stepper input {
+  border-color: var(--home-border);
+  border-radius: 0.75rem;
+  background: var(--home-surface);
+  color: var(--home-text);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.file-field input[type="file"]:focus,
+.stock-stepper input:focus {
+  border-color: var(--home-primary);
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(47, 95, 143, 0.15);
+}
+
+.calculator-status,
+.inventory-meta,
+.inventory-counted,
+.stat-card span,
+.panel-heading p,
+.form-help {
+  color: var(--home-text-muted);
+}
+
+.results-heading,
+.calculator-results th,
+.calculator-results td,
+.archive-row {
+  border-color: var(--home-border);
+}
+
+.calculator-results th {
+  background: var(--home-surface-muted);
+}
+
+.category-row th {
+  background: #e6eef7;
+  color: var(--home-primary-dark);
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 760px) {
+  body.homepage.public-page main .page-shell {
+    width: min(calc(100% - 1.5rem), var(--home-max-width));
+    padding-block: 1.5rem 3rem;
+  }
+
+  .nav-links button.nav-login {
+    width: 100%;
+    margin-left: 0;
+  }
+}

@@ -209,6 +209,26 @@ def register_inventory(app, db, token_required):
         db.session.commit()
         return jsonify({"item": item.to_dict()}), 200
 
+    @app.route("/api/inventory/items/<int:item_id>/permanent", methods=["DELETE"])
+    @token_required
+    def inventory_delete_item_permanently(current_user, item_id):
+        item, error = item_or_404(item_id)
+        if error:
+            return error
+
+        if item.active:
+            return (
+                jsonify(
+                    {"message": "Aktive varer skal arkiveres før permanent sletning"}
+                ),
+                409,
+            )
+
+        deleted_name = item.name
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({"message": f"{deleted_name} er slettet permanent"}), 200
+
     @app.route("/api/inventory/import", methods=["POST"])
     @token_required
     def inventory_import_items(current_user):

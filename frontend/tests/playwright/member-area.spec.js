@@ -118,7 +118,7 @@ test("member can log in, view resources and log out", async ({ page }, testInfo)
     })
   ).toBeVisible();
 
-  await expect(page.getByText("Logget ind som playwright-member.")).toBeVisible();
+  await expect(page.getByText("Logget ind som playwright-member · Medlem.")).toBeVisible();
 
   await expect(
     page.getByRole("heading", {
@@ -176,7 +176,7 @@ test("admin can use the member area", async ({ page }) => {
     page.locator("#loginBtn").click(),
   ]);
 
-  await expect(page.getByText("Logget ind som playwright-admin.")).toBeVisible();
+  await expect(page.getByText("Logget ind som playwright-admin · Administrator.")).toBeVisible();
 
   await expect(
     page.getByRole("heading", {
