@@ -91,6 +91,7 @@ function renderEditor(mediaSettings) {
       </form>
       <form class="form-card site-media-card" data-media-form="hero-background">
         <h3>Hero-baggrund</h3>
+        <p class="form-help">Bruges på hero-sektionerne på undersiderne og på forsiden, når hero-videoen ikke er aktiveret.</p>
         <div class="site-media-preview">
           <span data-media-empty="hero-background">Standardbilledet bruges</span>
           <img data-media-preview="hero-background" alt="Nuværende hero-baggrund" hidden />
@@ -106,6 +107,7 @@ function renderEditor(mediaSettings) {
       </form>
       <form class="form-card site-media-card" data-media-form="site-background">
         <h3>Fast site-baggrund</h3>
+        <p class="form-help">Separat fast baggrundsbillede bag hele siden. Det påvirker ikke hero-billedet.</p>
         <div class="site-media-preview">
           <span data-media-empty="site-background">Ingen brugerdefineret site-baggrund</span>
           <img data-media-preview="site-background" alt="Nuværende faste site-baggrund" hidden />
@@ -125,7 +127,7 @@ function renderEditor(mediaSettings) {
       <div class="form-field full">
         <label for="hero-video-url">Video-URL</label>
         <input id="hero-video-url" name="hero_video_url" type="url" maxlength="1000" placeholder="https://vimeo.com/123456789" />
-        <span class="form-help">Indsæt et Vimeo-link eller et direkte HTTP(S)-link til MP4/WebM. YouTube understøttes ikke.</span>
+        <span class="form-help">Indsæt et Vimeo-link eller et direkte HTTP(S)-link til MP4/WebM. Når video er aktiveret, erstatter den hero-billedet på forsiden. YouTube understøttes ikke.</span>
       </div>
       <label class="toggle-row">
         <input name="hero_video_enabled" type="checkbox" />
