@@ -16,9 +16,7 @@ def _create_item(client, headers, name="Pepsi Max"):
     return response.get_json()["item"]
 
 
-def test_active_inventory_item_cannot_be_deleted_permanently(
-    client, member_headers
-):
+def test_active_inventory_item_cannot_be_deleted_permanently(client, member_headers):
     item = _create_item(client, member_headers)
 
     response = client.delete(
@@ -33,9 +31,7 @@ def test_active_inventory_item_cannot_be_deleted_permanently(
         assert db.session.get(InventoryItem, item["id"]) is not None
 
 
-def test_archived_inventory_item_can_be_deleted_permanently(
-    client, member_headers
-):
+def test_archived_inventory_item_can_be_deleted_permanently(client, member_headers):
     item = _create_item(client, member_headers)
 
     archive_response = client.delete(
