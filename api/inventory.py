@@ -285,4 +285,7 @@ def register_inventory(app, db, token_required):
             200,
         )
 
+    from purchase_calculator import register_purchase_calculator
+
+    register_purchase_calculator(app, db, token_required, InventoryItem)
     return InventoryItem
