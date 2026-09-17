@@ -61,85 +61,132 @@
     <section class="public-hero" aria-labelledby="page-title">
       <div class="public-hero-inner">
         <p class="eyebrow">Intern ressource</p>
-        <h1 id="page-title">Indkøbsberegner</h1>
+        <h1 id="page-title">Indkøbsberegner 2.0</h1>
         <p>
-          Upload indkøbsarket og filtrer eller eksporter indkøbslisten direkte i
-          browseren. Filen sendes ikke til Vennekredsens server.
+          Beregn indkøb direkte fra Vennekredsens lagerkatalog ud fra festtype,
+          antal deltagere og den aktuelle lagerbeholdning.
         </p>
       </div>
     </section>
 
     <main id="main-content" hidden>
       <div class="page-shell calculator-shell">
-        <section class="calculator-panel" aria-labelledby="upload-heading">
-          <div class="section-heading">
-            <p class="eyebrow">Datakilde</p>
-            <h2 id="upload-heading">Upload indkøbsark</h2>
+        <p id="statusMessage" class="calculator-status" aria-live="polite">
+          Henter beregner...
+        </p>
+
+        <section class="calculator-panel" aria-labelledby="calculate-heading">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Beregning</p>
+            <h2 id="calculate-heading">Planlæg indkøbet</h2>
             <p>
-              Understøtter ODS, XLSX og XLS. Filen skal indeholde et ark med
-              navnet <strong>indkob</strong>.
+              Vælg arrangement og deltagere. Lageret kan trækkes fra det
+              beregnede behov uden at ændre lagerbeholdningen.
             </p>
           </div>
 
-          <label class="file-field">
-            <span>Vælg spreadsheet</span>
-            <input
-              id="fileInput"
-              type="file"
-              accept=".ods,.xlsx,.xls"
-              disabled
-            />
-          </label>
-          <p id="statusMessage" class="calculator-status" aria-live="polite">
-            Ingen fil indlæst.
-          </p>
+          <form id="calculationForm" class="calculation-form">
+            <label>
+              Festtype
+              <select id="partySelect" name="party_key" required disabled>
+                <option value="">Henter festtyper...</option>
+              </select>
+            </label>
+            <label>
+              Voksne
+              <input
+                id="adultsInput"
+                name="adults"
+                type="number"
+                min="0"
+                step="1"
+                value="0"
+                required
+              />
+            </label>
+            <label>
+              Børn
+              <input
+                id="childrenInput"
+                name="children"
+                type="number"
+                min="0"
+                step="1"
+                value="0"
+                required
+              />
+            </label>
+            <label class="toggle-field">
+              <input id="subtractStock" name="subtract_stock" type="checkbox" />
+              <span>Træk aktuelt lager fra</span>
+            </label>
+            <button class="primary-action" type="submit" disabled id="calculateButton">
+              Beregn indkøb
+            </button>
+          </form>
         </section>
 
-        <section class="stats-grid" aria-label="Statistik">
-          <article class="stat-card">
-            <strong id="totalVarer">0</strong>
-            <span>Varer i alt</span>
-          </article>
-          <article class="stat-card">
-            <strong id="totalSteder">0</strong>
-            <span>Indkøbssteder</span>
-          </article>
-          <article class="stat-card">
-            <strong id="totalKategorier">0</strong>
-            <span>Kategorier</span>
-          </article>
-          <article class="stat-card">
-            <strong id="visibleVarer">0</strong>
-            <span>Viste varer</span>
-          </article>
-        </section>
-
-        <section class="calculator-panel" aria-labelledby="filter-heading">
+        <section class="calculator-panel" aria-labelledby="configuration-heading">
           <div class="section-heading compact-heading">
-            <p class="eyebrow">Filtre</p>
-            <h2 id="filter-heading">Afgræns indkøbslisten</h2>
+            <p class="eyebrow">Festkonfiguration</p>
+            <h2 id="configuration-heading">Varer og forbrug</h2>
+            <p>
+              Festen bruger varer fra Lager. Forbrugstal og faktor gemmes kun
+              på denne festkonfiguration.
+            </p>
+          </div>
+
+          <form id="addItemForm" class="configuration-form">
+            <label class="wide-field">
+              Lagervare
+              <select id="inventoryItemSelect" required disabled>
+                <option value="">Henter lagervarer...</option>
+              </select>
+            </label>
+            <label>
+              Pr. voksen
+              <input id="addPerAdult" type="number" min="0" step="0.01" value="0" required />
+            </label>
+            <label>
+              Pr. barn
+              <input id="addPerChild" type="number" min="0" step="0.01" value="0" required />
+            </label>
+            <label>
+              Faktor
+              <input id="addFactor" type="number" min="0.01" step="0.01" value="1" required />
+            </label>
+            <button class="secondary-action" id="addItemButton" type="submit" disabled>
+              Tilføj vare
+            </button>
+          </form>
+
+          <div id="configurationList" class="configuration-list" aria-live="polite">
+            <p class="empty-state">Vælg en festtype for at se konfigurationen.</p>
+          </div>
+        </section>
+
+        <section class="calculator-panel result-controls" aria-labelledby="filter-heading">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Resultat</p>
+            <h2 id="filter-heading">Indkøbsliste</h2>
           </div>
 
           <div class="filter-grid">
             <label>
               Indkøbssted
-              <select id="indkobssted" disabled>
+              <select id="storeFilter" disabled>
                 <option value="">Alle indkøbssteder</option>
               </select>
             </label>
             <label>
               Kategori
-              <select id="kategori" disabled>
+              <select id="categoryFilter" disabled>
                 <option value="">Alle kategorier</option>
               </select>
             </label>
           </div>
 
-          <div
-            class="export-actions"
-            role="group"
-            aria-label="Eksportmuligheder"
-          >
+          <div class="export-actions" role="group" aria-label="Eksportmuligheder">
             <button type="button" id="downloadCurrent" disabled>
               Eksportér nuværende visning
             </button>
@@ -154,27 +201,26 @@
 
         <section class="calculator-results" aria-labelledby="resultsTitle">
           <div class="results-heading">
-            <h2 id="resultsTitle">Alle varer</h2>
+            <h2 id="resultsTitle">Ingen beregning endnu</h2>
+            <p id="resultsSummary">Konfigurér festen og beregn for at få en indkøbsliste.</p>
           </div>
           <div class="table-scroll" tabindex="0" aria-label="Indkøbsliste">
             <table>
               <thead>
                 <tr>
                   <th scope="col">Vare</th>
-                  <th scope="col">Pr. voksen</th>
-                  <th scope="col">Pr. barn</th>
-                  <th scope="col">Enhed</th>
-                  <th scope="col">Total mængde</th>
-                  <th scope="col">Ansvarlig</th>
-                  <th scope="col">Noter</th>
-                  <th scope="col">Indkøbssted</th>
                   <th scope="col">Kategori</th>
+                  <th scope="col">Enhed</th>
+                  <th scope="col">Butik</th>
+                  <th scope="col">Behov</th>
+                  <th scope="col">Lager</th>
+                  <th scope="col">Køb</th>
                 </tr>
               </thead>
               <tbody id="resultsTable">
                 <tr>
-                  <td colspan="9" class="empty-state">
-                    Upload en fil for at begynde.
+                  <td colspan="7" class="empty-state">
+                    Ingen beregning er udført endnu.
                   </td>
                 </tr>
               </tbody>
