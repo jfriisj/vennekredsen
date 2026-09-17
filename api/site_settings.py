@@ -29,7 +29,7 @@ FIELD_LIMITS = {
     "intro_text": 1000,
     "announcement_text": 500,
 }
-MEDIA_KEYS = {"logo", "hero-background"}
+MEDIA_KEYS = {"logo", "hero-background", "site-background"}
 MAX_MEDIA_BYTES = 5 * 1024 * 1024
 VIMEO_HOSTS = {"vimeo.com", "www.vimeo.com", "player.vimeo.com"}
 
@@ -178,6 +178,7 @@ def register_site_settings(app, db, admin_required):
             {
                 "logo_available": "logo" in existing_media,
                 "hero_background_available": "hero-background" in existing_media,
+                "site_background_available": "site-background" in existing_media,
             }
         )
         return media_settings
