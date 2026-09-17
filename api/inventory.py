@@ -218,7 +218,9 @@ def register_inventory(app, db, token_required):
 
         if item.active:
             return (
-                jsonify({"message": "Aktive varer skal arkiveres før permanent sletning"}),
+                jsonify(
+                    {"message": "Aktive varer skal arkiveres før permanent sletning"}
+                ),
                 409,
             )
 
