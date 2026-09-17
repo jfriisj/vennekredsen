@@ -14,7 +14,7 @@
   object-fit: contain;
 }
 
-.hero.has-managed-media {
+.hero.has-managed-background {
   background:
     url("/api/site-media/hero-background") center / cover no-repeat,
     url("skole.png") center / cover no-repeat;
