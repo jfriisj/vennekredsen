@@ -2,7 +2,7 @@ body.homepage.has-managed-site-background {
   background-color: var(--home-bg);
   background-image:
     linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.92)),
-    url("/api/site-media/hero-background");
+    url("/api/site-media/site-background");
   background-position: center, center;
   background-size: cover, cover;
   background-repeat: no-repeat;
@@ -13,7 +13,7 @@ body.application-page.has-managed-site-background {
   background-color: var(--home-bg) !important;
   background-image:
     linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.92)),
-    url("/api/site-media/hero-background") !important;
+    url("/api/site-media/site-background") !important;
   background-position: center, center !important;
   background-size: cover, cover !important;
   background-repeat: no-repeat !important;
