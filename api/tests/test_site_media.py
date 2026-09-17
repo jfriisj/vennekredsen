@@ -44,12 +44,43 @@ def test_admin_can_upload_replace_and_remove_public_logo(client, admin_headers):
     )
 
 
+def test_admin_can_manage_separate_hero_and_site_backgrounds(client, admin_headers):
+    hero_upload = _upload(
+        client, admin_headers, "hero-background", "hero.png", PNG_BYTES
+    )
+    site_upload = _upload(
+        client, admin_headers, "site-background", "site.jpg", JPEG_BYTES
+    )
+    assert hero_upload.status_code == 200
+    assert site_upload.status_code == 200
+
+    media = client.get("/api/site-settings").get_json()["media"]
+    assert media["hero_background_available"] is True
+    assert media["site_background_available"] is True
+
+    hero = client.get("/api/site-media/hero-background")
+    site = client.get("/api/site-media/site-background")
+    assert hero.content_type == "image/png"
+    assert hero.data == PNG_BYTES
+    assert site.content_type == "image/jpeg"
+    assert site.data == JPEG_BYTES
+
+    remove_site = client.delete(
+        "/api/admin/site-media/site-background", headers=admin_headers
+    )
+    assert remove_site.status_code == 204
+    media_after = client.get("/api/site-settings").get_json()["media"]
+    assert media_after["hero_background_available"] is True
+    assert media_after["site_background_available"] is False
+    assert client.get("/api/site-media/hero-background").status_code == 200
+
+
 def test_member_cannot_manage_site_media(client, member_headers):
-    upload = _upload(client, member_headers, "hero-background", "hero.png", PNG_BYTES)
+    upload = _upload(client, member_headers, "site-background", "site.png", PNG_BYTES)
     assert upload.status_code == 403
 
     remove = client.delete(
-        "/api/admin/site-media/hero-background", headers=member_headers
+        "/api/admin/site-media/site-background", headers=member_headers
     )
     assert remove.status_code == 403
 
@@ -94,6 +125,7 @@ def test_admin_can_configure_direct_hero_video(client, admin_headers):
         "hero_video_embed_url": "",
         "logo_available": False,
         "hero_background_available": False,
+        "site_background_available": False,
     }
 
 
