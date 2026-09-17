@@ -304,7 +304,7 @@ def member_resources(current_user):
         {
             "id": "purchase-calculator",
             "title": "Indkøbsberegner",
-            "description": "Upload og organiser indkøbslister til arrangementer.",
+            "description": "Beregn indkøb dynamisk ud fra deltagere, lager og festtype.",
             "href": "purchase-calculator.html",
             "available": True,
         },
