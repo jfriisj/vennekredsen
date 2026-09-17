@@ -1,383 +1,460 @@
 const { test, expect } = require("@playwright/test");
 
 const pixelPng = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2S6sAAAAASUVORK5CYII=",
-  "base64"
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2S6sAAAAASUVORK5CYII=",
+    "base64"
 );
 
 async function mockAdminArea(page) {
-  let videoSettings = {
-    hero_video_url: "",
-    hero_video_enabled: false,
-    logo_available: false,
-    hero_background_available: false,
-    site_background_available: false,
-  };
+    let videoSettings = {
+        hero_video_url: "",
+        hero_video_enabled: false,
+        logo_available: false,
+        hero_background_available: false,
+        site_background_available: false,
+    };
 
-  await page.route("**/api/me", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        id: 1,
-        username: "admin",
-        email: "admin@example.com",
-        role: "admin",
-      }),
-    })
-  );
+    await page.route("**/api/me", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                id: 1,
+                username: "admin",
+                email: "admin@example.com",
+                role: "admin",
+            }),
+        })
+    );
 
-  await page.route("**/api/member/resources", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        resources: [
-          {
-            id: "website",
-            title: "Hjemmeside",
-            description: "Hjemmeside",
-            href: "member.html#website",
-            available: true,
-          },
-        ],
-      }),
-    })
-  );
+    await page.route("**/api/member/resources", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                resources: [
+                    {
+                        id: "website",
+                        title: "Hjemmeside",
+                        description: "Hjemmeside",
+                        href: "member.html#website",
+                        available: true,
+                    },
+                ],
+            }),
+        })
+    );
 
-  await page.route("**/api/admin/site-settings", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        settings: {
-          hero_heading: "Hero",
-          hero_subheading: "Undertekst",
-          intro_text: "Mission",
-          announcement_text: "",
-          announcement_visible: false,
-        },
-        media: videoSettings,
-      }),
-    })
-  );
+    await page.route("**/api/admin/site-settings", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {
+                    hero_heading: "Hero",
+                    hero_subheading: "Undertekst",
+                    intro_text: "Mission",
+                    announcement_text: "",
+                    announcement_visible: false,
+                },
+                media: videoSettings,
+            }),
+        })
+    );
 
-  await page.route("**/api/admin/site-video", async route => {
-    videoSettings = { ...videoSettings, ...route.request().postDataJSON() };
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ media: videoSettings }),
+    await page.route("**/api/admin/site-video", async route => {
+        videoSettings = { ...videoSettings, ...route.request().postDataJSON() };
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ media: videoSettings }),
+        });
     });
-  });
 
-  await page.route("**/api/admin/site-media/*", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        media: {
-          key: route.request().url().split("/").pop(),
-          filename: "upload.png",
-          content_type: "image/png",
-          size: pixelPng.length,
-        },
-      }),
-    })
-  );
+    await page.route("**/api/admin/site-media/*", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                media: {
+                    key: route.request().url().split("/").pop(),
+                    filename: "upload.png",
+                    content_type: "image/png",
+                    size: pixelPng.length,
+                },
+            }),
+        })
+    );
 
-  await page.route("**/api/site-media/*", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
+    await page.route("**/api/site-media/*", route =>
+        route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+    );
 
-  return { getVideoSettings: () => videoSettings };
+    return { getVideoSettings: () => videoSettings };
 }
 
 async function openAdminWebsite(page) {
-  const state = await mockAdminArea(page);
-  await page.addInitScript(() => {
-    localStorage.setItem("authToken", "admin-token");
-  });
-  await page.goto("/member.html#website");
-  return state;
+    const state = await mockAdminArea(page);
+    await page.addInitScript(() => {
+        localStorage.setItem("authToken", "admin-token");
+    });
+    await page.goto("/member.html#website");
+    return state;
 }
 
 async function mockHomepageDependencies(page, media) {
-  await page.route("**/api/site-settings", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        settings: {
-          hero_heading: "Dynamisk hero",
-          hero_subheading: "Undertekst",
-          intro_text: "Mission",
-          announcement_text: "",
-          announcement_visible: false,
-        },
-        media,
-      }),
-    })
-  );
-  await page.route("**/api/events", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ events: {} }),
-    })
-  );
-  await page.route("**/api/approved-projects", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: "[]" })
-  );
+    await page.route("**/api/site-settings", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {
+                    hero_heading: "Dynamisk hero",
+                    hero_subheading: "Undertekst",
+                    intro_text: "Mission",
+                    announcement_text: "",
+                    announcement_visible: false,
+                },
+                media,
+            }),
+        })
+    );
+    await page.route("**/api/events", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({ events: {} }),
+        })
+    );
+    await page.route("**/api/approved-projects", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: "[]",
+        })
+    );
 }
 
-test("admin can upload logo, hero image and site background from website settings", async ({ page }) => {
-  await openAdminWebsite(page);
+test("admin can upload logo, hero image and site background from website settings", async ({
+    page,
+}) => {
+    await openAdminWebsite(page);
 
-  await expect(page.getByRole("heading", { name: "Billeder og video" })).toBeVisible();
+    await expect(
+        page.getByRole("heading", { name: "Billeder og video" })
+    ).toBeVisible();
 
-  await page.locator("#site-logo-file").setInputFiles({
-    name: "logo.png",
-    mimeType: "image/png",
-    buffer: pixelPng,
-  });
-  await page.getByRole("button", { name: "Upload logo" }).click();
-  await expect(page.getByText("Billedet er gemt.")).toBeVisible();
+    await page.locator("#site-logo-file").setInputFiles({
+        name: "logo.png",
+        mimeType: "image/png",
+        buffer: pixelPng,
+    });
+    await page.getByRole("button", { name: "Upload logo" }).click();
+    await expect(page.getByText("Billedet er gemt.")).toBeVisible();
 
-  await page.locator("#hero-background-file").setInputFiles({
-    name: "hero.png",
-    mimeType: "image/png",
-    buffer: pixelPng,
-  });
-  await page.getByRole("button", { name: "Upload hero-billede" }).click();
-  await expect(page.getByText("Billedet er gemt.")).toBeVisible();
+    await page.locator("#hero-background-file").setInputFiles({
+        name: "hero.png",
+        mimeType: "image/png",
+        buffer: pixelPng,
+    });
+    await page.getByRole("button", { name: "Upload hero-billede" }).click();
+    await expect(page.getByText("Billedet er gemt.")).toBeVisible();
 
-  await page.locator("#site-background-file").setInputFiles({
-    name: "site.png",
-    mimeType: "image/png",
-    buffer: pixelPng,
-  });
-  await page.getByRole("button", { name: "Upload site-baggrund" }).click();
-  await expect(page.getByText("Billedet er gemt.")).toBeVisible();
+    await page.locator("#site-background-file").setInputFiles({
+        name: "site.png",
+        mimeType: "image/png",
+        buffer: pixelPng,
+    });
+    await page.getByRole("button", { name: "Upload site-baggrund" }).click();
+    await expect(page.getByText("Billedet er gemt.")).toBeVisible();
 });
 
 test("admin can configure direct hero video", async ({ page }) => {
-  const state = await openAdminWebsite(page);
+    const state = await openAdminWebsite(page);
 
-  await page.locator('[name="hero_video_url"]').fill("https://cdn.example.com/hero.mp4");
-  await page.locator('[name="hero_video_enabled"]').check();
-  await page.getByRole("button", { name: "Gem videoindstillinger" }).click();
+    await page
+        .locator('[name="hero_video_url"]')
+        .fill("https://cdn.example.com/hero.mp4");
+    await page.locator('[name="hero_video_enabled"]').check();
+    await page.getByRole("button", { name: "Gem videoindstillinger" }).click();
 
-  await expect(page.getByText("Videoindstillingerne er gemt.")).toBeVisible();
-  expect(state.getVideoSettings()).toMatchObject({
-    hero_video_url: "https://cdn.example.com/hero.mp4",
-    hero_video_enabled: true,
-  });
+    await expect(page.getByText("Videoindstillingerne er gemt.")).toBeVisible();
+    expect(state.getVideoSettings()).toMatchObject({
+        hero_video_url: "https://cdn.example.com/hero.mp4",
+        hero_video_enabled: true,
+    });
 });
 
 test("admin can configure Vimeo hero video", async ({ page }) => {
-  const state = await openAdminWebsite(page);
+    const state = await openAdminWebsite(page);
 
-  await page.locator('[name="hero_video_url"]').fill("https://vimeo.com/123456789");
-  await page.locator('[name="hero_video_enabled"]').check();
-  await page.getByRole("button", { name: "Gem videoindstillinger" }).click();
+    await page
+        .locator('[name="hero_video_url"]')
+        .fill("https://vimeo.com/123456789");
+    await page.locator('[name="hero_video_enabled"]').check();
+    await page.getByRole("button", { name: "Gem videoindstillinger" }).click();
 
-  await expect(page.getByText("Videoindstillingerne er gemt.")).toBeVisible();
-  expect(state.getVideoSettings()).toMatchObject({
-    hero_video_url: "https://vimeo.com/123456789",
-    hero_video_enabled: true,
-  });
-  await expect(page.getByText(/Vimeo-link eller et direkte/)).toBeVisible();
+    await expect(page.getByText("Videoindstillingerne er gemt.")).toBeVisible();
+    expect(state.getVideoSettings()).toMatchObject({
+        hero_video_url: "https://vimeo.com/123456789",
+        hero_video_enabled: true,
+    });
+    await expect(page.getByText(/Vimeo-link eller et direkte/)).toBeVisible();
 });
 
 test("homepage video replaces managed hero image", async ({ page }) => {
-  await mockHomepageDependencies(page, {
-    hero_video_url: "https://cdn.example.com/hero.mp4",
-    hero_video_enabled: true,
-    hero_video_type: "direct",
-    hero_video_embed_url: "",
-    logo_available: true,
-    hero_background_available: true,
-    site_background_available: false,
-  });
-  await page.route("**/api/site-media/logo**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
-  await page.route("https://cdn.example.com/hero.mp4", route => route.abort());
+    await mockHomepageDependencies(page, {
+        hero_video_url: "https://cdn.example.com/hero.mp4",
+        hero_video_enabled: true,
+        hero_video_type: "direct",
+        hero_video_embed_url: "",
+        logo_available: true,
+        hero_background_available: true,
+        site_background_available: false,
+    });
+    await page.route("**/api/site-media/logo**", route =>
+        route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+    );
+    await page.route("https://cdn.example.com/hero.mp4", route =>
+        route.abort()
+    );
 
-  await page.goto("/index.html");
+    await page.goto("/index.html");
 
-  await expect(page.locator(".brand-mark .site-logo")).toHaveCount(1);
-  const hero = page.locator(".hero");
-  const video = page.locator(".hero-media-video");
-  await expect(video).toHaveCount(1);
-  await expect(video).toHaveAttribute("src", "https://cdn.example.com/hero.mp4");
-  expect(await video.getAttribute("poster")).toBeNull();
-  await expect(hero).not.toHaveClass(/has-managed-background/);
-  await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
+    await expect(page.locator(".brand-mark .site-logo")).toHaveCount(1);
+    const hero = page.locator(".hero");
+    const video = page.locator(".hero-media-video");
+    await expect(video).toHaveCount(1);
+    await expect(video).toHaveAttribute(
+        "src",
+        "https://cdn.example.com/hero.mp4"
+    );
+    expect(await video.getAttribute("poster")).toBeNull();
+    await expect(hero).not.toHaveClass(/has-managed-background/);
+    await expect(page.locator("[data-site-hero-heading]")).toHaveText(
+        "Dynamisk hero"
+    );
 });
 
 test("homepage Vimeo video replaces managed hero image", async ({ page }) => {
-  const embedUrl =
-    "https://player.vimeo.com/video/123456789?background=1&autoplay=1&muted=1&loop=1&autopause=0&title=0&byline=0&portrait=0";
-  await mockHomepageDependencies(page, {
-    hero_video_url: "https://vimeo.com/123456789",
-    hero_video_enabled: true,
-    hero_video_type: "vimeo",
-    hero_video_embed_url: embedUrl,
-    logo_available: false,
-    hero_background_available: true,
-    site_background_available: false,
-  });
-  await page.route("https://player.vimeo.com/**", route =>
-    route.fulfill({ status: 200, contentType: "text/html", body: "<html></html>" })
-  );
+    const embedUrl =
+        "https://player.vimeo.com/video/123456789?background=1&autoplay=1&muted=1&loop=1&autopause=0&title=0&byline=0&portrait=0";
+    await mockHomepageDependencies(page, {
+        hero_video_url: "https://vimeo.com/123456789",
+        hero_video_enabled: true,
+        hero_video_type: "vimeo",
+        hero_video_embed_url: embedUrl,
+        logo_available: false,
+        hero_background_available: true,
+        site_background_available: false,
+    });
+    await page.route("https://player.vimeo.com/**", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "text/html",
+            body: "<html></html>",
+        })
+    );
 
-  await page.goto("/index.html");
+    await page.goto("/index.html");
 
-  const hero = page.locator(".hero");
-  const iframe = page.locator(".hero-media-vimeo");
-  await expect(iframe).toHaveCount(1);
-  await expect(iframe).toHaveAttribute("src", embedUrl);
-  await expect(iframe).toHaveAttribute("allow", /autoplay/);
-  await expect(page.locator(".hero-media-video")).toHaveCount(0);
-  await expect(hero).not.toHaveClass(/has-managed-background/);
-  await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
+    const hero = page.locator(".hero");
+    const iframe = page.locator(".hero-media-vimeo");
+    await expect(iframe).toHaveCount(1);
+    await expect(iframe).toHaveAttribute("src", embedUrl);
+    await expect(iframe).toHaveAttribute("allow", /autoplay/);
+    await expect(page.locator(".hero-media-video")).toHaveCount(0);
+    await expect(hero).not.toHaveClass(/has-managed-background/);
+    await expect(page.locator("[data-site-hero-heading]")).toHaveText(
+        "Dynamisk hero"
+    );
 });
 
-test("homepage uses managed hero image when video is disabled", async ({ page }) => {
-  await mockHomepageDependencies(page, {
-    hero_video_url: "https://vimeo.com/123456789",
-    hero_video_enabled: false,
-    hero_video_type: "vimeo",
-    hero_video_embed_url: "https://player.vimeo.com/video/123456789",
-    logo_available: false,
-    hero_background_available: true,
-    site_background_available: false,
-  });
+test("homepage uses managed hero image when video is disabled", async ({
+    page,
+}) => {
+    await mockHomepageDependencies(page, {
+        hero_video_url: "https://vimeo.com/123456789",
+        hero_video_enabled: false,
+        hero_video_type: "vimeo",
+        hero_video_embed_url: "https://player.vimeo.com/video/123456789",
+        logo_available: false,
+        hero_background_available: true,
+        site_background_available: false,
+    });
 
-  await page.goto("/index.html");
+    await page.goto("/index.html");
 
-  const hero = page.locator(".hero");
-  await expect(hero).toHaveClass(/has-managed-background/);
-  await expect
-    .poll(() => hero.evaluate(element => getComputedStyle(element).backgroundImage))
-    .toContain("/api/site-media/hero-background");
-  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
+    const hero = page.locator(".hero");
+    await expect(hero).toHaveClass(/has-managed-background/);
+    await expect
+        .poll(() =>
+            hero.evaluate(element => getComputedStyle(element).backgroundImage)
+        )
+        .toContain("/api/site-media/hero-background");
+    await expect(
+        page.locator(".hero-media-video, .hero-media-vimeo")
+    ).toHaveCount(0);
 });
 
-test("site background and public hero use independent managed images", async ({ page }) => {
-  await page.route("**/api/site-settings", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        settings: {},
-        media: {
-          hero_video_url: "",
-          hero_video_enabled: false,
-          logo_available: false,
-          hero_background_available: true,
-          site_background_available: true,
-        },
-      }),
-    })
-  );
-  await page.route("**/api/site-media/hero-background**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
-  await page.route("**/api/site-media/site-background**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
+test("site background and public hero use independent managed images", async ({
+    page,
+}) => {
+    await page.route("**/api/site-settings", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {},
+                media: {
+                    hero_video_url: "",
+                    hero_video_enabled: false,
+                    logo_available: false,
+                    hero_background_available: true,
+                    site_background_available: true,
+                },
+            }),
+        })
+    );
+    await page.route("**/api/site-media/hero-background**", route =>
+        route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+    );
+    await page.route("**/api/site-media/site-background**", route =>
+        route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+    );
 
-  await page.goto("/about.html");
+    await page.goto("/about.html");
 
-  const body = page.locator("body");
-  await expect(body).toHaveClass(/has-managed-site-background/);
-  await expect(body).toHaveClass(/has-managed-public-hero-background/);
-  await expect
-    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage))
-    .toContain("/api/site-media/site-background");
-  await expect
-    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage))
-    .not.toContain("/api/site-media/hero-background");
-  await expect
-    .poll(() => body.evaluate(element => getComputedStyle(element).backgroundAttachment))
-    .toContain("fixed");
+    const body = page.locator("body");
+    await expect(body).toHaveClass(/has-managed-site-background/);
+    await expect(body).toHaveClass(/has-managed-public-hero-background/);
+    await expect
+        .poll(() =>
+            body.evaluate(element => getComputedStyle(element).backgroundImage)
+        )
+        .toContain("/api/site-media/site-background");
+    await expect
+        .poll(() =>
+            body.evaluate(element => getComputedStyle(element).backgroundImage)
+        )
+        .not.toContain("/api/site-media/hero-background");
+    await expect
+        .poll(() =>
+            body.evaluate(
+                element => getComputedStyle(element).backgroundAttachment
+            )
+        )
+        .toContain("fixed");
 
-  const publicHero = page.locator(".public-hero");
-  await expect
-    .poll(() => publicHero.evaluate(element => getComputedStyle(element).backgroundImage))
-    .toContain("/api/site-media/hero-background");
-  await expect
-    .poll(() => publicHero.evaluate(element => getComputedStyle(element).backgroundImage))
-    .not.toContain("/api/site-media/site-background");
-  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
+    const publicHero = page.locator(".public-hero");
+    await expect
+        .poll(() =>
+            publicHero.evaluate(
+                element => getComputedStyle(element).backgroundImage
+            )
+        )
+        .toContain("/api/site-media/hero-background");
+    await expect
+        .poll(() =>
+            publicHero.evaluate(
+                element => getComputedStyle(element).backgroundImage
+            )
+        )
+        .not.toContain("/api/site-media/site-background");
+    await expect(
+        page.locator(".hero-media-video, .hero-media-vimeo")
+    ).toHaveCount(0);
 });
 
-test("public hero can use managed hero image without site background", async ({ page }) => {
-  await page.route("**/api/site-settings", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        settings: {},
-        media: {
-          hero_video_url: "",
-          hero_video_enabled: false,
-          logo_available: false,
-          hero_background_available: true,
-          site_background_available: false,
-        },
-      }),
-    })
-  );
-  await page.route("**/api/site-media/hero-background**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
+test("public hero can use managed hero image without site background", async ({
+    page,
+}) => {
+    await page.route("**/api/site-settings", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {},
+                media: {
+                    hero_video_url: "",
+                    hero_video_enabled: false,
+                    logo_available: false,
+                    hero_background_available: true,
+                    site_background_available: false,
+                },
+            }),
+        })
+    );
+    await page.route("**/api/site-media/hero-background**", route =>
+        route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+    );
 
-  await page.goto("/about.html");
+    await page.goto("/about.html");
 
-  await expect(page.locator("body")).not.toHaveClass(/has-managed-site-background/);
-  await expect(page.locator("body")).toHaveClass(/has-managed-public-hero-background/);
-  await expect
-    .poll(() =>
-      page.locator(".public-hero").evaluate(element => getComputedStyle(element).backgroundImage)
-    )
-    .toContain("/api/site-media/hero-background");
+    await expect(page.locator("body")).not.toHaveClass(
+        /has-managed-site-background/
+    );
+    await expect(page.locator("body")).toHaveClass(
+        /has-managed-public-hero-background/
+    );
+    await expect
+        .poll(() =>
+            page
+                .locator(".public-hero")
+                .evaluate(element => getComputedStyle(element).backgroundImage)
+        )
+        .toContain("/api/site-media/hero-background");
 });
 
-test("homepage keeps V logo fallback when no managed logo exists", async ({ page }) => {
-  let mediaRequests = 0;
+test("homepage keeps V logo fallback when no managed logo exists", async ({
+    page,
+}) => {
+    let mediaRequests = 0;
 
-  await page.route("**/api/site-settings", route =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        settings: {},
-        media: {
-          logo_available: false,
-          hero_background_available: false,
-          site_background_available: false,
-        },
-      }),
-    })
-  );
-  await page.route("**/api/site-media/**", route => {
-    mediaRequests += 1;
-    return route.fulfill({ status: 404, contentType: "application/json", body: "{}" });
-  });
-  await page.route("**/api/events", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: "{}" })
-  );
-  await page.route("**/api/approved-projects", route =>
-    route.fulfill({ status: 200, contentType: "application/json", body: "[]" })
-  );
+    await page.route("**/api/site-settings", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {},
+                media: {
+                    logo_available: false,
+                    hero_background_available: false,
+                    site_background_available: false,
+                },
+            }),
+        })
+    );
+    await page.route("**/api/site-media/**", route => {
+        mediaRequests += 1;
+        return route.fulfill({
+            status: 404,
+            contentType: "application/json",
+            body: "{}",
+        });
+    });
+    await page.route("**/api/events", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: "{}",
+        })
+    );
+    await page.route("**/api/approved-projects", route =>
+        route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: "[]",
+        })
+    );
 
-  await page.goto("/index.html");
-  await expect(page.locator(".brand-mark")).toHaveText("V");
-  await expect(page.locator("body")).not.toHaveClass(/has-managed-site-background/);
-  await expect(page.locator("body")).not.toHaveClass(/has-managed-public-hero-background/);
-  expect(mediaRequests).toBe(0);
+    await page.goto("/index.html");
+    await expect(page.locator(".brand-mark")).toHaveText("V");
+    await expect(page.locator("body")).not.toHaveClass(
+        /has-managed-site-background/
+    );
+    await expect(page.locator("body")).not.toHaveClass(
+        /has-managed-public-hero-background/
+    );
+    expect(mediaRequests).toBe(0);
 });
