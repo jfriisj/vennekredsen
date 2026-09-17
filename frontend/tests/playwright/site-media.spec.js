@@ -235,6 +235,44 @@ test("homepage renders Vimeo hero background", async ({ page }) => {
   await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
 });
 
+test("managed hero image becomes shared fixed background and public hero background", async ({ page }) => {
+  await page.route("**/api/site-settings", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        settings: {},
+        media: {
+          hero_video_url: "",
+          hero_video_enabled: false,
+          logo_available: false,
+          hero_background_available: true,
+        },
+      }),
+    })
+  );
+  await page.route("**/api/site-media/hero-background**", route =>
+    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
+  );
+
+  await page.goto("/about.html");
+
+  const body = page.locator("body");
+  await expect(body).toHaveClass(/has-managed-site-background/);
+  await expect.poll(() => body.evaluate(element => getComputedStyle(element).backgroundImage)).toContain(
+    "/api/site-media/hero-background"
+  );
+  await expect.poll(() => body.evaluate(element => getComputedStyle(element).backgroundAttachment)).toContain(
+    "fixed"
+  );
+
+  const publicHero = page.locator(".public-hero");
+  await expect.poll(() =>
+    publicHero.evaluate(element => getComputedStyle(element).backgroundImage)
+  ).toContain("/api/site-media/hero-background");
+  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
+});
+
 test("homepage keeps V logo fallback when no managed logo exists", async ({ page }) => {
   let mediaRequests = 0;
 
@@ -264,5 +302,6 @@ test("homepage keeps V logo fallback when no managed logo exists", async ({ page
 
   await page.goto("/index.html");
   await expect(page.locator(".brand-mark")).toHaveText("V");
+  await expect(page.locator("body")).not.toHaveClass(/has-managed-site-background/);
   expect(mediaRequests).toBe(0);
 });
