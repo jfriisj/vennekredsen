@@ -1,5 +1,5 @@
 from datetime import datetime
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from flask import Response, jsonify, request
 from werkzeug.utils import secure_filename
@@ -31,6 +31,7 @@ FIELD_LIMITS = {
 }
 MEDIA_KEYS = {"logo", "hero-background"}
 MAX_MEDIA_BYTES = 5 * 1024 * 1024
+VIMEO_HOSTS = {"vimeo.com", "www.vimeo.com", "player.vimeo.com"}
 
 
 def _detect_image_content_type(data):
@@ -43,16 +44,64 @@ def _detect_image_content_type(data):
     return None
 
 
-def _valid_video_url(value):
+def _vimeo_video_details(parsed):
+    host = (parsed.hostname or "").casefold()
+    if host not in VIMEO_HOSTS:
+        return None
+
+    parts = [part for part in parsed.path.split("/") if part]
+    video_id = None
+    privacy_hash = None
+
+    if host == "player.vimeo.com":
+        if len(parts) >= 2 and parts[0].casefold() == "video" and parts[1].isdigit():
+            video_id = parts[1]
+    elif parts and parts[0].isdigit():
+        video_id = parts[0]
+        if len(parts) >= 2 and parts[1].isalnum():
+            privacy_hash = parts[1]
+
+    if not video_id:
+        return None
+
+    query = parse_qs(parsed.query)
+    if query.get("h"):
+        privacy_hash = query["h"][0]
+
+    parameters = {
+        "background": "1",
+        "autoplay": "1",
+        "muted": "1",
+        "loop": "1",
+        "autopause": "0",
+        "title": "0",
+        "byline": "0",
+        "portrait": "0",
+    }
+    if privacy_hash:
+        parameters["h"] = privacy_hash
+
+    return {
+        "type": "vimeo",
+        "embed_url": (
+            f"https://player.vimeo.com/video/{video_id}?{urlencode(parameters)}"
+        ),
+    }
+
+
+def _video_details(value):
     if not value:
-        return True
+        return {"type": "", "embed_url": ""}
 
     parsed = urlparse(value)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        return False
+        return None
 
     path = parsed.path.casefold()
-    return path.endswith(".mp4") or path.endswith(".webm")
+    if path.endswith(".mp4") or path.endswith(".webm"):
+        return {"type": "direct", "embed_url": ""}
+
+    return _vimeo_video_details(parsed)
 
 
 def register_site_settings(app, db, admin_required):
@@ -109,6 +158,16 @@ def register_site_settings(app, db, admin_required):
                 "hero_video_enabled": settings.hero_video_enabled,
             }
 
+        video_details = _video_details(media_settings["hero_video_url"])
+        media_settings.update(
+            {
+                "hero_video_type": video_details["type"] if video_details else "",
+                "hero_video_embed_url": (
+                    video_details["embed_url"] if video_details else ""
+                ),
+            }
+        )
+
         existing_media = {
             media_key
             for (media_key,) in db.session.query(SiteMedia.media_key)
@@ -153,9 +212,9 @@ def register_site_settings(app, db, admin_required):
             errors["hero_video_url"] = "Skal være tekst"
         elif len(video_url.strip()) > 1000:
             errors["hero_video_url"] = "Må højst være 1000 tegn"
-        elif not _valid_video_url(video_url.strip()):
+        elif _video_details(video_url.strip()) is None:
             errors["hero_video_url"] = (
-                "Skal være en direkte HTTP(S) MP4- eller WebM-URL"
+                "Skal være et direkte HTTP(S) MP4/WebM-link eller et Vimeo-link"
             )
 
         if not isinstance(video_enabled, bool):
