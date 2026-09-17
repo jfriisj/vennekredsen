@@ -39,6 +39,27 @@ CREATE TABLE inventory_items (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE purchase_parties (
+    id SERIAL PRIMARY KEY,
+    party_key VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE purchase_party_items (
+    id SERIAL PRIMARY KEY,
+    party_id INTEGER NOT NULL REFERENCES purchase_parties(id) ON DELETE CASCADE,
+    inventory_item_id INTEGER NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+    per_adult_quantity DOUBLE PRECISION NOT NULL DEFAULT 0,
+    per_child_quantity DOUBLE PRECISION NOT NULL DEFAULT 0,
+    factor DOUBLE PRECISION NOT NULL DEFAULT 1,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_purchase_party_inventory_item UNIQUE (party_id, inventory_item_id)
+);
+
 CREATE TABLE site_settings (
     id INTEGER PRIMARY KEY,
     hero_heading VARCHAR(120) NOT NULL,
@@ -67,3 +88,10 @@ VALUES
     ('sommerfest', '2026-09-18 18:00:00'),
     ('julefest', '2026-11-27 17:30:00'),
     ('fastelavn', '2027-02-05 17:30:00');
+
+INSERT INTO purchase_parties (party_key, name)
+VALUES
+    ('sommerfest', 'Sommerfest'),
+    ('julefest', 'Julefest'),
+    ('fastelavn', 'Fastelavn')
+ON CONFLICT (party_key) DO NOTHING;
