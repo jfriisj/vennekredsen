@@ -100,7 +100,7 @@ async function prepareAuthenticatedCalculator(page, role = "member") {
     })
   );
 
-  await page.route("**/api/purchase-calculator/parties", async route => {
+  await page.route("**/api/purchase-calculator/parties**", async route => {
     const request = route.request();
     const url = new URL(request.url());
     const path = url.pathname;
