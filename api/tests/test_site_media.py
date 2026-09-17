@@ -23,6 +23,7 @@ def test_admin_can_upload_replace_and_remove_public_logo(client, admin_headers):
     upload = _upload(client, admin_headers, "logo", "logo.png", PNG_BYTES)
     assert upload.status_code == 200
     assert upload.get_json()["media"]["content_type"] == "image/png"
+    assert client.get("/api/site-settings").get_json()["media"]["logo_available"] is True
 
     public = client.get("/api/site-media/logo")
     assert public.status_code == 200
@@ -36,6 +37,7 @@ def test_admin_can_upload_replace_and_remove_public_logo(client, admin_headers):
     remove = client.delete("/api/admin/site-media/logo", headers=admin_headers)
     assert remove.status_code == 204
     assert client.get("/api/site-media/logo").status_code == 404
+    assert client.get("/api/site-settings").get_json()["media"]["logo_available"] is False
 
 
 def test_member_cannot_manage_site_media(client, member_headers):
@@ -84,6 +86,8 @@ def test_admin_can_configure_direct_hero_video(client, admin_headers):
     assert public.get_json()["media"] == {
         "hero_video_url": "https://cdn.example.com/hero.mp4?version=2",
         "hero_video_enabled": True,
+        "logo_available": False,
+        "hero_background_available": False,
     }
 
 
