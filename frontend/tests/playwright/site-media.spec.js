@@ -190,7 +190,7 @@ test("admin can configure Vimeo hero video", async ({ page }) => {
   await expect(page.getByText(/Vimeo-link eller et direkte/)).toBeVisible();
 });
 
-test("homepage uses managed logo and configures direct hero video", async ({ page }) => {
+test("homepage video replaces managed hero image", async ({ page }) => {
   await mockHomepageDependencies(page, {
     hero_video_url: "https://cdn.example.com/hero.mp4",
     hero_video_enabled: true,
@@ -203,21 +203,21 @@ test("homepage uses managed logo and configures direct hero video", async ({ pag
   await page.route("**/api/site-media/logo**", route =>
     route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
   );
-  await page.route("**/api/site-media/hero-background**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
   await page.route("https://cdn.example.com/hero.mp4", route => route.abort());
 
   await page.goto("/index.html");
 
   await expect(page.locator(".brand-mark .site-logo")).toHaveCount(1);
+  const hero = page.locator(".hero");
   const video = page.locator(".hero-media-video");
   await expect(video).toHaveCount(1);
   await expect(video).toHaveAttribute("src", "https://cdn.example.com/hero.mp4");
+  expect(await video.getAttribute("poster")).toBeNull();
+  await expect(hero).not.toHaveClass(/has-managed-background/);
   await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
 });
 
-test("homepage renders Vimeo hero background", async ({ page }) => {
+test("homepage Vimeo video replaces managed hero image", async ({ page }) => {
   const embedUrl =
     "https://player.vimeo.com/video/123456789?background=1&autoplay=1&muted=1&loop=1&autopause=0&title=0&byline=0&portrait=0";
   await mockHomepageDependencies(page, {
@@ -229,21 +229,41 @@ test("homepage renders Vimeo hero background", async ({ page }) => {
     hero_background_available: true,
     site_background_available: false,
   });
-  await page.route("**/api/site-media/hero-background**", route =>
-    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
-  );
   await page.route("https://player.vimeo.com/**", route =>
     route.fulfill({ status: 200, contentType: "text/html", body: "<html></html>" })
   );
 
   await page.goto("/index.html");
 
+  const hero = page.locator(".hero");
   const iframe = page.locator(".hero-media-vimeo");
   await expect(iframe).toHaveCount(1);
   await expect(iframe).toHaveAttribute("src", embedUrl);
   await expect(iframe).toHaveAttribute("allow", /autoplay/);
   await expect(page.locator(".hero-media-video")).toHaveCount(0);
+  await expect(hero).not.toHaveClass(/has-managed-background/);
   await expect(page.locator("[data-site-hero-heading]")).toHaveText("Dynamisk hero");
+});
+
+test("homepage uses managed hero image when video is disabled", async ({ page }) => {
+  await mockHomepageDependencies(page, {
+    hero_video_url: "https://vimeo.com/123456789",
+    hero_video_enabled: false,
+    hero_video_type: "vimeo",
+    hero_video_embed_url: "https://player.vimeo.com/video/123456789",
+    logo_available: false,
+    hero_background_available: true,
+    site_background_available: false,
+  });
+
+  await page.goto("/index.html");
+
+  const hero = page.locator(".hero");
+  await expect(hero).toHaveClass(/has-managed-background/);
+  await expect
+    .poll(() => hero.evaluate(element => getComputedStyle(element).backgroundImage))
+    .toContain("/api/site-media/hero-background");
+  await expect(page.locator(".hero-media-video, .hero-media-vimeo")).toHaveCount(0);
 });
 
 test("site background and public hero use independent managed images", async ({ page }) => {
