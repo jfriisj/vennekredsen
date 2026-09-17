@@ -118,7 +118,8 @@ function renderEditor(mediaSettings) {
     siteSettingsForm.insertAdjacentElement("afterend", wrapper);
 
     const videoForm = document.getElementById("site-video-form");
-    videoForm.elements.hero_video_url.value = mediaSettings.hero_video_url || "";
+    videoForm.elements.hero_video_url.value =
+        mediaSettings.hero_video_url || "";
     videoForm.elements.hero_video_enabled.checked = Boolean(
         mediaSettings.hero_video_enabled
     );
