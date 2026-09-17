@@ -1,6 +1,8 @@
 from datetime import datetime
+from urllib.parse import urlparse
 
-from flask import jsonify, request
+from flask import Response, jsonify, request
+from werkzeug.utils import secure_filename
 
 DEFAULT_SITE_SETTINGS = {
     "hero_heading": "Vi gør gode idéer mulige.",
@@ -15,6 +17,8 @@ DEFAULT_SITE_SETTINGS = {
     ),
     "announcement_text": "",
     "announcement_visible": False,
+    "hero_video_url": "",
+    "hero_video_enabled": False,
 }
 
 FIELD_LIMITS = {
@@ -23,6 +27,31 @@ FIELD_LIMITS = {
     "intro_text": 1000,
     "announcement_text": 500,
 }
+
+MEDIA_KEYS = {"logo", "hero-background"}
+MAX_MEDIA_BYTES = 5 * 1024 * 1024
+
+
+def _detect_image_content_type(data):
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if data.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return None
+
+
+def _valid_video_url(value):
+    if not value:
+        return True
+
+    parsed = urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return False
+
+    path = parsed.path.casefold()
+    return path.endswith(".mp4") or path.endswith(".webm")
 
 
 def register_site_settings(app, db, admin_required):
@@ -35,6 +64,22 @@ def register_site_settings(app, db, admin_required):
         intro_text = db.Column(db.String(1000), nullable=False)
         announcement_text = db.Column(db.String(500), nullable=False, default="")
         announcement_visible = db.Column(db.Boolean, nullable=False, default=False)
+        hero_video_url = db.Column(db.String(1000), nullable=False, default="")
+        hero_video_enabled = db.Column(db.Boolean, nullable=False, default=False)
+        updated_at = db.Column(
+            db.DateTime,
+            nullable=False,
+            default=datetime.utcnow,
+            onupdate=datetime.utcnow,
+        )
+
+    class SiteMedia(db.Model):  # type: ignore
+        __tablename__ = "site_media"
+
+        media_key = db.Column(db.String(40), primary_key=True)
+        filename = db.Column(db.String(255), nullable=False)
+        content_type = db.Column(db.String(50), nullable=False)
+        data = db.Column(db.LargeBinary, nullable=False)
         updated_at = db.Column(
             db.DateTime,
             nullable=False,
@@ -52,6 +97,8 @@ def register_site_settings(app, db, admin_required):
             "intro_text": settings.intro_text,
             "announcement_text": settings.announcement_text,
             "announcement_visible": settings.announcement_visible,
+            "hero_video_url": settings.hero_video_url,
+            "hero_video_enabled": settings.hero_video_enabled,
         }
 
     def validate(payload):
@@ -73,12 +120,47 @@ def register_site_settings(app, db, admin_required):
         if not isinstance(payload.get("announcement_visible"), bool):
             errors["announcement_visible"] = "Skal være true eller false"
 
+        video_url = payload.get("hero_video_url", "")
+        if not isinstance(video_url, str):
+            errors["hero_video_url"] = "Skal være tekst"
+        elif len(video_url.strip()) > 1000:
+            errors["hero_video_url"] = "Må højst være 1000 tegn"
+        elif not _valid_video_url(video_url.strip()):
+            errors["hero_video_url"] = "Skal være en direkte HTTP(S) MP4- eller WebM-URL"
+
+        video_enabled = payload.get("hero_video_enabled", False)
+        if not isinstance(video_enabled, bool):
+            errors["hero_video_enabled"] = "Skal være true eller false"
+        elif video_enabled and not isinstance(video_url, str):
+            errors["hero_video_url"] = "Video-URL er påkrævet når video er slået til"
+        elif video_enabled and not video_url.strip():
+            errors["hero_video_url"] = "Video-URL er påkrævet når video er slået til"
+
         return errors
+
+    def media_or_404(media_key):
+        if media_key not in MEDIA_KEYS:
+            return None, (jsonify({"message": "Ukendt medietype"}), 404)
+
+        media = db.session.get(SiteMedia, media_key)
+        if media is None:
+            return None, (jsonify({"message": "Mediet findes ikke"}), 404)
+        return media, None
 
     @app.route("/api/site-settings", methods=["GET"])
     def public_site_settings():
         settings = db.session.get(SiteSettings, 1)
         return jsonify({"settings": serialize(settings)}), 200
+
+    @app.route("/api/site-media/<media_key>", methods=["GET"])
+    def public_site_media(media_key):
+        media, error = media_or_404(media_key)
+        if error:
+            return error
+
+        response = Response(media.data, mimetype=media.content_type)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
 
     @app.route("/api/admin/site-settings", methods=["GET"])
     @admin_required
@@ -90,6 +172,8 @@ def register_site_settings(app, db, admin_required):
     @admin_required
     def admin_update_site_settings(current_user):
         payload = request.get_json(silent=True) or {}
+        payload.setdefault("hero_video_url", "")
+        payload.setdefault("hero_video_enabled", False)
         errors = validate(payload)
 
         if errors:
@@ -112,8 +196,65 @@ def register_site_settings(app, db, admin_required):
             setattr(settings, field, payload[field].strip())
 
         settings.announcement_visible = payload["announcement_visible"]
+        settings.hero_video_url = payload["hero_video_url"].strip()
+        settings.hero_video_enabled = payload["hero_video_enabled"]
         db.session.commit()
 
         return jsonify({"settings": serialize(settings)}), 200
+
+    @app.route("/api/admin/site-media/<media_key>", methods=["PUT"])
+    @admin_required
+    def admin_upload_site_media(current_user, media_key):
+        if media_key not in MEDIA_KEYS:
+            return jsonify({"message": "Ukendt medietype"}), 404
+
+        uploaded = request.files.get("file")
+        if uploaded is None or not uploaded.filename:
+            return jsonify({"message": "Vælg en billedfil"}), 400
+
+        data = uploaded.stream.read(MAX_MEDIA_BYTES + 1)
+        if len(data) > MAX_MEDIA_BYTES:
+            return jsonify({"message": "Billedet må højst fylde 5 MB"}), 413
+
+        content_type = _detect_image_content_type(data)
+        if content_type is None:
+            return jsonify({"message": "Kun PNG, JPEG og WebP understøttes"}), 400
+
+        media = db.session.get(SiteMedia, media_key)
+        if media is None:
+            media = SiteMedia(media_key=media_key)
+            db.session.add(media)
+
+        media.filename = secure_filename(uploaded.filename) or f"{media_key}.img"
+        media.content_type = content_type
+        media.data = data
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "media": {
+                        "key": media.media_key,
+                        "filename": media.filename,
+                        "content_type": media.content_type,
+                        "size": len(media.data),
+                    }
+                }
+            ),
+            200,
+        )
+
+    @app.route("/api/admin/site-media/<media_key>", methods=["DELETE"])
+    @admin_required
+    def admin_delete_site_media(current_user, media_key):
+        if media_key not in MEDIA_KEYS:
+            return jsonify({"message": "Ukendt medietype"}), 404
+
+        media = db.session.get(SiteMedia, media_key)
+        if media is not None:
+            db.session.delete(media)
+            db.session.commit()
+
+        return "", 204
 
     return SiteSettings
