@@ -125,6 +125,8 @@ def test_site_media_migration_adds_video_columns_idempotently():
     migrate_engine(engine)
     migrate_engine(engine)
 
-    columns = {column["name"] for column in inspect(engine).get_columns("site_settings")}
+    columns = {
+        column["name"] for column in inspect(engine).get_columns("site_settings")
+    }
     assert "hero_video_url" in columns
     assert "hero_video_enabled" in columns
