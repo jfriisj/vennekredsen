@@ -23,7 +23,9 @@ def test_admin_can_upload_replace_and_remove_public_logo(client, admin_headers):
     upload = _upload(client, admin_headers, "logo", "logo.png", PNG_BYTES)
     assert upload.status_code == 200
     assert upload.get_json()["media"]["content_type"] == "image/png"
-    assert client.get("/api/site-settings").get_json()["media"]["logo_available"] is True
+    assert (
+        client.get("/api/site-settings").get_json()["media"]["logo_available"] is True
+    )
 
     public = client.get("/api/site-media/logo")
     assert public.status_code == 200
@@ -37,7 +39,9 @@ def test_admin_can_upload_replace_and_remove_public_logo(client, admin_headers):
     remove = client.delete("/api/admin/site-media/logo", headers=admin_headers)
     assert remove.status_code == 204
     assert client.get("/api/site-media/logo").status_code == 404
-    assert client.get("/api/site-settings").get_json()["media"]["logo_available"] is False
+    assert (
+        client.get("/api/site-settings").get_json()["media"]["logo_available"] is False
+    )
 
 
 def test_member_cannot_manage_site_media(client, member_headers):
