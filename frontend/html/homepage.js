@@ -27,7 +27,9 @@ function loadManagedMediaStyles() {
     document.head.append(link);
 }
 
-function loadSiteLogo() {
+function loadSiteLogo(mediaSettings = {}) {
+    if (!mediaSettings.logo_available) return;
+
     document.querySelectorAll(".brand-mark").forEach(mark => {
         const image = new Image();
         image.className = "site-logo";
@@ -44,25 +46,36 @@ function prepareHeroMedia(mediaSettings = {}) {
     const hero = document.querySelector(".hero");
     if (!hero) return;
 
-    hero.classList.add("has-managed-media");
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const hasBackground = Boolean(mediaSettings.hero_background_available);
+    const shouldPlay = Boolean(
+        mediaSettings.hero_video_enabled &&
+        mediaSettings.hero_video_url &&
+        !reducedMotion
+    );
+    const hasManagedMedia = hasBackground || shouldPlay;
 
-    let overlay = hero.querySelector(".hero-media-overlay");
+    hero.classList.toggle("has-managed-media", hasManagedMedia);
+    hero.classList.toggle("has-managed-background", hasBackground);
+
+    const existingVideo = hero.querySelector(".hero-media-video");
+    const existingOverlay = hero.querySelector(".hero-media-overlay");
+
+    if (!hasManagedMedia) {
+        if (existingVideo) existingVideo.remove();
+        if (existingOverlay) existingOverlay.remove();
+        return;
+    }
+
+    let overlay = existingOverlay;
     if (!overlay) {
         overlay = document.createElement("div");
         overlay.className = "hero-media-overlay";
         overlay.setAttribute("aria-hidden", "true");
         hero.prepend(overlay);
     }
-
-    const existingVideo = hero.querySelector(".hero-media-video");
-    const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches;
-    const shouldPlay = Boolean(
-        mediaSettings.hero_video_enabled &&
-        mediaSettings.hero_video_url &&
-        !reducedMotion
-    );
 
     if (!shouldPlay) {
         if (existingVideo) existingVideo.remove();
@@ -76,7 +89,7 @@ function prepareHeroMedia(mediaSettings = {}) {
     video.loop = true;
     video.playsInline = true;
     video.setAttribute("aria-hidden", "true");
-    video.poster = "/api/site-media/hero-background";
+    video.poster = hasBackground ? "/api/site-media/hero-background" : "skole.png";
     video.src = mediaSettings.hero_video_url;
     video.hidden = false;
     video.addEventListener("error", () => {
@@ -114,6 +127,7 @@ async function loadSiteSettings() {
 
         const payload = await response.json();
         const settings = payload.settings || {};
+        const mediaSettings = payload.media || {};
 
         if (heroHeading && settings.hero_heading) {
             heroHeading.textContent = settings.hero_heading;
@@ -135,7 +149,8 @@ async function loadSiteSettings() {
                 : "";
         }
 
-        prepareHeroMedia(payload.media || {});
+        loadSiteLogo(mediaSettings);
+        prepareHeroMedia(mediaSettings);
     } catch {
         if (announcement) announcement.hidden = true;
         prepareHeroMedia({});
@@ -250,7 +265,6 @@ async function loadProjects() {
 }
 
 loadManagedMediaStyles();
-loadSiteLogo();
 prepareHeroMedia({});
 loadSiteSettings();
 loadNextEvent();
