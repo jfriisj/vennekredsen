@@ -9,6 +9,8 @@ async function mockAdminArea(page) {
   let videoSettings = {
     hero_video_url: "",
     hero_video_enabled: false,
+    logo_available: false,
+    hero_background_available: false,
   };
 
   await page.route("**/api/me", route =>
@@ -60,7 +62,7 @@ async function mockAdminArea(page) {
   );
 
   await page.route("**/api/admin/site-video", async route => {
-    videoSettings = route.request().postDataJSON();
+    videoSettings = { ...videoSettings, ...route.request().postDataJSON() };
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -84,7 +86,7 @@ async function mockAdminArea(page) {
   );
 
   await page.route("**/api/site-media/*", route =>
-    route.fulfill({ status: 404, contentType: "application/json", body: "{}" })
+    route.fulfill({ status: 200, contentType: "image/png", body: pixelPng })
   );
 
   return { getVideoSettings: () => videoSettings };
@@ -129,7 +131,7 @@ test("admin can configure direct hero video", async ({ page }) => {
   await page.getByRole("button", { name: "Gem videoindstillinger" }).click();
 
   await expect(page.getByText("Videoindstillingerne er gemt.")).toBeVisible();
-  expect(state.getVideoSettings()).toEqual({
+  expect(state.getVideoSettings()).toMatchObject({
     hero_video_url: "https://cdn.example.com/hero.mp4",
     hero_video_enabled: true,
   });
@@ -151,6 +153,8 @@ test("homepage uses managed logo and configures hero video", async ({ page }) =>
         media: {
           hero_video_url: "https://cdn.example.com/hero.mp4",
           hero_video_enabled: true,
+          logo_available: true,
+          hero_background_available: true,
         },
       }),
     })
@@ -183,19 +187,25 @@ test("homepage uses managed logo and configures hero video", async ({ page }) =>
 });
 
 test("homepage keeps V logo fallback when no managed logo exists", async ({ page }) => {
+  let mediaRequests = 0;
+
   await page.route("**/api/site-settings", route =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ settings: {}, media: {} }),
+      body: JSON.stringify({
+        settings: {},
+        media: {
+          logo_available: false,
+          hero_background_available: false,
+        },
+      }),
     })
   );
-  await page.route("**/api/site-media/logo**", route =>
-    route.fulfill({ status: 404, contentType: "application/json", body: "{}" })
-  );
-  await page.route("**/api/site-media/hero-background**", route =>
-    route.fulfill({ status: 404, contentType: "application/json", body: "{}" })
-  );
+  await page.route("**/api/site-media/**", route => {
+    mediaRequests += 1;
+    return route.fulfill({ status: 404, contentType: "application/json", body: "{}" });
+  });
   await page.route("**/api/events", route =>
     route.fulfill({ status: 200, contentType: "application/json", body: "{}" })
   );
@@ -205,4 +215,5 @@ test("homepage keeps V logo fallback when no managed logo exists", async ({ page
 
   await page.goto("/index.html");
   await expect(page.locator(".brand-mark")).toHaveText("V");
+  expect(mediaRequests).toBe(0);
 });
