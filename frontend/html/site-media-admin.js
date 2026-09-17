@@ -70,7 +70,7 @@ function renderEditor(mediaSettings) {
     <div class="panel-heading">
       <p class="eyebrow">Branding og hero</p>
       <h3 id="site-media-heading">Billeder og video</h3>
-      <p>Upload logo og hero-billede direkte til hjemmesiden. PNG, JPEG og WebP understøttes op til 5 MB.</p>
+      <p>Upload logo, hero-billede og et separat site-baggrundsbillede. PNG, JPEG og WebP understøttes op til 5 MB.</p>
     </div>
     <div id="site-media-status" class="admin-message" role="status" hidden></div>
     <div class="site-media-admin-grid">
@@ -102,6 +102,21 @@ function renderEditor(mediaSettings) {
         <div class="site-media-actions">
           <button class="button" type="submit">Upload hero-billede</button>
           <button class="button secondary" type="button" data-media-delete="hero-background">Fjern hero-billede</button>
+        </div>
+      </form>
+      <form class="form-card site-media-card" data-media-form="site-background">
+        <h3>Fast site-baggrund</h3>
+        <div class="site-media-preview">
+          <span data-media-empty="site-background">Ingen brugerdefineret site-baggrund</span>
+          <img data-media-preview="site-background" alt="Nuværende faste site-baggrund" hidden />
+        </div>
+        <div class="form-field">
+          <label for="site-background-file">Vælg baggrundsbillede</label>
+          <input id="site-background-file" name="file" type="file" accept="image/png,image/jpeg,image/webp" required />
+        </div>
+        <div class="site-media-actions">
+          <button class="button" type="submit">Upload site-baggrund</button>
+          <button class="button secondary" type="button" data-media-delete="site-background">Fjern site-baggrund</button>
         </div>
       </form>
     </div>
@@ -199,6 +214,10 @@ function renderEditor(mediaSettings) {
     refreshPreview(
         "hero-background",
         Boolean(mediaSettings.hero_background_available)
+    );
+    refreshPreview(
+        "site-background",
+        Boolean(mediaSettings.site_background_available)
     );
 }
 
