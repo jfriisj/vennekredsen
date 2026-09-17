@@ -27,6 +27,14 @@ function loadManagedMediaStyles() {
     document.head.append(link);
 }
 
+function hasManagedMediaStyles(mediaSettings = {}) {
+    return Boolean(
+        mediaSettings.logo_available ||
+        mediaSettings.hero_background_available ||
+        mediaSettings.hero_video_enabled
+    );
+}
+
 function loadSiteLogo(mediaSettings = {}) {
     if (!mediaSettings.logo_available) return;
 
@@ -149,6 +157,9 @@ async function loadSiteSettings() {
                 : "";
         }
 
+        if (hasManagedMediaStyles(mediaSettings)) {
+            loadManagedMediaStyles();
+        }
         loadSiteLogo(mediaSettings);
         prepareHeroMedia(mediaSettings);
     } catch {
@@ -264,12 +275,12 @@ async function loadProjects() {
     }
 }
 
-loadManagedMediaStyles();
 prepareHeroMedia({});
 loadSiteSettings();
 loadNextEvent();
 loadProjects();
 
 if (document.getElementById("site-settings-form")) {
+    loadManagedMediaStyles();
     import("./site-media-admin.js");
 }
