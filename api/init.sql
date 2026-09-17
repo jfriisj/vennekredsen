@@ -46,6 +46,16 @@ CREATE TABLE site_settings (
     intro_text VARCHAR(1000) NOT NULL,
     announcement_text VARCHAR(500) NOT NULL DEFAULT '',
     announcement_visible BOOLEAN NOT NULL DEFAULT FALSE,
+    hero_video_url VARCHAR(1000) NOT NULL DEFAULT '',
+    hero_video_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE site_media (
+    media_key VARCHAR(40) PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    content_type VARCHAR(50) NOT NULL,
+    data BYTEA NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
