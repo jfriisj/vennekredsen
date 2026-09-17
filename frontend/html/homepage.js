@@ -97,7 +97,9 @@ function prepareHeroMedia(mediaSettings = {}) {
     video.loop = true;
     video.playsInline = true;
     video.setAttribute("aria-hidden", "true");
-    video.poster = hasBackground ? "/api/site-media/hero-background" : "skole.png";
+    video.poster = hasBackground
+        ? "/api/site-media/hero-background"
+        : "skole.png";
     video.src = mediaSettings.hero_video_url;
     video.hidden = false;
     video.addEventListener("error", () => {
