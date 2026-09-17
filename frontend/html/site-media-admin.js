@@ -25,12 +25,19 @@ function mediaUrl(mediaKey) {
     return `/api/site-media/${mediaKey}?v=${Date.now()}`;
 }
 
-function refreshPreview(mediaKey) {
+function refreshPreview(mediaKey, available = true) {
     const preview = document.querySelector(
         `[data-media-preview="${mediaKey}"]`
     );
     const empty = document.querySelector(`[data-media-empty="${mediaKey}"]`);
     if (!preview || !empty) return;
+
+    if (!available) {
+        preview.removeAttribute("src");
+        preview.hidden = true;
+        empty.hidden = false;
+        return;
+    }
 
     const candidate = mediaUrl(mediaKey);
     const probe = new Image();
@@ -142,7 +149,7 @@ function renderEditor(mediaSettings) {
                     body,
                 });
                 form.reset();
-                refreshPreview(mediaKey);
+                refreshPreview(mediaKey, true);
                 setStatus("Billedet er gemt.");
             } catch (error) {
                 setStatus(error.message, "error");
@@ -157,7 +164,7 @@ function renderEditor(mediaSettings) {
                 await adminRequest(`/api/admin/site-media/${mediaKey}`, {
                     method: "DELETE",
                 });
-                refreshPreview(mediaKey);
+                refreshPreview(mediaKey, false);
                 setStatus("Billedet er fjernet.");
             } catch (error) {
                 setStatus(error.message, "error");
@@ -188,8 +195,11 @@ function renderEditor(mediaSettings) {
         }
     });
 
-    refreshPreview("logo");
-    refreshPreview("hero-background");
+    refreshPreview("logo", Boolean(mediaSettings.logo_available));
+    refreshPreview(
+        "hero-background",
+        Boolean(mediaSettings.hero_background_available)
+    );
 }
 
 async function initializeMediaEditor() {
