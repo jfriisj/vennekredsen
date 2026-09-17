@@ -31,12 +31,13 @@ function hasManagedMediaStyles(mediaSettings = {}) {
     return Boolean(
         mediaSettings.logo_available ||
         mediaSettings.hero_background_available ||
+        mediaSettings.site_background_available ||
         mediaSettings.hero_video_enabled
     );
 }
 
 function applyManagedSiteBackground(mediaSettings = {}) {
-    const hasBackground = Boolean(mediaSettings.hero_background_available);
+    const hasBackground = Boolean(mediaSettings.site_background_available);
     document.body?.classList.toggle(
         "has-managed-site-background",
         hasBackground
