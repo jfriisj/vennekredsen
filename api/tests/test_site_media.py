@@ -90,12 +90,50 @@ def test_admin_can_configure_direct_hero_video(client, admin_headers):
     assert public.get_json()["media"] == {
         "hero_video_url": "https://cdn.example.com/hero.mp4?version=2",
         "hero_video_enabled": True,
+        "hero_video_type": "direct",
+        "hero_video_embed_url": "",
         "logo_available": False,
         "hero_background_available": False,
     }
 
 
-def test_hero_video_validation_requires_direct_supported_url(client, admin_headers):
+def test_admin_can_configure_vimeo_hero_video(client, admin_headers):
+    update = client.put(
+        "/api/admin/site-video",
+        headers=admin_headers,
+        json={
+            "hero_video_url": "https://vimeo.com/123456789",
+            "hero_video_enabled": True,
+        },
+    )
+    assert update.status_code == 200
+
+    media = update.get_json()["media"]
+    assert media["hero_video_type"] == "vimeo"
+    assert media["hero_video_embed_url"].startswith(
+        "https://player.vimeo.com/video/123456789?"
+    )
+    assert "background=1" in media["hero_video_embed_url"]
+    assert "autoplay=1" in media["hero_video_embed_url"]
+    assert "muted=1" in media["hero_video_embed_url"]
+    assert "loop=1" in media["hero_video_embed_url"]
+
+    player_update = client.put(
+        "/api/admin/site-video",
+        headers=admin_headers,
+        json={
+            "hero_video_url": "https://player.vimeo.com/video/987654321?h=abc123",
+            "hero_video_enabled": True,
+        },
+    )
+    assert player_update.status_code == 200
+    player_media = player_update.get_json()["media"]
+    assert player_media["hero_video_type"] == "vimeo"
+    assert "video/987654321?" in player_media["hero_video_embed_url"]
+    assert "h=abc123" in player_media["hero_video_embed_url"]
+
+
+def test_hero_video_validation_rejects_unsupported_url(client, admin_headers):
     invalid = client.put(
         "/api/admin/site-video",
         headers=admin_headers,
@@ -106,6 +144,16 @@ def test_hero_video_validation_requires_direct_supported_url(client, admin_heade
     )
     assert invalid.status_code == 400
     assert "hero_video_url" in invalid.get_json()["errors"]
+
+    invalid_vimeo = client.put(
+        "/api/admin/site-video",
+        headers=admin_headers,
+        json={
+            "hero_video_url": "https://vimeo.com/channels/staffpicks",
+            "hero_video_enabled": True,
+        },
+    )
+    assert invalid_vimeo.status_code == 400
 
     missing = client.put(
         "/api/admin/site-video",
