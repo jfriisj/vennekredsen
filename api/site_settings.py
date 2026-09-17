@@ -17,6 +17,8 @@ DEFAULT_SITE_SETTINGS = {
     ),
     "announcement_text": "",
     "announcement_visible": False,
+}
+DEFAULT_MEDIA_SETTINGS = {
     "hero_video_url": "",
     "hero_video_enabled": False,
 }
@@ -27,7 +29,6 @@ FIELD_LIMITS = {
     "intro_text": 1000,
     "announcement_text": 500,
 }
-
 MEDIA_KEYS = {"logo", "hero-background"}
 MAX_MEDIA_BYTES = 5 * 1024 * 1024
 
@@ -97,6 +98,12 @@ def register_site_settings(app, db, admin_required):
             "intro_text": settings.intro_text,
             "announcement_text": settings.announcement_text,
             "announcement_visible": settings.announcement_visible,
+        }
+
+    def serialize_media_settings(settings):
+        if settings is None:
+            return dict(DEFAULT_MEDIA_SETTINGS)
+        return {
             "hero_video_url": settings.hero_video_url,
             "hero_video_enabled": settings.hero_video_enabled,
         }
@@ -120,7 +127,13 @@ def register_site_settings(app, db, admin_required):
         if not isinstance(payload.get("announcement_visible"), bool):
             errors["announcement_visible"] = "Skal være true eller false"
 
+        return errors
+
+    def validate_video(payload):
+        errors = {}
         video_url = payload.get("hero_video_url", "")
+        video_enabled = payload.get("hero_video_enabled", False)
+
         if not isinstance(video_url, str):
             errors["hero_video_url"] = "Skal være tekst"
         elif len(video_url.strip()) > 1000:
@@ -128,15 +141,19 @@ def register_site_settings(app, db, admin_required):
         elif not _valid_video_url(video_url.strip()):
             errors["hero_video_url"] = "Skal være en direkte HTTP(S) MP4- eller WebM-URL"
 
-        video_enabled = payload.get("hero_video_enabled", False)
         if not isinstance(video_enabled, bool):
             errors["hero_video_enabled"] = "Skal være true eller false"
-        elif video_enabled and not isinstance(video_url, str):
-            errors["hero_video_url"] = "Video-URL er påkrævet når video er slået til"
-        elif video_enabled and not video_url.strip():
+        elif video_enabled and (not isinstance(video_url, str) or not video_url.strip()):
             errors["hero_video_url"] = "Video-URL er påkrævet når video er slået til"
 
         return errors
+
+    def get_or_create_settings():
+        settings = db.session.get(SiteSettings, 1)
+        if settings is None:
+            settings = SiteSettings(id=1, **DEFAULT_SITE_SETTINGS, **DEFAULT_MEDIA_SETTINGS)
+            db.session.add(settings)
+        return settings
 
     def media_or_404(media_key):
         if media_key not in MEDIA_KEYS:
@@ -150,7 +167,15 @@ def register_site_settings(app, db, admin_required):
     @app.route("/api/site-settings", methods=["GET"])
     def public_site_settings():
         settings = db.session.get(SiteSettings, 1)
-        return jsonify({"settings": serialize(settings)}), 200
+        return (
+            jsonify(
+                {
+                    "settings": serialize(settings),
+                    "media": serialize_media_settings(settings),
+                }
+            ),
+            200,
+        )
 
     @app.route("/api/site-media/<media_key>", methods=["GET"])
     def public_site_media(media_key):
@@ -166,14 +191,20 @@ def register_site_settings(app, db, admin_required):
     @admin_required
     def admin_get_site_settings(current_user):
         settings = db.session.get(SiteSettings, 1)
-        return jsonify({"settings": serialize(settings)}), 200
+        return (
+            jsonify(
+                {
+                    "settings": serialize(settings),
+                    "media": serialize_media_settings(settings),
+                }
+            ),
+            200,
+        )
 
     @app.route("/api/admin/site-settings", methods=["PUT"])
     @admin_required
     def admin_update_site_settings(current_user):
         payload = request.get_json(silent=True) or {}
-        payload.setdefault("hero_video_url", "")
-        payload.setdefault("hero_video_enabled", False)
         errors = validate(payload)
 
         if errors:
@@ -187,20 +218,27 @@ def register_site_settings(app, db, admin_required):
                 400,
             )
 
-        settings = db.session.get(SiteSettings, 1)
-        if settings is None:
-            settings = SiteSettings(id=1)
-            db.session.add(settings)
-
+        settings = get_or_create_settings()
         for field in FIELD_LIMITS:
             setattr(settings, field, payload[field].strip())
-
         settings.announcement_visible = payload["announcement_visible"]
-        settings.hero_video_url = payload["hero_video_url"].strip()
-        settings.hero_video_enabled = payload["hero_video_enabled"]
         db.session.commit()
 
         return jsonify({"settings": serialize(settings)}), 200
+
+    @app.route("/api/admin/site-video", methods=["PUT"])
+    @admin_required
+    def admin_update_site_video(current_user):
+        payload = request.get_json(silent=True) or {}
+        errors = validate_video(payload)
+        if errors:
+            return jsonify({"message": "Ugyldige videoindstillinger", "errors": errors}), 400
+
+        settings = get_or_create_settings()
+        settings.hero_video_url = payload.get("hero_video_url", "").strip()
+        settings.hero_video_enabled = payload.get("hero_video_enabled", False)
+        db.session.commit()
+        return jsonify({"media": serialize_media_settings(settings)}), 200
 
     @app.route("/api/admin/site-media/<media_key>", methods=["PUT"])
     @admin_required
