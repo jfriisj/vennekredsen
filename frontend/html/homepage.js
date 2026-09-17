@@ -67,19 +67,15 @@ function prepareHeroMedia(mediaSettings = {}) {
     const hero = document.querySelector(".hero");
     if (!hero) return;
 
-    const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-    ).matches;
     const hasBackground = Boolean(mediaSettings.hero_background_available);
     const shouldPlay = Boolean(
-        mediaSettings.hero_video_enabled &&
-        mediaSettings.hero_video_url &&
-        !reducedMotion
+        mediaSettings.hero_video_enabled && mediaSettings.hero_video_url
     );
-    const hasManagedMedia = hasBackground || shouldPlay;
+    const useHeroImage = hasBackground && !shouldPlay;
+    const hasManagedMedia = useHeroImage || shouldPlay;
 
     hero.classList.toggle("has-managed-media", hasManagedMedia);
-    hero.classList.toggle("has-managed-background", hasBackground);
+    hero.classList.toggle("has-managed-background", useHeroImage);
 
     const existingVideo = hero.querySelector(".hero-media-video");
     const existingVimeo = hero.querySelector(".hero-media-vimeo");
@@ -145,9 +141,7 @@ function prepareHeroMedia(mediaSettings = {}) {
     video.loop = true;
     video.playsInline = true;
     video.setAttribute("aria-hidden", "true");
-    video.poster = hasBackground
-        ? "/api/site-media/hero-background"
-        : "skole.png";
+    video.removeAttribute("poster");
     video.src = mediaSettings.hero_video_url;
     video.hidden = false;
     video.addEventListener("error", () => {
