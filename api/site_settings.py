@@ -139,11 +139,15 @@ def register_site_settings(app, db, admin_required):
         elif len(video_url.strip()) > 1000:
             errors["hero_video_url"] = "Må højst være 1000 tegn"
         elif not _valid_video_url(video_url.strip()):
-            errors["hero_video_url"] = "Skal være en direkte HTTP(S) MP4- eller WebM-URL"
+            errors["hero_video_url"] = (
+                "Skal være en direkte HTTP(S) MP4- eller WebM-URL"
+            )
 
         if not isinstance(video_enabled, bool):
             errors["hero_video_enabled"] = "Skal være true eller false"
-        elif video_enabled and (not isinstance(video_url, str) or not video_url.strip()):
+        elif video_enabled and (
+            not isinstance(video_url, str) or not video_url.strip()
+        ):
             errors["hero_video_url"] = "Video-URL er påkrævet når video er slået til"
 
         return errors
@@ -151,7 +155,9 @@ def register_site_settings(app, db, admin_required):
     def get_or_create_settings():
         settings = db.session.get(SiteSettings, 1)
         if settings is None:
-            settings = SiteSettings(id=1, **DEFAULT_SITE_SETTINGS, **DEFAULT_MEDIA_SETTINGS)
+            settings = SiteSettings(
+                id=1, **DEFAULT_SITE_SETTINGS, **DEFAULT_MEDIA_SETTINGS
+            )
             db.session.add(settings)
         return settings
 
@@ -232,7 +238,10 @@ def register_site_settings(app, db, admin_required):
         payload = request.get_json(silent=True) or {}
         errors = validate_video(payload)
         if errors:
-            return jsonify({"message": "Ugyldige videoindstillinger", "errors": errors}), 400
+            return (
+                jsonify({"message": "Ugyldige videoindstillinger", "errors": errors}),
+                400,
+            )
 
         settings = get_or_create_settings()
         settings.hero_video_url = payload.get("hero_video_url", "").strip()
