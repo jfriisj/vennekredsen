@@ -21,6 +21,7 @@
 }
 
 .hero-media-video,
+.hero-media-vimeo,
 .hero-media-overlay {
   position: absolute;
   inset: 0;
@@ -33,7 +34,14 @@
   object-fit: cover;
 }
 
-.hero-media-video[hidden] {
+.hero-media-vimeo {
+  z-index: 0;
+  border: 0;
+  pointer-events: none;
+}
+
+.hero-media-video[hidden],
+.hero-media-vimeo[hidden] {
   display: none;
 }
 
