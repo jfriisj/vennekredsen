@@ -19,6 +19,76 @@ const announcementText = document.querySelector(
     "[data-site-announcement-text]"
 );
 
+function loadManagedMediaStyles() {
+    if (document.querySelector('link[href="site-media.css"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "site-media.css";
+    document.head.append(link);
+}
+
+function loadSiteLogo() {
+    document.querySelectorAll(".brand-mark").forEach(mark => {
+        const image = new Image();
+        image.className = "site-logo";
+        image.alt = "";
+        image.onload = () => {
+            mark.replaceChildren(image);
+            mark.classList.add("has-site-logo");
+        };
+        image.src = `/api/site-media/logo?v=${Date.now()}`;
+    });
+}
+
+function prepareHeroMedia(mediaSettings = {}) {
+    const hero = document.querySelector(".hero");
+    if (!hero) return;
+
+    hero.classList.add("has-managed-media");
+
+    let overlay = hero.querySelector(".hero-media-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.className = "hero-media-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        hero.prepend(overlay);
+    }
+
+    const existingVideo = hero.querySelector(".hero-media-video");
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const shouldPlay = Boolean(
+        mediaSettings.hero_video_enabled &&
+            mediaSettings.hero_video_url &&
+            !reducedMotion
+    );
+
+    if (!shouldPlay) {
+        if (existingVideo) existingVideo.remove();
+        return;
+    }
+
+    const video = existingVideo || document.createElement("video");
+    video.className = "hero-media-video";
+    video.muted = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.setAttribute("aria-hidden", "true");
+    video.poster = "/api/site-media/hero-background";
+    video.src = mediaSettings.hero_video_url;
+    video.hidden = false;
+    video.addEventListener("error", () => {
+        video.hidden = true;
+    });
+
+    if (!existingVideo) hero.prepend(video);
+    video.play().catch(() => {
+        video.hidden = true;
+    });
+}
+
 if (navToggle && navLinks) {
     navToggle.addEventListener("click", () => {
         const isOpen = navLinks.classList.toggle("is-open");
@@ -64,8 +134,11 @@ async function loadSiteSettings() {
                 ? settings.announcement_text
                 : "";
         }
+
+        prepareHeroMedia(payload.media || {});
     } catch {
         if (announcement) announcement.hidden = true;
+        prepareHeroMedia({});
     }
 }
 
@@ -176,6 +249,13 @@ async function loadProjects() {
     }
 }
 
+loadManagedMediaStyles();
+loadSiteLogo();
+prepareHeroMedia({});
 loadSiteSettings();
 loadNextEvent();
 loadProjects();
+
+if (document.getElementById("site-settings-form")) {
+    import("./site-media-admin.js");
+}
