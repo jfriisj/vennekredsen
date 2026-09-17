@@ -108,9 +108,9 @@ function renderEditor(mediaSettings) {
     <form id="site-video-form" class="form-card site-media-card">
       <h3>Hero-video</h3>
       <div class="form-field full">
-        <label for="hero-video-url">Direkte video-URL</label>
-        <input id="hero-video-url" name="hero_video_url" type="url" maxlength="1000" placeholder="https://cdn.example.dk/hero.mp4" />
-        <span class="form-help">Direkte HTTP(S)-link til MP4 eller WebM. YouTube/Vimeo er ikke understøttet i denne version.</span>
+        <label for="hero-video-url">Video-URL</label>
+        <input id="hero-video-url" name="hero_video_url" type="url" maxlength="1000" placeholder="https://vimeo.com/123456789" />
+        <span class="form-help">Indsæt et Vimeo-link eller et direkte HTTP(S)-link til MP4/WebM. YouTube understøttes ikke.</span>
       </div>
       <label class="toggle-row">
         <input name="hero_video_enabled" type="checkbox" />
