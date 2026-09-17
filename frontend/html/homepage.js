@@ -60,8 +60,8 @@ function prepareHeroMedia(mediaSettings = {}) {
     ).matches;
     const shouldPlay = Boolean(
         mediaSettings.hero_video_enabled &&
-            mediaSettings.hero_video_url &&
-            !reducedMotion
+        mediaSettings.hero_video_url &&
+        !reducedMotion
     );
 
     if (!shouldPlay) {
