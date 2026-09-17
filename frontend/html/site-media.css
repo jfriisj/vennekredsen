@@ -1,3 +1,31 @@
+body.homepage.has-managed-site-background {
+  background-color: var(--home-bg);
+  background-image:
+    linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.92)),
+    url("/api/site-media/hero-background");
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed, fixed;
+}
+
+body.application-page.has-managed-site-background {
+  background-color: var(--home-bg) !important;
+  background-image:
+    linear-gradient(rgba(245, 247, 251, 0.86), rgba(245, 247, 251, 0.92)),
+    url("/api/site-media/hero-background") !important;
+  background-position: center, center !important;
+  background-size: cover, cover !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed, fixed !important;
+}
+
+body.homepage.has-managed-site-background .public-hero {
+  background:
+    linear-gradient(100deg, rgba(23, 32, 51, 0.94), rgba(35, 73, 110, 0.78)),
+    url("/api/site-media/hero-background") center / cover no-repeat;
+}
+
 .brand-mark.has-site-logo {
   width: auto;
   min-width: 2.25rem;
