@@ -35,6 +35,14 @@ function hasManagedMediaStyles(mediaSettings = {}) {
     );
 }
 
+function applyManagedSiteBackground(mediaSettings = {}) {
+    const hasBackground = Boolean(mediaSettings.hero_background_available);
+    document.body?.classList.toggle(
+        "has-managed-site-background",
+        hasBackground
+    );
+}
+
 function loadSiteLogo(mediaSettings = {}) {
     if (!mediaSettings.logo_available) return;
 
@@ -197,10 +205,12 @@ async function loadSiteSettings() {
         if (hasManagedMediaStyles(mediaSettings)) {
             loadManagedMediaStyles();
         }
+        applyManagedSiteBackground(mediaSettings);
         loadSiteLogo(mediaSettings);
         prepareHeroMedia(mediaSettings);
     } catch {
         if (announcement) announcement.hidden = true;
+        applyManagedSiteBackground({});
         prepareHeroMedia({});
     }
 }
