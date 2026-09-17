@@ -102,11 +102,26 @@ def register_site_settings(app, db, admin_required):
 
     def serialize_media_settings(settings):
         if settings is None:
-            return dict(DEFAULT_MEDIA_SETTINGS)
-        return {
-            "hero_video_url": settings.hero_video_url,
-            "hero_video_enabled": settings.hero_video_enabled,
+            media_settings = dict(DEFAULT_MEDIA_SETTINGS)
+        else:
+            media_settings = {
+                "hero_video_url": settings.hero_video_url,
+                "hero_video_enabled": settings.hero_video_enabled,
+            }
+
+        existing_media = {
+            media_key
+            for (media_key,) in db.session.query(SiteMedia.media_key)
+            .filter(SiteMedia.media_key.in_(MEDIA_KEYS))
+            .all()
         }
+        media_settings.update(
+            {
+                "logo_available": "logo" in existing_media,
+                "hero_background_available": "hero-background" in existing_media,
+            }
+        )
+        return media_settings
 
     def validate(payload):
         errors = {}
