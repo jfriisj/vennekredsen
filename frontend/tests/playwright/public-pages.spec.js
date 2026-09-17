@@ -1,6 +1,24 @@
 const { test, expect } = require("@playwright/test");
 
 async function mockHomepageApi(page) {
+    await page.route("**/api/site-settings", async route => {
+        await route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+                settings: {
+                    hero_heading: "Vi gør gode idéer mulige.",
+                    hero_subheading:
+                        "Vennekredsen samler midler og frivillige kræfter, så børnene på Hashøjskolen får flere oplevelser, stærkere fællesskaber og bedre rammer i hverdagen.",
+                    intro_text:
+                        "Vennekredsen arbejder for, at økonomi ikke bliver en barriere for børnenes deltagelse i oplevelser og aktiviteter omkring skolen.",
+                    announcement_text: "",
+                    announcement_visible: false,
+                },
+            }),
+        });
+    });
+
     await page.route("**/api/events", async route => {
         await route.fulfill({
             status: 200,
