@@ -9,6 +9,18 @@ Applikationen har to brugerroller:
 
 Brugere kan desuden være aktive eller inaktive.
 
+```mermaid
+flowchart TD
+    P[Public bruger] --> PUB[Offentlige sider og formularer]
+    M[Member] --> AUTH[JWT-autentifikation]
+    A[Admin] --> AUTH
+    AUTH --> MEMBER[Beskyttet medlemsområde]
+    AUTH --> R{Rolle?}
+    R -->|member| MEMBER
+    R -->|admin| MEMBER
+    R -->|admin| ADMIN[Admin-endpoints og administration]
+```
+
 ## Passwords
 
 Nye og ændrede passwords gemmes med Argon2id.
