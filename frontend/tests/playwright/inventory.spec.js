@@ -274,7 +274,7 @@ test("member can archive and restore an item from the archive modal", async ({ p
   await expect(page.getByRole("heading", { name: "Pepsi Max" })).toBeHidden();
   await expect(page.locator("#archive-count")).toHaveText("1");
 
-  await page.getByRole("button", { name: /Arkiv/ }).click();
+  await page.getByRole("button", { name: "Arkiv", exact: true }).click();
   const archiveDialog = page.locator("#archiveDialog");
   await expect(archiveDialog).toBeVisible();
   await expect(archiveDialog.getByText("Pepsi Max", { exact: true })).toBeVisible();
