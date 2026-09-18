@@ -24,8 +24,12 @@ const resultsSummary = document.getElementById("resultsSummary");
 const downloadCurrentButton = document.getElementById("downloadCurrent");
 const downloadStoreButton = document.getElementById("downloadStore");
 const downloadCategoryButton = document.getElementById("downloadCategory");
-const downloadTemplateXlsxButton = document.getElementById("downloadTemplateXlsx");
-const downloadTemplateCsvButton = document.getElementById("downloadTemplateCsv");
+const downloadTemplateXlsxButton = document.getElementById(
+    "downloadTemplateXlsx"
+);
+const downloadTemplateCsvButton = document.getElementById(
+    "downloadTemplateCsv"
+);
 const partyImportFile = document.getElementById("partyImportFile");
 
 function redirectToLogin() {
@@ -202,7 +206,9 @@ async function importPartyConfiguration(file) {
         if (typeof XLSX === "undefined") {
             throw new Error("Spreadsheet-biblioteket kunne ikke indlæses.");
         }
-        const workbook = XLSX.read(await file.arrayBuffer(), { cellDates: true });
+        const workbook = XLSX.read(await file.arrayBuffer(), {
+            cellDates: true,
+        });
         const firstSheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[firstSheetName];
         rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
@@ -771,10 +777,7 @@ downloadStoreButton.addEventListener("click", () =>
         true
     )
 );
-downloadTemplateXlsxButton.addEventListener(
-    "click",
-    downloadPartyTemplateXlsx
-);
+downloadTemplateXlsxButton.addEventListener("click", downloadPartyTemplateXlsx);
 downloadTemplateCsvButton.addEventListener("click", downloadPartyTemplateCsv);
 partyImportFile.addEventListener("change", async event => {
     const [file] = event.target.files;
