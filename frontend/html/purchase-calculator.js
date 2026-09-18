@@ -52,7 +52,9 @@ async function apiRequest(url, options = {}) {
 
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-        throw new Error(payload.message || "Handlingen kunne ikke gennemføres.");
+        throw new Error(
+            payload.message || "Handlingen kunne ikke gennemføres."
+        );
     }
     return payload;
 }
@@ -156,8 +158,7 @@ function renderConfiguration() {
         const heading = document.createElement("h3");
         heading.textContent = item.name;
         const meta = document.createElement("p");
-        meta.textContent =
-            `${item.category} · ${item.unit} · ${item.default_store || "Ingen butik"}`;
+        meta.textContent = `${item.category} · ${item.unit} · ${item.default_store || "Ingen butik"}`;
         identity.append(heading, meta);
 
         if (!item.inventory_active) {
@@ -286,8 +287,10 @@ async function addInventoryItem(event) {
                 method: "POST",
                 body: JSON.stringify({
                     inventory_item_id: Number(inventoryItemSelect.value),
-                    per_adult_quantity: document.getElementById("addPerAdult").value,
-                    per_child_quantity: document.getElementById("addPerChild").value,
+                    per_adult_quantity:
+                        document.getElementById("addPerAdult").value,
+                    per_child_quantity:
+                        document.getElementById("addPerChild").value,
                     factor: document.getElementById("addFactor").value,
                 }),
             }
