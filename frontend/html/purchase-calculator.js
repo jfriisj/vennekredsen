@@ -31,6 +31,51 @@ const downloadTemplateCsvButton = document.getElementById(
     "downloadTemplateCsv"
 );
 const partyImportFile = document.getElementById("partyImportFile");
+const configurationTab = document.getElementById("configurationTab");
+const purchaseListTab = document.getElementById("purchaseListTab");
+const configurationView = document.getElementById("configurationView");
+const purchaseListView = document.getElementById("purchaseListView");
+
+function setCalculatorView(view) {
+    const showConfiguration = view === "configuration";
+    configurationView.hidden = !showConfiguration;
+    purchaseListView.hidden = showConfiguration;
+
+    configurationTab.classList.toggle("is-active", showConfiguration);
+    purchaseListTab.classList.toggle("is-active", !showConfiguration);
+    configurationTab.setAttribute(
+        "aria-selected",
+        String(showConfiguration)
+    );
+    purchaseListTab.setAttribute(
+        "aria-selected",
+        String(!showConfiguration)
+    );
+    configurationTab.tabIndex = showConfiguration ? 0 : -1;
+    purchaseListTab.tabIndex = showConfiguration ? -1 : 0;
+}
+
+function activateTabFromKeyboard(event) {
+    const tabs = [configurationTab, purchaseListTab];
+    const currentIndex = tabs.indexOf(event.currentTarget);
+    let nextIndex = currentIndex;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
+    } else if (event.key === "Home") {
+        nextIndex = 0;
+    } else if (event.key === "End") {
+        nextIndex = tabs.length - 1;
+    } else {
+        return;
+    }
+
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    setCalculatorView(nextTab === configurationTab ? "configuration" : "purchases");
+    nextTab.focus();
+}
 
 function redirectToLogin() {
     localStorage.removeItem("authToken");
@@ -642,6 +687,7 @@ async function calculatePurchases(event) {
                 : "Festtypen har ingen aktive varer at beregne.",
             calculatedItems.length ? "success" : "neutral"
         );
+        setCalculatorView("purchases");
     } catch (error) {
         setStatus(error.message, "error");
     } finally {
@@ -752,6 +798,15 @@ async function initialize() {
         }
     }
 }
+
+configurationTab.addEventListener("click", () =>
+    setCalculatorView("configuration")
+);
+purchaseListTab.addEventListener("click", () =>
+    setCalculatorView("purchases")
+);
+configurationTab.addEventListener("keydown", activateTabFromKeyboard);
+purchaseListTab.addEventListener("keydown", activateTabFromKeyboard);
 
 partySelect.addEventListener("change", async () => {
     calculateButton.disabled = !partySelect.value;
