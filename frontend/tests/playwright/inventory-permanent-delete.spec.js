@@ -103,12 +103,12 @@ test("member can permanently delete only an archived item", async ({ page }) => 
     page.getByRole("button", { name: "Slet Pepsi Max permanent" })
   ).toBeVisible();
 
-  page.once("dialog", dialog => dialog.dismiss());
-  await page.getByRole("button", { name: "Slet Pepsi Max permanent" }).click();
-  await expect(archiveDialog.getByText("Pepsi Max", { exact: true })).toBeVisible();
-  expect(state.items).toHaveLength(1);
+  let dialogShown = false;
+  page.on("dialog", async dialog => {
+    dialogShown = true;
+    await dialog.dismiss();
+  });
 
-  page.once("dialog", dialog => dialog.accept());
   await page.getByRole("button", { name: "Slet Pepsi Max permanent" }).click();
 
   await expect(archiveDialog.getByText("Pepsi Max", { exact: true })).toBeHidden();
@@ -117,4 +117,5 @@ test("member can permanently delete only an archived item", async ({ page }) => 
     "Pepsi Max er slettet permanent."
   );
   expect(state.items).toHaveLength(0);
+  expect(dialogShown).toBe(false);
 });
