@@ -59,4 +59,4 @@ Kør:
 python tools/publish_wiki.py --verify-only
 ```
 
-Validatoren fejler hvis obligatoriske sider mangler, eller et `[[Wiki Link]]` peger på en side, som ikke findes i `wiki/`.
+Validatoren fejler hvis obligatoriske sider mangler, eller et internt GitHub Wiki-link peger på en side, som ikke findes i `wiki/`.
