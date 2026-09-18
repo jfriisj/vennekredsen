@@ -145,23 +145,55 @@
             </label>
             <label>
               Pr. voksen
-              <input id="addPerAdult" type="number" min="0" step="0.01" value="0" required />
+              <input
+                id="addPerAdult"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                required
+              />
             </label>
             <label>
               Pr. barn
-              <input id="addPerChild" type="number" min="0" step="0.01" value="0" required />
+              <input
+                id="addPerChild"
+                type="number"
+                min="0"
+                step="0.01"
+                value="0"
+                required
+              />
             </label>
             <label>
               Faktor
-              <input id="addFactor" type="number" min="0.01" step="0.01" value="1" required />
+              <input
+                id="addFactor"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value="1"
+                required
+              />
             </label>
-            <button class="secondary-action" id="addItemButton" type="submit" disabled>
+            <button
+              class="secondary-action"
+              id="addItemButton"
+              type="submit"
+              disabled
+            >
               Tilføj vare
             </button>
           </form>
 
-          <div id="configurationList" class="configuration-list" aria-live="polite">
-            <p class="empty-state">Vælg en festtype for at se konfigurationen.</p>
+          <div
+            id="configurationList"
+            class="configuration-list"
+            aria-live="polite"
+          >
+            <p class="empty-state">
+              Vælg en festtype for at se konfigurationen.
+            </p>
           </div>
         </section>
 
@@ -186,7 +218,11 @@
             </label>
           </div>
 
-          <div class="export-actions" role="group" aria-label="Eksportmuligheder">
+          <div
+            class="export-actions"
+            role="group"
+            aria-label="Eksportmuligheder"
+          >
             <button type="button" id="downloadCurrent" disabled>
               Eksportér nuværende visning
             </button>
@@ -202,7 +238,9 @@
         <section class="calculator-results" aria-labelledby="resultsTitle">
           <div class="results-heading">
             <h2 id="resultsTitle">Ingen beregning endnu</h2>
-            <p id="resultsSummary">Konfigurér festen og beregn for at få en indkøbsliste.</p>
+            <p id="resultsSummary">
+              Konfigurér festen og beregn for at få en indkøbsliste.
+            </p>
           </div>
           <div class="table-scroll" tabindex="0" aria-label="Indkøbsliste">
             <table>
