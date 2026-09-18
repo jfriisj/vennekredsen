@@ -8,6 +8,8 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'scripts/**'
+      - 'wiki/**'
+      - 'tools/publish_wiki.py'
       - 'Makefile'
       - '.github/workflows/code-quality.yml'
   pull_request:
@@ -16,6 +18,8 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'scripts/**'
+      - 'wiki/**'
+      - 'tools/publish_wiki.py'
       - 'Makefile'
       - '.github/workflows/code-quality.yml'
 
@@ -140,6 +144,17 @@ jobs:
           cd frontend
           npx stylelint "html/**/*.css"
 
+  wiki-quality:
+    name: Wiki Source Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate wiki source
+        run: python tools/publish_wiki.py --verify-only
+
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
@@ -216,13 +231,13 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
-    needs: [python-quality, frontend-quality, security-scan, docker-quality]
+    needs: [python-quality, frontend-quality, wiki-quality, security-scan, docker-quality]
     if: always()
     
     steps:
       - name: Check job status
         run: |
-          if [[ "${{ needs.python-quality.result }}" == "failure" || "${{ needs.frontend-quality.result }}" == "failure" ]]; then
+          if [[ "${{ needs.python-quality.result }}" == "failure" || "${{ needs.frontend-quality.result }}" == "failure" || "${{ needs.wiki-quality.result }}" == "failure" ]]; then
             echo "Code quality checks failed!"
             exit 1
           fi
