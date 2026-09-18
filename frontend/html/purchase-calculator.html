@@ -268,71 +268,71 @@
             class="calculator-panel result-controls"
             aria-labelledby="filter-heading"
           >
-          <div class="section-heading compact-heading">
-            <p class="eyebrow">Resultat</p>
-            <h2 id="filter-heading">Indkøbsliste</h2>
-          </div>
+            <div class="section-heading compact-heading">
+              <p class="eyebrow">Resultat</p>
+              <h2 id="filter-heading">Indkøbsliste</h2>
+            </div>
 
-          <div class="filter-grid">
-            <label>
-              Indkøbssted
-              <select id="storeFilter" disabled>
-                <option value="">Alle indkøbssteder</option>
-              </select>
-            </label>
-            <label>
-              Kategori
-              <select id="categoryFilter" disabled>
-                <option value="">Alle kategorier</option>
-              </select>
-            </label>
-          </div>
+            <div class="filter-grid">
+              <label>
+                Indkøbssted
+                <select id="storeFilter" disabled>
+                  <option value="">Alle indkøbssteder</option>
+                </select>
+              </label>
+              <label>
+                Kategori
+                <select id="categoryFilter" disabled>
+                  <option value="">Alle kategorier</option>
+                </select>
+              </label>
+            </div>
 
-          <div
-            class="export-actions"
-            role="group"
-            aria-label="Eksportmuligheder"
-          >
-            <button type="button" id="downloadCurrent" disabled>
-              Eksportér nuværende visning
-            </button>
-            <button type="button" id="downloadStore" disabled>
-              Eksportér efter butik
-            </button>
-            <button type="button" id="downloadCategory" disabled>
-              Eksportér efter kategori
-            </button>
-          </div>
+            <div
+              class="export-actions"
+              role="group"
+              aria-label="Eksportmuligheder"
+            >
+              <button type="button" id="downloadCurrent" disabled>
+                Eksportér nuværende visning
+              </button>
+              <button type="button" id="downloadStore" disabled>
+                Eksportér efter butik
+              </button>
+              <button type="button" id="downloadCategory" disabled>
+                Eksportér efter kategori
+              </button>
+            </div>
           </section>
 
           <section class="calculator-results" aria-labelledby="resultsTitle">
             <div class="results-heading">
-            <h2 id="resultsTitle">Ingen beregning endnu</h2>
-            <p id="resultsSummary">
-              Konfigurér festen og beregn for at få en indkøbsliste.
-            </p>
-          </div>
-          <div class="table-scroll" tabindex="0" aria-label="Indkøbsliste">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Vare</th>
-                  <th scope="col">Kategori</th>
-                  <th scope="col">Enhed</th>
-                  <th scope="col">Butik</th>
-                  <th scope="col">Behov</th>
-                  <th scope="col">Lager</th>
-                  <th scope="col">Køb</th>
-                </tr>
-              </thead>
-              <tbody id="resultsTable">
-                <tr>
-                  <td colspan="7" class="empty-state">
-                    Ingen beregning er udført endnu.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              <h2 id="resultsTitle">Ingen beregning endnu</h2>
+              <p id="resultsSummary">
+                Konfigurér festen og beregn for at få en indkøbsliste.
+              </p>
+            </div>
+            <div class="table-scroll" tabindex="0" aria-label="Indkøbsliste">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Vare</th>
+                    <th scope="col">Kategori</th>
+                    <th scope="col">Enhed</th>
+                    <th scope="col">Butik</th>
+                    <th scope="col">Behov</th>
+                    <th scope="col">Lager</th>
+                    <th scope="col">Køb</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsTable">
+                  <tr>
+                    <td colspan="7" class="empty-state">
+                      Ingen beregning er udført endnu.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </section>
         </div>

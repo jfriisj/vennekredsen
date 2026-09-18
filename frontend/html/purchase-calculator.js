@@ -43,14 +43,8 @@ function setCalculatorView(view) {
 
     configurationTab.classList.toggle("is-active", showConfiguration);
     purchaseListTab.classList.toggle("is-active", !showConfiguration);
-    configurationTab.setAttribute(
-        "aria-selected",
-        String(showConfiguration)
-    );
-    purchaseListTab.setAttribute(
-        "aria-selected",
-        String(!showConfiguration)
-    );
+    configurationTab.setAttribute("aria-selected", String(showConfiguration));
+    purchaseListTab.setAttribute("aria-selected", String(!showConfiguration));
     configurationTab.tabIndex = showConfiguration ? 0 : -1;
     purchaseListTab.tabIndex = showConfiguration ? -1 : 0;
 }
@@ -73,7 +67,9 @@ function activateTabFromKeyboard(event) {
 
     event.preventDefault();
     const nextTab = tabs[nextIndex];
-    setCalculatorView(nextTab === configurationTab ? "configuration" : "purchases");
+    setCalculatorView(
+        nextTab === configurationTab ? "configuration" : "purchases"
+    );
     nextTab.focus();
 }
 
@@ -802,9 +798,7 @@ async function initialize() {
 configurationTab.addEventListener("click", () =>
     setCalculatorView("configuration")
 );
-purchaseListTab.addEventListener("click", () =>
-    setCalculatorView("purchases")
-);
+purchaseListTab.addEventListener("click", () => setCalculatorView("purchases"));
 configurationTab.addEventListener("keydown", activateTabFromKeyboard);
 purchaseListTab.addEventListener("keydown", activateTabFromKeyboard);
 
