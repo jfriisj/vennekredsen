@@ -102,6 +102,24 @@ async function openAdminWebsite(page) {
     return state;
 }
 
+test("member site media editor does not depend on homepage bootstrap", async ({
+    page,
+}) => {
+    await mockAdminArea(page);
+    await page.addInitScript(() => {
+        localStorage.setItem("authToken", "admin-token");
+    });
+    await page.route("**/homepage.js", route => route.abort());
+
+    await page.goto("/member.html#website");
+
+    await expect(
+        page.getByRole("heading", { name: "Billeder og video" })
+    ).toBeVisible();
+    await expect(page.locator('link[href="site-media.css"]')).toHaveCount(1);
+    await expect(page.locator('script[src="site-media-admin.js"]')).toHaveCount(1);
+});
+
 async function mockHomepageDependencies(page, media) {
     await page.route("**/api/site-settings", route =>
         route.fulfill({
