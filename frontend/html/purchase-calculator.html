@@ -144,6 +144,24 @@
             </p>
           </div>
 
+          <div class="export-actions" role="group" aria-label="Import og template">
+            <button type="button" id="downloadTemplateXlsx">
+              Download XLSX-template
+            </button>
+            <button type="button" id="downloadTemplateCsv">
+              Download CSV-template
+            </button>
+            <label class="secondary-action" for="partyImportFile">
+              Importér festkonfiguration
+            </label>
+            <input
+              id="partyImportFile"
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              hidden
+            />
+          </div>
+
           <form id="addItemForm" class="configuration-form">
             <label class="wide-field">
               Lagervare
