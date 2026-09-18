@@ -2,28 +2,7 @@ const { test, expect } = require("@playwright/test");
 
 const sheetJsMock = String.raw`
 window.XLSX = {
-  read(buffer) {
-    const marker = new TextDecoder().decode(buffer);
-    if (marker.includes("missing-sheet")) return { Sheets: {} };
-    return {
-      Sheets: {
-        indkob: {
-          __rows: [
-            ["", "", ""],
-            ["", "", ""],
-            ["", "", ""],
-            ["Drikkevarer", "", ""],
-            ["Cola", 1, 0.5, "liter", "", 12, "Jon", "Kold", "Dagrofa"],
-            ["Vand", 1, 1, "liter", "", 18, "Anna", "", "Bilka"],
-            ["Mad", "", ""],
-            ["Pølser", 2, 1, "stk", "", 30, "Jon", "", "Dagrofa"]
-          ]
-        }
-      }
-    };
-  },
   utils: {
-    sheet_to_json(sheet) { return sheet.__rows; },
     book_new() { return { sheets: [] }; },
     aoa_to_sheet(data) { return { data }; },
     book_append_sheet(workbook, sheet, name) {
@@ -37,7 +16,59 @@ window.XLSX = {
 };
 `;
 
+function inventoryItems() {
+  return [
+    {
+      id: 1,
+      name: "Cola",
+      category: "Drikkevarer",
+      unit: "liter",
+      default_store: "Dagrofa",
+      stock_quantity: 2,
+      active: true,
+    },
+    {
+      id: 2,
+      name: "Pølser",
+      category: "Mad",
+      unit: "stk",
+      default_store: "Bilka",
+      stock_quantity: 10,
+      active: true,
+    },
+  ];
+}
+
+function configuredItem(overrides = {}) {
+  return {
+    id: 10,
+    inventory_item_id: 1,
+    name: "Cola",
+    category: "Drikkevarer",
+    unit: "liter",
+    default_store: "Dagrofa",
+    stock_quantity: 2,
+    inventory_active: true,
+    per_adult_quantity: 1,
+    per_child_quantity: 0.5,
+    factor: 1.2,
+    active: true,
+    ...overrides,
+  };
+}
+
 async function prepareAuthenticatedCalculator(page, role = "member") {
+  const state = {
+    lastCalculation: null,
+    lastAddedItem: null,
+    lastImport: null,
+    configurations: {
+      sommerfest: [configuredItem()],
+      julefest: [],
+      fastelavn: [],
+    },
+  };
+
   await page.route("https://cdnjs.cloudflare.com/ajax/libs/xlsx/**", route =>
     route.fulfill({
       status: 200,
@@ -62,17 +93,218 @@ async function prepareAuthenticatedCalculator(page, role = "member") {
     });
   });
 
+  await page.route("**/api/inventory/items", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ items: inventoryItems() }),
+    })
+  );
+
+  await page.route("**/api/purchase-calculator/parties**", async route => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const path = url.pathname;
+
+    if (path === "/api/purchase-calculator/parties") {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          parties: [
+            { id: 1, key: "sommerfest", name: "Sommerfest" },
+            { id: 2, key: "julefest", name: "Julefest" },
+            { id: 3, key: "fastelavn", name: "Fastelavn" },
+          ],
+        }),
+      });
+    }
+
+    const importMatch = path.match(
+      /^\/api\/purchase-calculator\/parties\/([^/]+)\/import$/
+    );
+    if (importMatch && request.method() === "POST") {
+      const partyKey = importMatch[1];
+      const data = request.postDataJSON();
+      state.lastImport = { partyKey, ...data };
+
+      data.items.forEach((imported, index) => {
+        const existing = state.configurations[partyKey].find(
+          item => item.name.toLocaleLowerCase() === String(imported.name).trim().toLocaleLowerCase()
+        );
+        if (existing) {
+          existing.per_adult_quantity = Number(imported.per_adult_quantity);
+          existing.per_child_quantity = Number(imported.per_child_quantity);
+          existing.factor = Number(imported.factor);
+          existing.active = imported.active;
+        } else {
+          state.configurations[partyKey].push(
+            configuredItem({
+              id: 100 + index,
+              inventory_item_id: 100 + index,
+              name: String(imported.name).trim(),
+              category: imported.category,
+              unit: imported.unit,
+              default_store: imported.default_store,
+              stock_quantity: 0,
+              per_adult_quantity: Number(imported.per_adult_quantity),
+              per_child_quantity: Number(imported.per_child_quantity),
+              factor: Number(imported.factor),
+              active: imported.active,
+            })
+          );
+        }
+      });
+
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          created_inventory_items: 1,
+          matched_inventory_items: 0,
+          created_party_items: 1,
+          updated_party_items: 0,
+          imported_rows: data.items.length,
+        }),
+      });
+    }
+
+    const itemMatch = path.match(
+      /^\/api\/purchase-calculator\/parties\/([^/]+)\/items(?:\/(\d+))?$/
+    );
+    if (itemMatch) {
+      const [, partyKey, itemId] = itemMatch;
+      const data = request.postDataJSON?.() || {};
+
+      if (request.method() === "POST") {
+        state.lastAddedItem = data;
+        const source = inventoryItems().find(
+          item => item.id === data.inventory_item_id
+        );
+        const added = configuredItem({
+          id: 20,
+          inventory_item_id: source.id,
+          name: source.name,
+          category: source.category,
+          unit: source.unit,
+          default_store: source.default_store,
+          stock_quantity: source.stock_quantity,
+          per_adult_quantity: Number(data.per_adult_quantity),
+          per_child_quantity: Number(data.per_child_quantity),
+          factor: Number(data.factor),
+        });
+        state.configurations[partyKey].push(added);
+        return route.fulfill({
+          status: 201,
+          contentType: "application/json",
+          body: JSON.stringify({ item: added }),
+        });
+      }
+
+      if (request.method() === "PATCH") {
+        const item = state.configurations[partyKey].find(
+          entry => entry.inventory_item_id === Number(itemId)
+        );
+        Object.assign(item, {
+          per_adult_quantity: Number(data.per_adult_quantity),
+          per_child_quantity: Number(data.per_child_quantity),
+          factor: Number(data.factor),
+          active: data.active,
+        });
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ item }),
+        });
+      }
+
+      if (request.method() === "DELETE") {
+        const item = state.configurations[partyKey].find(
+          entry => entry.inventory_item_id === Number(itemId)
+        );
+        item.active = false;
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ item }),
+        });
+      }
+    }
+
+    const partyMatch = path.match(
+      /^\/api\/purchase-calculator\/parties\/([^/]+)$/
+    );
+    if (partyMatch && request.method() === "GET") {
+      const partyKey = partyMatch[1];
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          party: {
+            key: partyKey,
+            name:
+              partyKey === "sommerfest"
+                ? "Sommerfest"
+                : partyKey === "julefest"
+                  ? "Julefest"
+                  : "Fastelavn",
+          },
+          items: state.configurations[partyKey],
+        }),
+      });
+    }
+
+    return route.fallback();
+  });
+
+  await page.route("**/api/purchase-calculator/calculate", async route => {
+    state.lastCalculation = route.request().postDataJSON();
+    const subtractStock = state.lastCalculation.subtract_stock;
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        party: { key: state.lastCalculation.party_key, name: "Sommerfest" },
+        adults: Number(state.lastCalculation.adults),
+        children: Number(state.lastCalculation.children),
+        subtract_stock: subtractStock,
+        items: [
+          {
+            inventory_item_id: 1,
+            name: "Cola",
+            category: "Drikkevarer",
+            unit: "liter",
+            default_store: "Dagrofa",
+            stock_quantity: 2,
+            per_adult_quantity: 1,
+            per_child_quantity: 0.5,
+            factor: 1.2,
+            required_quantity: 14.4,
+            suggested_purchase_quantity: subtractStock ? 12.4 : 14.4,
+          },
+          {
+            inventory_item_id: 2,
+            name: "Pølser",
+            category: "Mad",
+            unit: "stk",
+            default_store: "Bilka",
+            stock_quantity: 10,
+            per_adult_quantity: 2,
+            per_child_quantity: 1,
+            factor: 1,
+            required_quantity: 24,
+            suggested_purchase_quantity: subtractStock ? 14 : 24,
+          },
+        ],
+      }),
+    });
+  });
+
   await page.addInitScript(value => {
     localStorage.setItem("authToken", value);
   }, `calculator-${role}-token`);
-}
 
-async function uploadMarker(page, marker, name = "indkob.xlsx") {
-  await page.locator("#fileInput").setInputFiles({
-    name,
-    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    buffer: Buffer.from(marker),
-  });
+  return state;
 }
 
 test("logged-out user is redirected from calculator", async ({ page }) => {
@@ -80,28 +312,49 @@ test("logged-out user is redirected from calculator", async ({ page }) => {
   await expect(page).toHaveURL(/member-login\.html$/);
 });
 
-test("member can parse, filter and export purchase data", async ({ page }) => {
-  await prepareAuthenticatedCalculator(page);
+test("member can calculate, adjust, filter and export purchases", async ({
+  page,
+}) => {
+  const state = await prepareAuthenticatedCalculator(page);
   await page.goto("/purchase-calculator.html");
 
-  await expect(page.locator("#fileInput")).toBeEnabled();
-  await uploadMarker(page, "valid-sheet");
+  await expect(page.locator("#partySelect")).toHaveValue("sommerfest");
+  await expect(page.getByRole("heading", { name: "Cola" })).toBeVisible();
+  await expect(page.locator("#fileInput")).toHaveCount(0);
 
-  await expect(page.locator("#totalVarer")).toHaveText("3");
-  await expect(page.locator("#totalSteder")).toHaveText("2");
-  await expect(page.locator("#totalKategorier")).toHaveText("2");
-  await expect(page.locator("#visibleVarer")).toHaveText("3");
-  await expect(page.getByText("3 varer indlæst fra indkob.xlsx.")).toBeVisible();
+  await page.locator("#adultsInput").fill("10");
+  await page.locator("#childrenInput").fill("4");
+  await page.locator("#subtractStock").check();
+  await page.getByRole("button", { name: "Beregn indkøb" }).click();
 
-  await page.locator("#indkobssted").selectOption("Dagrofa");
-  await expect(page.locator("#visibleVarer")).toHaveText("2");
+  expect(state.lastCalculation).toEqual({
+    party_key: "sommerfest",
+    adults: "10",
+    children: "4",
+    subtract_stock: true,
+  });
+
+  await expect(page.locator("#configurationView")).toBeHidden();
+  await expect(page.locator("#purchaseListView")).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Indkøbsliste" })).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
   await expect(page.getByRole("cell", { name: "Cola" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Pølser" })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "Vand" })).toHaveCount(0);
+  await expect(page.locator("#resultsSummary")).toContainText(
+    "lager trukket fra"
+  );
 
-  await page.locator("#kategori").selectOption("Drikkevarer");
-  await expect(page.locator("#visibleVarer")).toHaveText("1");
-  await expect(page.locator("#resultsTitle")).toHaveText("Drikkevarer - Dagrofa");
+  const colaOverride = page.getByLabel("Endeligt køb for Cola");
+  await expect(colaOverride).toHaveValue("12.4");
+  await colaOverride.fill("13");
+  await colaOverride.blur();
+  await expect(colaOverride).toHaveValue("13");
+
+  await page.locator("#storeFilter").selectOption("Dagrofa");
+  await expect(page.getByRole("cell", { name: "Cola" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Pølser" })).toHaveCount(0);
 
   await page.locator("#downloadCurrent").click();
   await page.locator("#downloadStore").click();
@@ -109,29 +362,132 @@ test("member can parse, filter and export purchase data", async ({ page }) => {
 
   await expect
     .poll(() =>
-      page.evaluate(() => (window.__xlsxDownloads || []).map(item => item.filename))
+      page.evaluate(() =>
+        (window.__xlsxDownloads || []).map(item => item.filename)
+      )
     )
     .toEqual([
-      "Indkob_filtreret.xlsx",
+      "Indkob_beregnet.xlsx",
       "Indkob_efter_butik.xlsx",
       "Indkob_efter_kategori.xlsx",
     ]);
 });
 
+test("member can switch between configuration and purchase list views", async ({
+  page,
+}) => {
+  await prepareAuthenticatedCalculator(page);
+  await page.goto("/purchase-calculator.html");
+
+  await expect(page.locator("#configurationView")).toBeVisible();
+  await expect(page.locator("#purchaseListView")).toBeHidden();
+
+  await page.getByRole("tab", { name: "Indkøbsliste" }).click();
+  await expect(page.locator("#configurationView")).toBeHidden();
+  await expect(page.locator("#purchaseListView")).toBeVisible();
+
+  await page.getByRole("tab", { name: "Varer & forbrug" }).click();
+  await expect(page.locator("#configurationView")).toBeVisible();
+  await expect(page.locator("#purchaseListView")).toBeHidden();
+});
+
+test("member can add Inventory item to a party configuration", async ({
+  page,
+}) => {
+  const state = await prepareAuthenticatedCalculator(page);
+  await page.goto("/purchase-calculator.html");
+
+  await page.locator("#partySelect").selectOption("julefest");
+  await page.locator("#inventoryItemSelect").selectOption("2");
+  await page.locator("#addPerAdult").fill("2");
+  await page.locator("#addPerChild").fill("1");
+  await page.locator("#addFactor").fill("1.1");
+  await page.getByRole("button", { name: "Tilføj vare" }).click();
+
+  expect(state.lastAddedItem).toEqual({
+    inventory_item_id: 2,
+    per_adult_quantity: "2",
+    per_child_quantity: "1",
+    factor: "1.1",
+  });
+  await expect(page.getByRole("heading", { name: "Pølser" })).toBeVisible();
+});
+
+test("member can download templates and optionally import CSV party configuration", async ({
+  page,
+}) => {
+  const state = await prepareAuthenticatedCalculator(page);
+  await page.goto("/purchase-calculator.html");
+
+  await page.locator("#partySelect").selectOption("julefest");
+
+  await page.locator("#downloadTemplateXlsx").click();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (window.__xlsxDownloads || []).map(item => item.filename)
+      )
+    )
+    .toContain("Vennekredsen_festkonfiguration_template.xlsx");
+
+  const csvDownloadPromise = page.waitForEvent("download");
+  await page.locator("#downloadTemplateCsv").click();
+  const csvDownload = await csvDownloadPromise;
+  expect(csvDownload.suggestedFilename()).toBe(
+    "Vennekredsen_festkonfiguration_template.csv"
+  );
+
+  const csv = [
+    "name,category,unit,default_store,per_adult_quantity,per_child_quantity,factor,active",
+    "Saftevand,Drikkevarer,liter,Dagrofa,0.2,0.4,1.1,true",
+  ].join("\n");
+
+  await page.locator("#partyImportFile").setInputFiles({
+    name: "julefest.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(csv),
+  });
+
+  await expect(page.locator("#statusMessage")).toContainText("Import færdig");
+  expect(state.lastImport.partyKey).toBe("julefest");
+  expect(state.lastImport.items).toEqual([
+    {
+      name: "Saftevand",
+      category: "Drikkevarer",
+      unit: "liter",
+      default_store: "Dagrofa",
+      per_adult_quantity: "0.2",
+      per_child_quantity: "0.4",
+      factor: "1.1",
+      active: true,
+    },
+  ]);
+  await expect(
+    page.getByRole("heading", { name: "Saftevand" })
+  ).toBeVisible();
+});
+
 test("admin can use calculator", async ({ page }) => {
   await prepareAuthenticatedCalculator(page, "admin");
   await page.goto("/purchase-calculator.html");
-  await expect(page.locator("#fileInput")).toBeEnabled();
+
+  await expect(page.locator("#partySelect")).toBeEnabled();
+  await expect(
+    page.getByRole("button", { name: "Beregn indkøb" })
+  ).toBeEnabled();
 });
 
-test("missing indkob sheet shows a clear error", async ({ page }) => {
+test("calculator stays inside a phone viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await prepareAuthenticatedCalculator(page);
   await page.goto("/purchase-calculator.html");
-  await uploadMarker(page, "missing-sheet", "forkert.xlsx");
 
-  await expect(page.locator("#statusMessage")).toHaveText(
-    "Filen mangler det forventede ark indkob."
-  );
-  await expect(page.locator("#statusMessage")).toHaveAttribute("data-state", "error");
-  await expect(page.locator("#downloadCurrent")).toBeDisabled();
+  const sizes = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+
+  expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth);
+  await expect(page.locator("#calculationForm")).toBeVisible();
+  await expect(page.locator("#configurationList")).toBeVisible();
 });

@@ -221,6 +221,75 @@ async function mockCalculator(page) {
   await page.route("https://cdnjs.cloudflare.com/**", route =>
     route.fulfill({ status: 200, contentType: "text/javascript", body: "" })
   );
+
+  await page.route("**/api/inventory/items", route =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        items: [
+          {
+            id: 1,
+            name: "Pepsi Max",
+            category: "Drikkevarer",
+            unit: "liter",
+            default_store: "Dagrofa",
+            stock_quantity: 3,
+            active: true,
+          },
+        ],
+      }),
+    })
+  );
+
+  await page.route("**/api/purchase-calculator/parties**", route => {
+    const url = new URL(route.request().url());
+    if (url.pathname === "/api/purchase-calculator/parties") {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          parties: [
+            { id: 1, key: "sommerfest", name: "Sommerfest" },
+            { id: 2, key: "julefest", name: "Julefest" },
+            { id: 3, key: "fastelavn", name: "Fastelavn" },
+          ],
+        }),
+      });
+    }
+
+    if (url.pathname === "/api/purchase-calculator/parties/sommerfest") {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          party: { id: 1, key: "sommerfest", name: "Sommerfest" },
+          items: [
+            {
+              id: 10,
+              inventory_item_id: 1,
+              name: "Pepsi Max",
+              category: "Drikkevarer",
+              unit: "liter",
+              default_store: "Dagrofa",
+              stock_quantity: 3,
+              inventory_active: true,
+              per_adult_quantity: 0.33,
+              per_child_quantity: 0.2,
+              factor: 1.1,
+              active: true,
+            },
+          ],
+        }),
+      });
+    }
+
+    return route.fulfill({
+      status: 404,
+      contentType: "application/json",
+      body: JSON.stringify({ message: "Not mocked" }),
+    });
+  });
 }
 
 async function saveScreenshot(page, testInfo, name) {

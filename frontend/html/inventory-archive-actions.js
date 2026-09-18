@@ -10,13 +10,6 @@
 */
 
 async function deleteArchivedItemPermanently(item) {
-    const confirmed = window.confirm(
-        `Slet ${item.name} permanent? Handlingen kan ikke fortrydes.`
-    );
-    if (!confirmed) {
-        return;
-    }
-
     setStatus(`Sletter ${item.name} permanent...`);
     try {
         const response = await authenticatedFetch(
