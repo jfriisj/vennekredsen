@@ -287,5 +287,7 @@ def register_inventory(app, db, token_required):
             200,
         )
 
-    register_purchase_calculator(app, db, token_required, InventoryItem)
+    register_purchase_calculator(
+        app, db, token_required, InventoryItem, _normalize_item_name
+    )
     return InventoryItem
