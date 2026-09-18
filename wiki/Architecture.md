@@ -4,17 +4,12 @@
 
 Vennekredsen er en klassisk API + statisk frontend-løsning uden SPA-framework.
 
-```text
-Browser
-  |
-  v
-Nginx frontend
-  |-- statiske HTML/CSS/JS-sider
-  |
-  +-- /api/* --> Flask API
-                  |
-                  v
-               PostgreSQL 15
+```mermaid
+flowchart LR
+    U[Browser] --> N[Nginx frontend]
+    N --> S[Statiske HTML/CSS/JS-sider]
+    N -->|/api/*| A[Flask API]
+    A --> D[(PostgreSQL 15)]
 ```
 
 ## Frontend

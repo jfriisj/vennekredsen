@@ -6,6 +6,17 @@
 
 Frontend og API kan både bygges lokalt og anvende de GHCR-images, der er angivet i Compose-filen.
 
+```mermaid
+flowchart LR
+    B[Browser] --> CF[Cloudflare]
+    CF --> T[Cloudflare Tunnel]
+    T --> N[Nginx frontend]
+    N -->|HTML/CSS/JS| B
+    N -->|/api/*| A[Flask API]
+    A --> D[(PostgreSQL 15)]
+    D --> V[(db_data volume)]
+```
+
 ## Miljøfil
 
 Start fra repositoryets eksempel:
