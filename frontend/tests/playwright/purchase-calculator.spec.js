@@ -334,6 +334,12 @@ test("member can calculate, adjust, filter and export purchases", async ({
     subtract_stock: true,
   });
 
+  await expect(page.locator("#configurationView")).toBeHidden();
+  await expect(page.locator("#purchaseListView")).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Indkøbsliste" })).toHaveAttribute(
+    "aria-selected",
+    "true"
+  );
   await expect(page.getByRole("cell", { name: "Cola" })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Pølser" })).toBeVisible();
   await expect(page.locator("#resultsSummary")).toContainText(
@@ -365,6 +371,24 @@ test("member can calculate, adjust, filter and export purchases", async ({
       "Indkob_efter_butik.xlsx",
       "Indkob_efter_kategori.xlsx",
     ]);
+});
+
+test("member can switch between configuration and purchase list views", async ({
+  page,
+}) => {
+  await prepareAuthenticatedCalculator(page);
+  await page.goto("/purchase-calculator.html");
+
+  await expect(page.locator("#configurationView")).toBeVisible();
+  await expect(page.locator("#purchaseListView")).toBeHidden();
+
+  await page.getByRole("tab", { name: "Indkøbsliste" }).click();
+  await expect(page.locator("#configurationView")).toBeHidden();
+  await expect(page.locator("#purchaseListView")).toBeVisible();
+
+  await page.getByRole("tab", { name: "Varer & forbrug" }).click();
+  await expect(page.locator("#configurationView")).toBeVisible();
+  await expect(page.locator("#purchaseListView")).toBeHidden();
 });
 
 test("member can add Inventory item to a party configuration", async ({
