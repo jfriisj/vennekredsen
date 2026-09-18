@@ -15,8 +15,16 @@ else
 fi
 
 echo "📦 Installing dependencies..."
-"$PYTHON_BIN" -m pip install -r requirements.txt
-"$PYTHON_BIN" -m pip install -r requirements-dev.txt
+if "$PYTHON_BIN" -m pip --version >/dev/null 2>&1; then
+    "$PYTHON_BIN" -m pip install -r requirements.txt
+    "$PYTHON_BIN" -m pip install -r requirements-dev.txt
+elif command -v uv >/dev/null 2>&1; then
+    uv pip install --system -r requirements.txt
+    uv pip install --system -r requirements-dev.txt
+else
+    echo "❌ Neither pip nor uv is available to install API quality dependencies."
+    exit 1
+fi
 
 echo "🎨 Running Black (code formatting)..."
 "$PYTHON_BIN" -m black --check --diff . || {
