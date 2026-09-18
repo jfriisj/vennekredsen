@@ -22,7 +22,12 @@ services:
       network: host
     container_name: vennekredsen-api-dev
     restart: unless-stopped
-    command: ["python", "app.py"]
+    command:
+      [
+        "sh",
+        "-c",
+        "python migrate_site_media.py && python -c 'from app import app, db; ctx = app.app_context(); ctx.push(); db.create_all(); ctx.pop()' && exec python app.py",
+      ]
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development  # Development instead of production
