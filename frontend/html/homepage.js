@@ -255,6 +255,35 @@ async function loadNextEvent() {
     }
 }
 
+function parseProjectDescription(rawDescription) {
+    const description = String(rawDescription || "").replace(/\r\n?/g, "\n").trim();
+
+    if (!description) {
+        return { title: "Støttet projekt", body: "" };
+    }
+
+    const lines = description.split("\n");
+    const firstContentIndex = lines.findIndex(line => line.trim());
+
+    if (firstContentIndex === -1) {
+        return { title: "Støttet projekt", body: "" };
+    }
+
+    const firstLine = lines[firstContentIndex].trim();
+    const hasStructuredTitle = firstLine.startsWith("📋");
+    const remainingLines = lines.slice(firstContentIndex + 1);
+    const hasBody = remainingLines.some(line => line.trim());
+
+    if (hasStructuredTitle || hasBody) {
+        return {
+            title: firstLine.replace(/^📋\s*/, "").trim() || "Støttet projekt",
+            body: remainingLines.join("\n").trim(),
+        };
+    }
+
+    return { title: firstLine, body: "" };
+}
+
 function createProjectCard(project) {
     const article = document.createElement("article");
     article.className = "card-panel project-card";
@@ -265,10 +294,17 @@ function createProjectCard(project) {
         "da-DK"
     )} kr.`;
 
+    const description = parseProjectDescription(project.beskrivelse);
+
     const heading = document.createElement("h3");
-    heading.textContent = project.beskrivelse || "Støttet projekt";
+    heading.textContent = description.title;
+
+    const content = document.createElement("p");
+    content.className = "project-description";
+    content.textContent = description.body;
 
     const meta = document.createElement("p");
+    meta.className = "project-meta";
     if (project.godkendt_dato) {
         const approvedDate = new Intl.DateTimeFormat("da-DK", {
             dateStyle: "medium",
@@ -278,7 +314,11 @@ function createProjectCard(project) {
         meta.textContent = "Godkendt af Vennekredsen";
     }
 
-    article.append(amount, heading, meta);
+    article.append(amount, heading);
+    if (description.body) {
+        article.append(content);
+    }
+    article.append(meta);
     return article;
 }
 
