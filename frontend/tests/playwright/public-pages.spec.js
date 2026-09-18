@@ -1,6 +1,9 @@
 const { test, expect } = require("@playwright/test");
 
-async function mockHomepageApi(page) {
+async function mockHomepageApi(
+    page,
+    projectDescription = "Støtte til en fælles oplevelse for børnene på Hashøjskolen"
+) {
     await page.route("**/api/site-settings", async route => {
         await route.fulfill({
             status: 200,
@@ -41,8 +44,7 @@ async function mockHomepageApi(page) {
                 {
                     id: 1,
                     belob: 2500,
-                    beskrivelse:
-                        "Støtte til en fælles oplevelse for børnene på Hashøjskolen",
+                    beskrivelse: projectDescription,
                     godkendt_dato: "2026-09-10",
                 },
             ]),
@@ -213,6 +215,43 @@ test("homepage renders correctly", async ({ page }, testInfo) => {
     await expect(page).toHaveScreenshot("homepage.png", {
         fullPage: true,
     });
+});
+
+test("homepage structures long project text without horizontal overflow", async ({
+    page,
+}) => {
+    const longUrl =
+        "https://example.com/klasseskasse-pakke/c16-086?gad_source=1&campaignid=18473755410&gclid=abcdefghijklmnopqrstuvwxyz0123456789";
+    const projectDescription = [
+        "📋 SkoleOL-Finale",
+        "",
+        "🎯 Projektets formål:",
+        "Fællesskab gennem fælles oplevelser.",
+        "",
+        "✅ Hvordan kommer det alle børn til gode:",
+        "• Inkluderende aktiviteter - alle kan deltage uanset baggrund eller evner",
+        "",
+        "💰 Konkret brug af midlerne:",
+        longUrl,
+    ].join("\n");
+
+    await mockHomepageApi(page, projectDescription);
+    await page.goto("/index.html");
+
+    const projectCard = page.locator(".project-card");
+    await expect(
+        projectCard.getByRole("heading", {
+            level: 3,
+            name: "SkoleOL-Finale",
+        })
+    ).toBeVisible();
+    await expect(projectCard.locator(".project-description")).toContainText(
+        "Projektets formål:"
+    );
+    await expect(projectCard.locator(".project-description")).toContainText(
+        longUrl
+    );
+    await expectNoHorizontalOverflow(page);
 });
 
 test("about page renders correctly", async ({ page }, testInfo) => {
