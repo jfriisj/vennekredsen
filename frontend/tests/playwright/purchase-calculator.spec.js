@@ -61,6 +61,7 @@ async function prepareAuthenticatedCalculator(page, role = "member") {
   const state = {
     lastCalculation: null,
     lastAddedItem: null,
+    lastImport: null,
     configurations: {
       sommerfest: [configuredItem()],
       julefest: [],
@@ -115,6 +116,55 @@ async function prepareAuthenticatedCalculator(page, role = "member") {
             { id: 2, key: "julefest", name: "Julefest" },
             { id: 3, key: "fastelavn", name: "Fastelavn" },
           ],
+        }),
+      });
+    }
+
+    const importMatch = path.match(
+      /^\/api\/purchase-calculator\/parties\/([^/]+)\/import$/
+    );
+    if (importMatch && request.method() === "POST") {
+      const partyKey = importMatch[1];
+      const data = request.postDataJSON();
+      state.lastImport = { partyKey, ...data };
+
+      data.items.forEach((imported, index) => {
+        const existing = state.configurations[partyKey].find(
+          item => item.name.toLocaleLowerCase() === String(imported.name).trim().toLocaleLowerCase()
+        );
+        if (existing) {
+          existing.per_adult_quantity = Number(imported.per_adult_quantity);
+          existing.per_child_quantity = Number(imported.per_child_quantity);
+          existing.factor = Number(imported.factor);
+          existing.active = imported.active;
+        } else {
+          state.configurations[partyKey].push(
+            configuredItem({
+              id: 100 + index,
+              inventory_item_id: 100 + index,
+              name: String(imported.name).trim(),
+              category: imported.category,
+              unit: imported.unit,
+              default_store: imported.default_store,
+              stock_quantity: 0,
+              per_adult_quantity: Number(imported.per_adult_quantity),
+              per_child_quantity: Number(imported.per_child_quantity),
+              factor: Number(imported.factor),
+              active: imported.active,
+            })
+          );
+        }
+      });
+
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          created_inventory_items: 1,
+          matched_inventory_items: 0,
+          created_party_items: 1,
+          updated_party_items: 0,
+          imported_rows: data.items.length,
         }),
       });
     }
@@ -337,6 +387,60 @@ test("member can add Inventory item to a party configuration", async ({
     factor: "1.1",
   });
   await expect(page.getByRole("heading", { name: "Pølser" })).toBeVisible();
+});
+
+test("member can download templates and optionally import CSV party configuration", async ({
+  page,
+}) => {
+  const state = await prepareAuthenticatedCalculator(page);
+  await page.goto("/purchase-calculator.html");
+
+  await page.locator("#partySelect").selectOption("julefest");
+
+  await page.locator("#downloadTemplateXlsx").click();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (window.__xlsxDownloads || []).map(item => item.filename)
+      )
+    )
+    .toContain("Vennekredsen_festkonfiguration_template.xlsx");
+
+  const csvDownloadPromise = page.waitForEvent("download");
+  await page.locator("#downloadTemplateCsv").click();
+  const csvDownload = await csvDownloadPromise;
+  expect(csvDownload.suggestedFilename()).toBe(
+    "Vennekredsen_festkonfiguration_template.csv"
+  );
+
+  const csv = [
+    "name,category,unit,default_store,per_adult_quantity,per_child_quantity,factor,active",
+    "Saftevand,Drikkevarer,liter,Dagrofa,0.2,0.4,1.1,true",
+  ].join("\n");
+
+  await page.locator("#partyImportFile").setInputFiles({
+    name: "julefest.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(csv),
+  });
+
+  await expect(page.locator("#statusMessage")).toContainText("Import færdig");
+  expect(state.lastImport.partyKey).toBe("julefest");
+  expect(state.lastImport.items).toEqual([
+    {
+      name: "Saftevand",
+      category: "Drikkevarer",
+      unit: "liter",
+      default_store: "Dagrofa",
+      per_adult_quantity: "0.2",
+      per_child_quantity: "0.4",
+      factor: "1.1",
+      active: true,
+    },
+  ]);
+  await expect(
+    page.getByRole("heading", { name: "Saftevand" })
+  ).toBeVisible();
 });
 
 test("admin can use calculator", async ({ page }) => {
