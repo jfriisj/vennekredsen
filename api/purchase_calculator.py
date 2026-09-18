@@ -413,7 +413,9 @@ def register_purchase_calculator(
                 return jsonify({"message": f"Række {index}: navn er påkrævet"}), 400
             if normalized_name in seen_names:
                 return (
-                    jsonify({"message": f"Række {index}: varen findes flere gange i filen"}),
+                    jsonify(
+                        {"message": f"Række {index}: varen findes flere gange i filen"}
+                    ),
                     400,
                 )
             seen_names.add(normalized_name)
@@ -428,7 +430,9 @@ def register_purchase_calculator(
             active = raw_item.get("active", True)
             if not isinstance(active, bool):
                 return (
-                    jsonify({"message": f"Række {index}: active skal være true eller false"}),
+                    jsonify(
+                        {"message": f"Række {index}: active skal være true eller false"}
+                    ),
                     400,
                 )
 

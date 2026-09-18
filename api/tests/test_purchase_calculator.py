@@ -260,7 +260,9 @@ def test_archived_inventory_item_remains_visible_in_configuration_but_not_calcul
     assert calculation.get_json()["items"] == []
 
 
-def test_party_import_creates_missing_inventory_and_configuration(client, member_headers):
+def test_party_import_creates_missing_inventory_and_configuration(
+    client, member_headers
+):
     response = client.post(
         "/api/purchase-calculator/parties/sommerfest/import",
         headers=member_headers,
