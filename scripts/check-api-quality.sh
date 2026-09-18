@@ -5,37 +5,46 @@ echo "🔍 Running API code quality checks..."
 
 cd api
 
+if command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN=python3
+elif command -v python >/dev/null 2>&1; then
+    PYTHON_BIN=python
+else
+    echo "❌ Python 3 is required but neither 'python3' nor 'python' was found."
+    exit 1
+fi
+
 echo "📦 Installing dependencies..."
-python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
+"$PYTHON_BIN" -m pip install -r requirements.txt
+"$PYTHON_BIN" -m pip install -r requirements-dev.txt
 
 echo "🎨 Running Black (code formatting)..."
-python -m black --check --diff . || {
-    echo "❌ Black formatting issues found. Run 'python -m black .' to fix."
+"$PYTHON_BIN" -m black --check --diff . || {
+    echo "❌ Black formatting issues found. Run '"$PYTHON_BIN" -m black .' to fix."
     exit 1
 }
 
 echo "📋 Running isort (import sorting)..."
-python -m isort --check-only --diff . || {
-    echo "❌ Import sorting issues found. Run 'python -m isort .' to fix."
+"$PYTHON_BIN" -m isort --check-only --diff . || {
+    echo "❌ Import sorting issues found. Run '"$PYTHON_BIN" -m isort .' to fix."
     exit 1
 }
 
 echo "🔍 Running Flake8 (linting)..."
-python -m flake8 . || {
+"$PYTHON_BIN" -m flake8 . || {
     echo "❌ Linting issues found."
     exit 1
 }
 
 echo "🛡️ Running Bandit (security check)..."
-python -m bandit -r . -ll || {
+"$PYTHON_BIN" -m bandit -r . -ll || {
     echo "❌ Security issues found."
     exit 1
 }
 
 echo "🔒 Running Safety (dependency security)..."
 # Scan only project dependency files, not the full local environment.
-python -m safety check \
+"$PYTHON_BIN" -m safety check \
     -r requirements.txt \
     -r requirements-dev.txt \
     --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086 || {
