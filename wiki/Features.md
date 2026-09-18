@@ -2,6 +2,26 @@
 
 Denne side beskriver funktioner, som findes på den aktuelle `main`-branch. Planlagte GitHub issues er ikke dokumenteret som implementerede funktioner.
 
+## Overblik
+
+```mermaid
+flowchart TD
+    V[Besøgende] --> P[Offentlig hjemmeside]
+    P --> E[Events og støttede projekter]
+    P --> A[Støtteansøgning]
+    P --> T[Tilmelding]
+
+    M[Member] --> MA[Medlemsområde]
+    MA --> I[Inventory]
+    MA --> C[Indkøbsberegner]
+
+    AD[Admin] --> MA
+    AD --> AM[Administration]
+    AM --> U[Brugere og ansøgninger]
+    AM --> EC[Events og indhold]
+    AM --> SM[Site-media]
+```
+
 ## Offentlig hjemmeside
 
 Den offentlige del omfatter blandt andet:
