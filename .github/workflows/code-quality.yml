@@ -8,6 +8,8 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'scripts/**'
+      - 'wiki/**'
+      - 'tools/publish_wiki.py'
       - 'Makefile'
       - '.github/workflows/code-quality.yml'
   pull_request:
@@ -16,6 +18,8 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'scripts/**'
+      - 'wiki/**'
+      - 'tools/publish_wiki.py'
       - 'Makefile'
       - '.github/workflows/code-quality.yml'
 
@@ -139,6 +143,17 @@ jobs:
         run: |
           cd frontend
           npx stylelint "html/**/*.css"
+
+  wiki-quality:
+    name: Wiki Source Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate wiki source
+        run: python tools/publish_wiki.py --verify-only
 
   security-scan:
     name: Security Scanning
