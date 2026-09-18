@@ -9,6 +9,18 @@
 
 ## Lokal udvikling
 
+```mermaid
+flowchart LR
+    C[Clone repository] --> S[./dev.sh start]
+    S --> D[Docker Compose starter services]
+    D --> F[Frontend localhost:85]
+    D --> A[API localhost:5000]
+    D --> DB[(PostgreSQL)]
+    F --> L[Log ind eller brug offentlig side]
+    A --> DB
+    L -->|første admin| CA[./dev.sh create-admin]
+```
+
 ```bash
 git clone https://github.com/jfriisj/vennekredsen.git
 cd vennekredsen
