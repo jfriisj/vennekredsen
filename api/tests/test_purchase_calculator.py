@@ -258,3 +258,144 @@ def test_archived_inventory_item_remains_visible_in_configuration_but_not_calcul
     )
     assert calculation.status_code == 200
     assert calculation.get_json()["items"] == []
+
+
+def test_party_import_creates_missing_inventory_and_configuration(client, member_headers):
+    response = client.post(
+        "/api/purchase-calculator/parties/sommerfest/import",
+        headers=member_headers,
+        json={
+            "items": [
+                {
+                    "name": "Saftevand",
+                    "category": "Drikkevarer",
+                    "unit": "liter",
+                    "default_store": "Dagrofa",
+                    "per_adult_quantity": 0.2,
+                    "per_child_quantity": 0.4,
+                    "factor": 1.1,
+                    "active": True,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.get_json()
+    assert result["created_inventory_items"] == 1
+    assert result["created_party_items"] == 1
+
+    inventory = client.get("/api/inventory/items", headers=member_headers).get_json()
+    created = next(item for item in inventory["items"] if item["name"] == "Saftevand")
+    assert created["stock_quantity"] == 0
+    assert created["category"] == "Drikkevarer"
+    assert created["default_store"] == "Dagrofa"
+
+    party = client.get(
+        "/api/purchase-calculator/parties/sommerfest",
+        headers=member_headers,
+    ).get_json()
+    configured = next(item for item in party["items"] if item["name"] == "Saftevand")
+    assert configured["per_adult_quantity"] == 0.2
+    assert configured["per_child_quantity"] == 0.4
+    assert configured["factor"] == 1.1
+
+
+def test_party_import_reuses_inventory_preserves_stock_and_is_idempotent(
+    client, member_headers
+):
+    item = _create_inventory_item(
+        client,
+        member_headers,
+        name="Pepsi Max",
+        category="Drikkevarer",
+        unit="liter",
+        default_store="Dagrofa",
+        stock_quantity=7,
+    )
+    payload = {
+        "items": [
+            {
+                "name": " pepsi   max ",
+                "category": "Skal ikke overskrive",
+                "unit": "stk",
+                "default_store": "Anden butik",
+                "per_adult_quantity": 0.6,
+                "per_child_quantity": 0.3,
+                "factor": 1.05,
+                "active": True,
+            }
+        ]
+    }
+
+    first = client.post(
+        "/api/purchase-calculator/parties/sommerfest/import",
+        headers=member_headers,
+        json=payload,
+    )
+    second = client.post(
+        "/api/purchase-calculator/parties/sommerfest/import",
+        headers=member_headers,
+        json=payload,
+    )
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert first.get_json()["matched_inventory_items"] == 1
+    assert first.get_json()["created_party_items"] == 1
+    assert second.get_json()["created_inventory_items"] == 0
+    assert second.get_json()["updated_party_items"] == 1
+
+    with app.app_context():
+        saved = db.session.get(InventoryItem, item["id"])
+        assert saved.stock_quantity == 7
+        assert saved.category == "Drikkevarer"
+        assert saved.unit == "liter"
+        assert saved.default_store == "Dagrofa"
+
+    party = client.get(
+        "/api/purchase-calculator/parties/sommerfest",
+        headers=member_headers,
+    ).get_json()
+    matching = [
+        configured
+        for configured in party["items"]
+        if configured["inventory_item_id"] == item["id"]
+    ]
+    assert len(matching) == 1
+    assert matching[0]["factor"] == 1.05
+
+
+def test_party_import_does_not_reactivate_archived_inventory(client, member_headers):
+    item = _create_inventory_item(client, member_headers, name="Arkiveret vare")
+    archive = client.delete(
+        f"/api/inventory/items/{item['id']}",
+        headers=member_headers,
+    )
+    assert archive.status_code == 200
+
+    response = client.post(
+        "/api/purchase-calculator/parties/sommerfest/import",
+        headers=member_headers,
+        json={
+            "items": [
+                {
+                    "name": "Arkiveret vare",
+                    "category": "Mad",
+                    "unit": "stk",
+                    "default_store": "Dagrofa",
+                    "per_adult_quantity": 1,
+                    "per_child_quantity": 1,
+                    "factor": 1,
+                    "active": True,
+                }
+            ]
+        },
+    )
+
+    assert response.status_code == 409
+    assert "arkiveret" in response.get_json()["message"].lower()
+
+    with app.app_context():
+        saved = db.session.get(InventoryItem, item["id"])
+        assert saved.active is False
