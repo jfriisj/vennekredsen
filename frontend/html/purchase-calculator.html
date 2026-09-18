@@ -131,9 +131,39 @@
           </form>
         </section>
 
+        <div
+          class="calculator-tabs"
+          role="tablist"
+          aria-label="Beregner-visning"
+        >
+          <button
+            type="button"
+            id="configurationTab"
+            class="calculator-tab is-active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="configurationView"
+          >
+            Varer &amp; forbrug
+          </button>
+          <button
+            type="button"
+            id="purchaseListTab"
+            class="calculator-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="purchaseListView"
+            tabindex="-1"
+          >
+            Indkøbsliste
+          </button>
+        </div>
+
         <section
-          class="calculator-panel"
-          aria-labelledby="configuration-heading"
+          id="configurationView"
+          class="calculator-panel calculator-view"
+          role="tabpanel"
+          aria-labelledby="configurationTab configuration-heading"
         >
           <div class="section-heading compact-heading">
             <p class="eyebrow">Festkonfiguration</p>
@@ -227,10 +257,17 @@
           </div>
         </section>
 
-        <section
-          class="calculator-panel result-controls"
-          aria-labelledby="filter-heading"
+        <div
+          id="purchaseListView"
+          class="calculator-view"
+          role="tabpanel"
+          aria-labelledby="purchaseListTab"
+          hidden
         >
+          <section
+            class="calculator-panel result-controls"
+            aria-labelledby="filter-heading"
+          >
           <div class="section-heading compact-heading">
             <p class="eyebrow">Resultat</p>
             <h2 id="filter-heading">Indkøbsliste</h2>
@@ -266,10 +303,10 @@
               Eksportér efter kategori
             </button>
           </div>
-        </section>
+          </section>
 
-        <section class="calculator-results" aria-labelledby="resultsTitle">
-          <div class="results-heading">
+          <section class="calculator-results" aria-labelledby="resultsTitle">
+            <div class="results-heading">
             <h2 id="resultsTitle">Ingen beregning endnu</h2>
             <p id="resultsSummary">
               Konfigurér festen og beregn for at få en indkøbsliste.
@@ -296,8 +333,9 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   </body>
