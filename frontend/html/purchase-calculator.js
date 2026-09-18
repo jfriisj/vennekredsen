@@ -24,6 +24,9 @@ const resultsSummary = document.getElementById("resultsSummary");
 const downloadCurrentButton = document.getElementById("downloadCurrent");
 const downloadStoreButton = document.getElementById("downloadStore");
 const downloadCategoryButton = document.getElementById("downloadCategory");
+const downloadTemplateXlsxButton = document.getElementById("downloadTemplateXlsx");
+const downloadTemplateCsvButton = document.getElementById("downloadTemplateCsv");
+const partyImportFile = document.getElementById("partyImportFile");
 
 function redirectToLogin() {
     localStorage.removeItem("authToken");
@@ -57,6 +60,173 @@ async function apiRequest(url, options = {}) {
         );
     }
     return payload;
+}
+
+const PARTY_TEMPLATE_HEADERS = [
+    "name",
+    "category",
+    "unit",
+    "default_store",
+    "per_adult_quantity",
+    "per_child_quantity",
+    "factor",
+    "active",
+];
+
+const PARTY_TEMPLATE_EXAMPLE = [
+    "Pepsi Max",
+    "Drikkevarer",
+    "liter",
+    "Dagrofa",
+    0.5,
+    0.3,
+    1.1,
+    true,
+];
+
+function templateRows() {
+    return [PARTY_TEMPLATE_HEADERS, PARTY_TEMPLATE_EXAMPLE];
+}
+
+function downloadPartyTemplateXlsx() {
+    if (typeof XLSX === "undefined") {
+        setStatus("Spreadsheet-biblioteket kunne ikke indlæses.", "error");
+        return;
+    }
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(templateRows());
+    XLSX.utils.book_append_sheet(workbook, sheet, "festkonfiguration");
+    XLSX.writeFile(workbook, "Vennekredsen_festkonfiguration_template.xlsx");
+}
+
+function downloadPartyTemplateCsv() {
+    const csv = templateRows()
+        .map(row =>
+            row
+                .map(value => {
+                    const text = String(value);
+                    return `"${text.replaceAll('"', '""')}"`;
+                })
+                .join(",")
+        )
+        .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Vennekredsen_festkonfiguration_template.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+function normalizeImportedRow(row) {
+    const normalized = {};
+    PARTY_TEMPLATE_HEADERS.forEach((header, index) => {
+        normalized[header] = row[index];
+    });
+
+    const activeValue = normalized.active;
+    if (typeof activeValue !== "boolean") {
+        const text = String(activeValue ?? "")
+            .trim()
+            .toLocaleLowerCase("da-DK");
+        if (["true", "1", "ja", "yes"].includes(text)) {
+            normalized.active = true;
+        } else if (["false", "0", "nej", "no"].includes(text)) {
+            normalized.active = false;
+        }
+    }
+
+    return normalized;
+}
+
+function rowsToImportItems(rows) {
+    if (!Array.isArray(rows) || rows.length < 2) {
+        return [];
+    }
+    const headers = rows[0].map(value => String(value || "").trim());
+    if (
+        PARTY_TEMPLATE_HEADERS.some(
+            (header, index) => headers[index] !== header
+        )
+    ) {
+        throw new Error(
+            "Filen matcher ikke Vennekredsens festkonfiguration-template."
+        );
+    }
+
+    return rows
+        .slice(1)
+        .filter(row => row.some(value => String(value ?? "").trim() !== ""))
+        .map(normalizeImportedRow);
+}
+
+function parseCsv(text) {
+    const lines = text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean);
+    return lines.map(line => {
+        const values = [];
+        let current = "";
+        let quoted = false;
+        for (let index = 0; index < line.length; index += 1) {
+            const character = line[index];
+            const next = line[index + 1];
+            if (character === '"' && quoted && next === '"') {
+                current += '"';
+                index += 1;
+            } else if (character === '"') {
+                quoted = !quoted;
+            } else if (character === "," && !quoted) {
+                values.push(current);
+                current = "";
+            } else {
+                current += character;
+            }
+        }
+        values.push(current);
+        return values;
+    });
+}
+
+async function importPartyConfiguration(file) {
+    if (!partySelect.value) {
+        throw new Error("Vælg en festtype før import.");
+    }
+
+    let rows;
+    if (file.name.toLocaleLowerCase("da-DK").endsWith(".csv")) {
+        rows = parseCsv(await file.text());
+    } else {
+        if (typeof XLSX === "undefined") {
+            throw new Error("Spreadsheet-biblioteket kunne ikke indlæses.");
+        }
+        const workbook = XLSX.read(await file.arrayBuffer(), { cellDates: true });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[firstSheetName];
+        rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    }
+
+    const items = rowsToImportItems(rows);
+    if (items.length === 0) {
+        throw new Error("Importfilen indeholder ingen varer.");
+    }
+
+    const result = await apiRequest(
+        `/api/purchase-calculator/parties/${partySelect.value}/import`,
+        {
+            method: "POST",
+            body: JSON.stringify({ items }),
+        }
+    );
+
+    await Promise.all([loadInventory(), loadPartyConfiguration()]);
+    clearCalculation();
+    setStatus(
+        `Import færdig: ${result.created_inventory_items} nye lagervarer, ${result.matched_inventory_items} eksisterende lagervarer, ${result.created_party_items} nye festvarer og ${result.updated_party_items} opdaterede festvarer.`,
+        "success"
+    );
 }
 
 function formatQuantity(value) {
@@ -258,6 +428,12 @@ function renderConfiguration() {
         configurationList.append(card);
     });
 
+    renderInventoryOptions();
+}
+
+async function loadInventory() {
+    const inventoryPayload = await apiRequest("/api/inventory/items");
+    inventoryItems = inventoryPayload.items || [];
     renderInventoryOptions();
 }
 
@@ -595,6 +771,24 @@ downloadStoreButton.addEventListener("click", () =>
         true
     )
 );
+downloadTemplateXlsxButton.addEventListener(
+    "click",
+    downloadPartyTemplateXlsx
+);
+downloadTemplateCsvButton.addEventListener("click", downloadPartyTemplateCsv);
+partyImportFile.addEventListener("change", async event => {
+    const [file] = event.target.files;
+    if (!file) return;
+    try {
+        setStatus(`Importerer ${file.name}...`);
+        await importPartyConfiguration(file);
+    } catch (error) {
+        setStatus(error.message, "error");
+    } finally {
+        partyImportFile.value = "";
+    }
+});
+
 downloadCategoryButton.addEventListener("click", () =>
     downloadGrouped(
         "category",
