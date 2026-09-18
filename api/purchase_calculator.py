@@ -55,7 +55,9 @@ def _round_quantity(value, unit):
     return round(value + 1e-12, 2)
 
 
-def register_purchase_calculator(app, db, token_required, InventoryItem):
+def register_purchase_calculator(
+    app, db, token_required, InventoryItem, normalize_item_name
+):
     """Register persisted party configuration and calculation endpoints."""
 
     class PurchaseParty(db.Model):  # type: ignore
@@ -378,6 +380,171 @@ def register_purchase_calculator(app, db, token_required, InventoryItem):
                         if inventory_item is not None
                         else None
                     )
+                }
+            ),
+            200,
+        )
+
+    @app.route(
+        "/api/purchase-calculator/parties/<string:party_key>/import",
+        methods=["POST"],
+    )
+    @token_required
+    def purchase_import_party_configuration(current_user, party_key):
+        party, error = get_party_or_404(party_key)
+        if error:
+            return error
+
+        data = request.get_json(silent=True) or {}
+        incoming_items = data.get("items")
+        if not isinstance(incoming_items, list) or not incoming_items:
+            return jsonify({"message": "Import kræver mindst én vare"}), 400
+
+        prepared = []
+        seen_names = set()
+
+        for index, raw_item in enumerate(incoming_items, start=1):
+            if not isinstance(raw_item, dict):
+                return jsonify({"message": f"Række {index} er ugyldig"}), 400
+
+            name = str(raw_item.get("name", "")).strip()
+            normalized_name = normalize_item_name(name)
+            if not normalized_name:
+                return jsonify({"message": f"Række {index}: navn er påkrævet"}), 400
+            if normalized_name in seen_names:
+                return (
+                    jsonify({"message": f"Række {index}: varen findes flere gange i filen"}),
+                    400,
+                )
+            seen_names.add(normalized_name)
+
+            values, validation_error = parse_configuration_values(raw_item)
+            if validation_error:
+                return (
+                    jsonify({"message": f"Række {index}: {validation_error}"}),
+                    400,
+                )
+
+            active = raw_item.get("active", True)
+            if not isinstance(active, bool):
+                return (
+                    jsonify({"message": f"Række {index}: active skal være true eller false"}),
+                    400,
+                )
+
+            prepared.append(
+                {
+                    "index": index,
+                    "name": name,
+                    "normalized_name": normalized_name,
+                    "category": str(raw_item.get("category", "")).strip(),
+                    "unit": str(raw_item.get("unit", "")).strip(),
+                    "default_store": str(raw_item.get("default_store", "")).strip(),
+                    "values": values,
+                    "active": active,
+                }
+            )
+
+        normalized_names = [item["normalized_name"] for item in prepared]
+        existing_items = {
+            item.normalized_name: item
+            for item in InventoryItem.query.filter(
+                InventoryItem.normalized_name.in_(normalized_names)
+            ).all()
+        }
+
+        for item in prepared:
+            existing = existing_items.get(item["normalized_name"])
+            if existing is not None and not existing.active:
+                return (
+                    jsonify(
+                        {
+                            "message": (
+                                f"Række {item['index']}: {existing.name} er arkiveret "
+                                "i Lager og skal gendannes manuelt før import"
+                            )
+                        }
+                    ),
+                    409,
+                )
+            if existing is None and (not item["category"] or not item["unit"]):
+                return (
+                    jsonify(
+                        {
+                            "message": (
+                                f"Række {item['index']}: nye varer kræver kategori "
+                                "og enhed"
+                            )
+                        }
+                    ),
+                    400,
+                )
+
+        created_inventory = 0
+        matched_inventory = 0
+        created_relationships = 0
+        updated_relationships = 0
+
+        try:
+            for item in prepared:
+                inventory_item = existing_items.get(item["normalized_name"])
+                if inventory_item is None:
+                    inventory_item = InventoryItem(
+                        name=item["name"],
+                        normalized_name=item["normalized_name"],
+                        category=item["category"],
+                        unit=item["unit"],
+                        default_store=item["default_store"],
+                        stock_quantity=0,
+                        note="",
+                        active=True,
+                        last_counted_at=None,
+                    )
+                    db.session.add(inventory_item)
+                    db.session.flush()
+                    existing_items[item["normalized_name"]] = inventory_item
+                    created_inventory += 1
+                else:
+                    matched_inventory += 1
+
+                per_adult, per_child, factor = item["values"]
+                relationship = PurchasePartyItem.query.filter_by(
+                    party_id=party.id,
+                    inventory_item_id=inventory_item.id,
+                ).first()
+
+                if relationship is None:
+                    relationship = PurchasePartyItem(
+                        party_id=party.id,
+                        inventory_item_id=inventory_item.id,
+                        per_adult_quantity=per_adult,
+                        per_child_quantity=per_child,
+                        factor=factor,
+                        active=item["active"],
+                    )
+                    db.session.add(relationship)
+                    created_relationships += 1
+                else:
+                    relationship.per_adult_quantity = per_adult
+                    relationship.per_child_quantity = per_child
+                    relationship.factor = factor
+                    relationship.active = item["active"]
+                    updated_relationships += 1
+
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({"message": "Importen skabte en datakonflikt"}), 409
+
+        return (
+            jsonify(
+                {
+                    "party": party.to_dict(),
+                    "created_inventory_items": created_inventory,
+                    "matched_inventory_items": matched_inventory,
+                    "created_party_items": created_relationships,
+                    "updated_party_items": updated_relationships,
+                    "imported_rows": len(prepared),
                 }
             ),
             200,
