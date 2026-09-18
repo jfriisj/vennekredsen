@@ -8,9 +8,10 @@ Frontend og API kan både bygges lokalt og anvende de GHCR-images, der er angive
 
 ```mermaid
 flowchart LR
-    U[Internet] --> C[Cloudflare Tunnel]
-    C --> N[Nginx frontend]
-    N -->|statiske sider| U
+    B[Browser] --> CF[Cloudflare]
+    CF --> T[Cloudflare Tunnel]
+    T --> N[Nginx frontend]
+    N -->|HTML/CSS/JS| B
     N -->|/api/*| A[Flask API]
     A --> D[(PostgreSQL 15)]
     D --> V[(db_data volume)]
