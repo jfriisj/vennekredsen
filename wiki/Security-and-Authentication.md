@@ -12,11 +12,10 @@ Brugere kan desuden være aktive eller inaktive.
 ```mermaid
 flowchart TD
     P[Public bruger] --> PUB[Offentlige sider og formularer]
-    M[Member] --> AUTH[JWT-autentifikation]
-    A[Admin] --> AUTH
-    AUTH --> MEMBER[Beskyttet medlemsområde]
-    AUTH --> R{Rolle?}
-    R -->|member| MEMBER
+    U[Member eller admin] --> LOGIN[Login]
+    LOGIN --> JWT[Bearer JWT]
+    JWT --> R{Rolle}
+    R -->|member| MEMBER[Beskyttet medlemsområde]
     R -->|admin| MEMBER
     R -->|admin| ADMIN[Admin-endpoints og administration]
 ```
