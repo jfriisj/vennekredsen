@@ -325,4 +325,3 @@ prepareHeroMedia({});
 loadSiteSettings();
 loadNextEvent();
 loadProjects();
-
