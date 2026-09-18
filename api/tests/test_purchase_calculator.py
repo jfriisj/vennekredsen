@@ -55,9 +55,7 @@ def test_three_default_parties_are_available(client, member_headers):
     ]
 
 
-def test_same_inventory_item_can_have_different_party_values(
-    client, member_headers
-):
+def test_same_inventory_item_can_have_different_party_values(client, member_headers):
     item = _create_inventory_item(client, member_headers)
 
     summer = _add_party_item(
@@ -96,16 +94,10 @@ def test_same_inventory_item_can_have_different_party_values(
     assert christmas_payload["items"][0]["factor"] == 1.1
 
 
-def test_duplicate_party_item_is_rejected_without_duplicate_row(
-    client, member_headers
-):
+def test_duplicate_party_item_is_rejected_without_duplicate_row(client, member_headers):
     item = _create_inventory_item(client, member_headers)
-    first = _add_party_item(
-        client, member_headers, "sommerfest", item["id"]
-    )
-    duplicate = _add_party_item(
-        client, member_headers, "sommerfest", item["id"]
-    )
+    first = _add_party_item(client, member_headers, "sommerfest", item["id"])
+    duplicate = _add_party_item(client, member_headers, "sommerfest", item["id"])
 
     assert first.status_code == 201
     assert duplicate.status_code == 409
@@ -117,9 +109,7 @@ def test_duplicate_party_item_is_rejected_without_duplicate_row(
     assert len(payload["items"]) == 1
 
 
-def test_calculation_subtracts_stock_without_mutating_inventory(
-    client, member_headers
-):
+def test_calculation_subtracts_stock_without_mutating_inventory(client, member_headers):
     item = _create_inventory_item(
         client,
         member_headers,
