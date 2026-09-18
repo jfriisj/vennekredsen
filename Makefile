@@ -1,5 +1,5 @@
 # Vennekredsen Project Makefile
-.PHONY: help install-dev check-quality fix-format test clean
+.PHONY: help install-dev check-quality check-api check-frontend check-wiki fix-format test clean
 
 # Default target
 help:
@@ -13,6 +13,7 @@ help:
 	@echo "  check-quality   Run all quality checks"
 	@echo "  check-api       Run API quality checks only"
 	@echo "  check-frontend  Run frontend quality checks only"
+	@echo "  check-wiki      Validate repository-backed wiki source"
 	@echo "  fix-format      Fix all formatting issues"
 	@echo "  fix-api         Fix API formatting issues"
 	@echo "  fix-frontend    Fix frontend formatting issues"
@@ -56,6 +57,9 @@ check-api:
 check-frontend:
 	@chmod +x scripts/check-frontend-quality.sh
 	@./scripts/check-frontend-quality.sh
+
+check-wiki:
+	@python tools/publish_wiki.py --verify-only
 
 # Format fixing
 fix-format:

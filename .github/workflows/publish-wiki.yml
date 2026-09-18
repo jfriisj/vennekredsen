@@ -1,0 +1,39 @@
+name: Publish wiki
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact source revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Resolve exact source SHA
+        run: echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Validate and stage admitted wiki source
+        run: >-
+          python tools/publish_wiki.py
+          --repo-slug "$GITHUB_REPOSITORY"
+          --expected-sha "$SOURCE_SHA"
+          --stage-dir .wiki-publish
+
+      - name: Deploy staged wiki
+        uses: actions4gh/deploy-wiki@5aca866154473e3c9e857f985329521599b8786f # v1
+        with:
+          path: .wiki-publish
