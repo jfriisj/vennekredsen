@@ -101,7 +101,9 @@ function renderPartyOptions() {
 
 function renderInventoryOptions() {
     const configuredActiveIds = new Set(
-        configuredItems.filter(item => item.active).map(item => item.inventory_item_id)
+        configuredItems
+            .filter(item => item.active)
+            .map(item => item.inventory_item_id)
     );
     const available = inventoryItems.filter(
         item => item.active && !configuredActiveIds.has(item.id)
@@ -154,7 +156,8 @@ function renderConfiguration() {
         const heading = document.createElement("h3");
         heading.textContent = item.name;
         const meta = document.createElement("p");
-        meta.textContent = `${item.category} · ${item.unit} · ${item.default_store || "Ingen butik"}`;
+        meta.textContent =
+            `${item.category} · ${item.unit} · ${item.default_store || "Ingen butik"}`;
         identity.append(heading, meta);
 
         if (!item.inventory_active) {
@@ -239,7 +242,10 @@ function renderConfiguration() {
                 );
                 await loadPartyConfiguration();
                 clearCalculation();
-                setStatus(`${item.name} er fjernet fra festkonfigurationen.`, "success");
+                setStatus(
+                    `${item.name} er fjernet fra festkonfigurationen.`,
+                    "success"
+                );
             } catch (error) {
                 setStatus(error.message, "error");
                 remove.disabled = false;
@@ -303,10 +309,12 @@ async function addInventoryItem(event) {
 function populateResultFilters() {
     populateSelect(
         storeFilter,
-        uniqueSorted(calculatedItems.map(item => item.default_store)).map(value => ({
-            value,
-            label: value,
-        })),
+        uniqueSorted(calculatedItems.map(item => item.default_store)).map(
+            value => ({
+                value,
+                label: value,
+            })
+        ),
         "Alle indkøbssteder"
     );
     populateSelect(
@@ -425,7 +433,8 @@ async function calculatePurchases(event) {
                 party_key: partySelect.value,
                 adults: document.getElementById("adultsInput").value,
                 children: document.getElementById("childrenInput").value,
-                subtract_stock: document.getElementById("subtractStock").checked,
+                subtract_stock:
+                    document.getElementById("subtractStock").checked,
             }),
         });
 
@@ -503,12 +512,20 @@ function downloadCurrentView() {
     XLSX.writeFile(workbook, "Indkob_beregnet.xlsx");
 }
 
-function downloadGrouped(groupKey, filename, label, includeStore, includeCategory) {
+function downloadGrouped(
+    groupKey,
+    filename,
+    label,
+    includeStore,
+    includeCategory
+) {
     if (!ensureSpreadsheetLibrary()) return;
     const workbook = XLSX.utils.book_new();
     uniqueSorted(calculatedItems.map(item => item[groupKey])).forEach(
         (value, index) => {
-            const items = calculatedItems.filter(item => item[groupKey] === value);
+            const items = calculatedItems.filter(
+                item => item[groupKey] === value
+            );
             XLSX.utils.book_append_sheet(
                 workbook,
                 XLSX.utils.aoa_to_sheet(
@@ -584,6 +601,8 @@ downloadCategoryButton.addEventListener("click", () =>
         false
     )
 );
-document.getElementById("logoutButton").addEventListener("click", redirectToLogin);
+document
+    .getElementById("logoutButton")
+    .addEventListener("click", redirectToLogin);
 
 initialize();
