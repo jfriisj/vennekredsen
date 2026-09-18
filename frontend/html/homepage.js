@@ -326,7 +326,3 @@ loadSiteSettings();
 loadNextEvent();
 loadProjects();
 
-if (document.getElementById("site-settings-form")) {
-    loadManagedMediaStyles();
-    import("./site-media-admin.js");
-}
