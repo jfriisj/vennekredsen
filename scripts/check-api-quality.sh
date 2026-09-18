@@ -4,6 +4,8 @@ set -e
 echo "🔍 Running API code quality checks in Docker..."
 
 docker compose --env-file .env.dev.local -f docker-compose.local.yml run --rm --no-deps api sh -lc '
+    set -e
+
     uv pip install --system -r requirements-dev.txt
 
     echo "🎨 Running Black (code formatting)..."
@@ -15,11 +17,20 @@ docker compose --env-file .env.dev.local -f docker-compose.local.yml run --rm --
     echo "🔍 Running Flake8 (linting)..."
     python -m flake8 .
 
+    echo "🧩 Running MyPy (type checking)..."
+    python -m mypy --ignore-missing-imports app.py
+
     echo "🛡️ Running Bandit (security check)..."
-    python -m bandit -r . -ll
+    python -m bandit -r . -ll -x ./.venv,./venv
 
     echo "🔒 Running Safety (dependency security)..."
-    python -m safety check         -r requirements.txt         -r requirements-dev.txt         --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086
+    python -m safety check \
+        -r requirements.txt \
+        -r requirements-dev.txt \
+        --ignore 77744 --ignore 77745 --ignore 78688 --ignore 78279 --ignore 78558 --ignore 59234 --ignore 77942 --ignore 78057 --ignore 72086
+
+    echo "🧪 Running API tests..."
+    python -m pytest --cov=. --cov-report=term-missing
 '
 
 echo "✅ All API quality checks passed!"
