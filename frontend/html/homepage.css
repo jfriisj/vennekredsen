@@ -357,6 +357,7 @@ body.homepage a {
 }
 
 .project-card {
+  min-width: 0;
   padding: 1.4rem;
 }
 
@@ -371,11 +372,22 @@ body.homepage a {
 .project-card h3 {
   margin: 0;
   font-size: 1.05rem;
+  overflow-wrap: anywhere;
 }
 
 .project-card p {
   margin: 0.7rem 0 0;
   color: var(--home-text-muted);
+}
+
+.project-description {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.project-meta {
+  font-size: 0.88rem;
 }
 
 .empty-state {
