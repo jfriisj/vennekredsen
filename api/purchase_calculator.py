@@ -249,7 +249,10 @@ def register_purchase_calculator(app, db, token_required, InventoryItem):
         ).first()
         if relationship is not None:
             if relationship.active:
-                return jsonify({"message": "Varen er allerede tilføjet til festtypen"}), 409
+                return (
+                    jsonify({"message": "Varen er allerede tilføjet til festtypen"}),
+                    409,
+                )
             relationship.per_adult_quantity = per_adult
             relationship.per_child_quantity = per_child
             relationship.factor = factor
@@ -325,7 +328,10 @@ def register_purchase_calculator(app, db, token_required, InventoryItem):
         if not isinstance(active, bool):
             return jsonify({"message": "active skal være true eller false"}), 400
         if active and not inventory_item.active:
-            return jsonify({"message": "En arkiveret lagervare kan ikke aktiveres"}), 409
+            return (
+                jsonify({"message": "En arkiveret lagervare kan ikke aktiveres"}),
+                409,
+            )
 
         relationship.per_adult_quantity = per_adult
         relationship.per_child_quantity = per_child
@@ -395,7 +401,10 @@ def register_purchase_calculator(app, db, token_required, InventoryItem):
         if children is None:
             return jsonify({"message": "Antal børn skal være 0 eller højere"}), 400
         if not isinstance(subtract_stock, bool):
-            return jsonify({"message": "subtract_stock skal være true eller false"}), 400
+            return (
+                jsonify({"message": "subtract_stock skal være true eller false"}),
+                400,
+            )
 
         rows = (
             db.session.query(PurchasePartyItem, InventoryItem)
