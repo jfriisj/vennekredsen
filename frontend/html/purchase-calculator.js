@@ -58,7 +58,7 @@ function setCalculatorView(view) {
 function activateTabFromKeyboard(event) {
     const tabs = [configurationTab, purchaseListTab];
     const currentIndex = tabs.indexOf(event.currentTarget);
-    let nextIndex = currentIndex;
+    let nextIndex;
 
     if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
         const direction = event.key === "ArrowRight" ? 1 : -1;
